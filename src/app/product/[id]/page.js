@@ -299,7 +299,7 @@ export default function ProductDetailPage({ params }) {
         </div>
 
         {/* RIGHT COLUMN: Sticky Purchase Sidebar Panel */}
-        <div className="pdp-purchase-col" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "var(--shadow-md)" }}>
+        <div className="pdp-purchase-col" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
             <span style={{ fontSize: "11px", color: "var(--text-2)", textTransform: "uppercase", fontWeight: "700" }}>Price / الإجمالي</span>
             <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginTop: "4px" }}>

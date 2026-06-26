@@ -1147,7 +1147,7 @@ main {
   }
 
   .layout-side-col {
-    width: 380px;
+    width: 300px;
     position: sticky;
     top: 90px;
   }
@@ -1933,5 +1933,15 @@ main {
   .unified-sub-boxes {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-16);
+  }
+}
+
+/* Pharmacy Detail Page Tabs & Empty State Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
   }
 }
