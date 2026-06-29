@@ -1072,7 +1072,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
-  box-shadow: var(--shadow-sm);
+  /* box-shadow: var(--shadow-sm); */
 }
 
 .order-group-header {
@@ -1147,7 +1147,7 @@ main {
   }
 
   .layout-side-col {
-    width: 300px;
+    width: 380px;
     position: sticky;
     top: 90px;
   }

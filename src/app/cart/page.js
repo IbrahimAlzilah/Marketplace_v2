@@ -5,6 +5,7 @@ import { useApp } from "@/context/AppContext";
 import CartItem from "@/components/CartItem";
 import { useRouter } from "next/navigation";
 import AuthModal from "@/components/AuthModal";
+import Link from "next/link";
 
 export default function CartPage() {
   const { language, cart, attachPrescription, walletBalance, loyaltyPoints, currentAddress, addresses, setCurrentAddress, isLoggedIn, login } = useApp();
@@ -160,7 +161,7 @@ export default function CartPage() {
             const progressPercent = Math.min((sub / freeDeliveryThreshold) * 100, 100);
 
             return (
-              <div key={pharmacyId} className="order-group-box" style={{ border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", backgroundColor: "var(--surface)", display: "flex", flexDirection: "column", gap: "12px", boxShadow: "var(--shadow-sm)" }}>
+              <div key={pharmacyId} className="order-group-box" style={{ border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", backgroundColor: "var(--surface)", display: "flex", flexDirection: "column", gap: "12px" }}>
                 <div className="order-group-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
                   <span style={{ fontSize: "15px", fontWeight: "700", color: "var(--primary)" }}>🏥 {pharmacyName}</span>
                   <span style={{ fontSize: "12px", color: "var(--text-2)" }}>
@@ -198,9 +199,34 @@ export default function CartPage() {
                   )}
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", borderTop: "1px solid var(--border)", paddingTop: "10px", fontWeight: "700" }}>
-                  <span>{language === "ar" ? "المجموع الفرعي للصيدلية:" : "Pharmacy Subtotal:"}</span>
-                  <span>{sub.toFixed(2)} {t.sar}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", borderTop: "1px solid var(--border)", paddingTop: "10px", fontWeight: "700", flexWrap: "wrap", gap: "8px" }}>
+                  <div>
+                    <span style={{ color: "var(--text-2)", fontWeight: "600" }}>{language === "ar" ? "المجموع الفرعي للصيدلية: " : "Pharmacy Subtotal: "}</span>
+                    <span style={{ color: "var(--text-1)", fontWeight: "800" }}>{sub.toFixed(2)} {t.sar}</span>
+                  </div>
+                  <Link
+                    href={`/pharmacies/${pharmacyId}`}
+                    style={{
+                      fontSize: "12px",
+                      color: "var(--primary)",
+                      fontWeight: "700",
+                      textDecoration: "none",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "2px",
+                      transition: "color 0.2s"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.textDecoration = 'underline';
+                      e.target.style.color = 'var(--primary-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.textDecoration = 'none';
+                      e.target.style.color = 'var(--primary)';
+                    }}
+                  >
+                    + {language === "ar" ? `تسوق المزيد من ${pharmacyName}` : `Shop More from ${pharmacyName}`}
+                  </Link>
                 </div>
               </div>
             );
@@ -221,7 +247,7 @@ export default function CartPage() {
           
           <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
             <h3 style={{ fontSize: "16px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
-              📋 {t.orderSummary}
+              {t.orderSummary}
             </h3>
 
             {/* Billing breakdown */}
@@ -269,7 +295,6 @@ export default function CartPage() {
                       border: "1.5px solid var(--primary)",
                       borderRadius: "12px",
                       padding: "12px",
-                      boxShadow: "var(--shadow-lg)",
                       zIndex: 100,
                       width: "240px",
                       display: "flex",
