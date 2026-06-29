@@ -20,6 +20,19 @@ export function AppProvider({ children }) {
   const [searchHistory, setSearchHistory] = useState(["Panadol", "Baby Milk"]);
   const [recentlyViewed, setRecentlyViewed] = useState(["pr-1", "pr-2"]); // Pre-populated default product IDs
 
+  // Sync login status from localStorage on client-side mount (hydration-safe)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("isLoggedIn") === "true";
+      if (stored) {
+        setIsLoggedIn(true);
+        if (addresses.length > 0) {
+          setCurrentAddress(addresses[0]);
+        }
+      }
+    }
+  }, []);
+
   // Update HTML document direction and lang on language toggle
   useEffect(() => {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
@@ -32,13 +45,19 @@ export function AppProvider({ children }) {
 
   const login = (phone, password) => {
     setIsLoggedIn(true);
-    if (!currentAddress && addresses.length > 0) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("isLoggedIn", "true");
+    }
+    if (addresses.length > 0) {
       setCurrentAddress(addresses[0]);
     }
   };
 
   const logout = () => {
     setIsLoggedIn(false);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("isLoggedIn");
+    }
     setCurrentAddress(null);
     setCart([]);
   };
@@ -241,6 +260,7 @@ export function AppProvider({ children }) {
         language,
         toggleLanguage,
         cart,
+        setCart,
         addToCart,
         removeFromCart,
         updateCartQuantity,

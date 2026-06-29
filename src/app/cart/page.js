@@ -11,9 +11,6 @@ export default function CartPage() {
   const { language, cart, attachPrescription, walletBalance, loyaltyPoints, currentAddress, addresses, setCurrentAddress, isLoggedIn, login } = useApp();
   const router = useRouter();
 
-  const [couponCode, setCouponCode] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0);
-  const [couponApplied, setCouponApplied] = useState(false);
   const [uploadingItem, setUploadingItem] = useState(null);
 
   const [showLocationGating, setShowLocationGating] = useState(false);
@@ -101,17 +98,8 @@ export default function CartPage() {
 
   const deliveryFees = deliveryFeesDetails.reduce((sum, item) => sum + item.fee, 0);
 
-  const appliedDiscount = itemsSubtotal * couponDiscount;
-  const vat = (itemsSubtotal - appliedDiscount) * 0.15;
-  const totalAmount = itemsSubtotal - appliedDiscount + deliveryFees + vat;
-
-  const handleApplyCoupon = (e) => {
-    e.preventDefault();
-    if (couponCode.toUpperCase() === "BABY20" || couponCode.toUpperCase() === "YUSUR10") {
-      setCouponDiscount(0.10); // 10% discount
-      setCouponApplied(true);
-    }
-  };
+  const vat = itemsSubtotal * 0.15;
+  const totalAmount = itemsSubtotal + deliveryFees + vat;
 
   const hasMissingPrescriptions = cart.some((item) => item.isRx && !item.rxFile);
 
@@ -257,12 +245,7 @@ export default function CartPage() {
                 <span style={{ fontWeight: "600" }}>{itemsSubtotal.toFixed(2)} {t.sar}</span>
               </div>
 
-              {couponDiscount > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "var(--success)", fontWeight: "700" }}>
-                  <span>{language === "ar" ? "خصم الكوبون:" : "Coupon Discount:"}</span>
-                  <span>-{(appliedDiscount).toFixed(2)} {t.sar}</span>
-                </div>
-              )}
+
 
               {/* Delivery Fees Clickable Split Popover */}
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", position: "relative" }}>
@@ -335,27 +318,6 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Coupon tool */}
-            <form onSubmit={handleApplyCoupon} style={{ display: "flex", gap: "8px", borderTop: "1px solid var(--border)", paddingTop: "12px", marginTop: "4px" }}>
-              <input
-                type="text"
-                className="form-input"
-                placeholder={t.coupon}
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                disabled={couponApplied}
-                style={{ flex: 1, padding: "8px 12px", fontSize: "12px" }}
-              />
-              <button type="submit" className="btn-secondary" style={{ width: "auto", padding: "8px 16px", fontSize: "12px" }} disabled={couponApplied}>
-                {t.apply}
-              </button>
-            </form>
-
-            {couponApplied && (
-              <div style={{ fontSize: "11px", color: "var(--success)", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
-                ✓ {t.applied}
-              </div>
-            )}
 
             {/* Wallet & Loyalty Benefits Preview */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", borderTop: "1px solid var(--border)", paddingTop: "12px", marginTop: "4px" }}>

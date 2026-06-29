@@ -30,15 +30,36 @@ export default function CartItem({ item, onUploadPrescription }) {
       }}
     >
       <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-        <div style={{ fontSize: "28px", width: "48px", height: "48px", backgroundColor: "var(--bg)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {item.image}
-        </div>
-        <div style={{ flex: 1 }}>
-          <h5 style={{ fontSize: "13px", fontWeight: "600" }}>{name}</h5>
-          <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--primary)" }}>
-            {item.price.toFixed(2)} {t.sar}
-          </span>
-        </div>
+        <Link
+          href={`/product/${item.id}`}
+          style={{
+            display: "flex",
+            gap: "12px",
+            alignItems: "center",
+            textDecoration: "none",
+            color: "inherit",
+            flex: 1,
+            minWidth: 0
+          }}
+          onMouseEnter={(e) => {
+            const titleEl = e.currentTarget.querySelector("h5");
+            if (titleEl) titleEl.style.textDecoration = "underline";
+          }}
+          onMouseLeave={(e) => {
+            const titleEl = e.currentTarget.querySelector("h5");
+            if (titleEl) titleEl.style.textDecoration = "none";
+          }}
+        >
+          <div style={{ fontSize: "28px", width: "48px", height: "48px", backgroundColor: "var(--bg)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {item.image}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h5 style={{ fontSize: "13px", fontWeight: "600", margin: 0 }}>{name}</h5>
+            <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--primary)" }}>
+              {item.price.toFixed(2)} {t.sar}
+            </span>
+          </div>
+        </Link>
         
         <div className="qty-counter">
           <button className="qty-btn" onClick={() => updateCartQuantity(item.id, item.quantity - 1)}>-</button>
