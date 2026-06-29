@@ -21,6 +21,10 @@ export default function PharmacyDetailPage({ params }) {
   const [notified, setNotified] = useState(false);
   const [helpfulVotes, setHelpfulVotes] = useState({});
 
+  // Offline simulation state (Screen 13 specifications)
+  // Whites (ph-3) defaults to closed/offline on initial view to demonstrate the state
+  const [isStoreOffline, setIsStoreOffline] = useState(pharmacyId === "ph-3");
+
   if (!pharmacy) {
     return <div className="empty-state">Pharmacy Not Found</div>;
   }
@@ -158,40 +162,135 @@ export default function PharmacyDetailPage({ params }) {
     { id: "branches", label: t.tabBranches }
   ];
 
+  // Brand-based styling storefront banners (Screen 13 covered imagery)
+  const brandBanners = {
+    "ph-1": "linear-gradient(135deg, #065f46 0%, #0f766e 100%)", // Al-Dawaa Green
+    "ph-2": "linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)", // Nahdi Blue
+    "ph-3": "linear-gradient(135deg, #be185d 0%, #111827 100%)", // Whites Pink/Grey
+    "ph-4": "linear-gradient(135deg, #0369a1 0%, #075985 100%)", // Al-Safaa Teal
+    "ph-5": "linear-gradient(135deg, #4338ca 0%, #3730a3 100%)"  // Community indigos
+  };
+  const activeBanner = brandBanners[pharmacyId] || "linear-gradient(135deg, #0f766e 0%, #115e59 100%)";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      {/* Header card details */}
+      {/* Styles for animations */}
+      <style>{`
+        @keyframes pulsePin {
+          0% { opacity: 0.95; }
+          100% { opacity: 1; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+        }
+      `}</style>
+
+      {/* Covered Storefront Visual Banner Header (Screen 13 specifications) */}
+      <div
+        style={{
+          position: "relative",
+          height: "160px",
+          background: activeBanner,
+          borderRadius: "16px",
+          overflow: "hidden",
+          display: "flex",
+          alignItems: "flex-end",
+          padding: "20px",
+          boxShadow: "var(--shadow-sm)"
+        }}
+      >
+        {/* Brand medical logo silhouette background decoration */}
+        <div style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          fontSize: "64px",
+          opacity: 0.15,
+          userSelect: "none"
+        }}>
+          🏥
+        </div>
+        
+        {/* Glassmorphism card detailing pharmacy */}
+        <div style={{
+          display: "flex",
+          gap: "16px",
+          alignItems: "center",
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          borderRadius: "12px",
+          padding: "12px 18px",
+          color: "white",
+          width: "100%",
+          zIndex: 10
+        }}>
+          <div style={{ fontSize: "36px" }}>{pharmacy.logo}</div>
+          <div>
+            <h2 style={{ fontSize: "18px", fontWeight: "800", margin: 0, color: "white" }}>{name}</h2>
+            <span style={{ fontSize: "11px", opacity: 0.9 }}>📍 {language === "ar" ? "الرياض، حي الملقا" : "Riyadh, Al-Malqa District"}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Info Card Details (Stars, Delivery ETA, Closed Switch) */}
       <div
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
           borderRadius: "16px",
-          padding: "20px",
+          padding: "16px",
           display: "flex",
-          gap: "20px",
-          boxShadow: "var(--shadow-sm)",
-          alignItems: "center"
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "16px",
+          boxShadow: "var(--shadow-sm)"
         }}
       >
-        <div style={{ fontSize: "48px", width: "72px", height: "72px", backgroundColor: "var(--bg)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {pharmacy.logo}
+        <div style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text-2)" }}>
+          <span style={{ fontWeight: "700", color: "var(--warning)", fontSize: "13px" }}>★ {pharmacy.rating.toFixed(1)} ({pharmacy.reviewsCount})</span>
+          <span>⏱️ {eta}</span>
+          <span>🚗 {t.fee} {pharmacy.deliveryFee === 0 ? t.free : `${pharmacy.deliveryFee} ${t.sar}`}</span>
         </div>
-        <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: "20px", fontWeight: "800", color: "var(--text-1)", marginBottom: "6px" }}>{name}</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ color: "var(--warning)", fontWeight: "700", fontSize: "15px" }}>
-              ★ {pharmacy.rating.toFixed(1)}
-            </span>
-            <span style={{ color: "var(--text-2)", fontSize: "13px" }}>
-              ({pharmacy.reviewsCount} {t.reviews})
-            </span>
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", fontSize: "12px", color: "var(--text-2)", marginTop: "10px", borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>⏱️ {eta}</span>
-            <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>🚗 {t.fee} {pharmacy.deliveryFee === 0 ? t.free : `${pharmacy.deliveryFee} ${t.sar}`}</span>
-          </div>
+
+        {/* Offline Simulation Gating Switch */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "10px" }}>
+          <label htmlFor="store-offline-toggle" style={{ fontSize: "11px", fontWeight: "700", color: isStoreOffline ? "var(--danger)" : "var(--text-1)", cursor: "pointer" }}>
+            {isStoreOffline ? (language === "ar" ? "المتجر مغلق 🛑" : "Store Closed 🛑") : (language === "ar" ? "محاكاة الإغلاق ⚙️" : "Simulate Closed ⚙️")}
+          </label>
+          <input
+            id="store-offline-toggle"
+            type="checkbox"
+            checked={isStoreOffline}
+            onChange={() => setIsStoreOffline(!isStoreOffline)}
+            style={{ width: "16px", height: "16px", cursor: "pointer" }}
+          />
         </div>
       </div>
+
+      {/* Store Closed Warning Alert Banner (Screen 13 Offline alerts) */}
+      {isStoreOffline && (
+        <div
+          style={{
+            backgroundColor: "rgba(239, 68, 68, 0.08)",
+            border: "1.5px solid var(--danger)",
+            borderRadius: "12px",
+            padding: "14px 18px",
+            color: "var(--danger)",
+            fontSize: "13px",
+            fontWeight: "700",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            animation: "pulsePin 1s infinite alternate"
+          }}
+        >
+          <span>🛑</span>
+          <span>
+            {language === "ar" 
+              ? "تنبيه: الصيدلية مغلقة حالياً. تم تعطيل إضافة المنتجات للسلة مؤقتاً." 
+              : "Alert: This pharmacy is currently closed/offline. Adding items to cart is temporarily disabled."}
+          </span>
+        </div>
+      )}
 
       {/* Tab Navigation */}
       <div 
@@ -262,7 +361,7 @@ export default function PharmacyDetailPage({ params }) {
             {filteredProducts.length > 0 ? (
               <div className="product-grid" style={{ marginBottom: "20px" }}>
                 {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} disabled={isStoreOffline} />
                 ))}
               </div>
             ) : (
@@ -281,7 +380,7 @@ export default function PharmacyDetailPage({ params }) {
           {offersList.length > 0 ? (
             <div className="product-grid" style={{ marginBottom: "20px" }}>
               {offersList.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} disabled={isStoreOffline} />
               ))}
             </div>
           ) : (
@@ -374,6 +473,7 @@ export default function PharmacyDetailPage({ params }) {
                 </p>
                 <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid var(--border)", paddingTop: "8px" }}>
                   <button 
+                    disabled={isStoreOffline}
                     onClick={() => handleHelpfulClick(rev.id)}
                     style={{ 
                       background: "transparent", 
@@ -385,7 +485,8 @@ export default function PharmacyDetailPage({ params }) {
                       alignItems: "center", 
                       gap: "4px",
                       fontWeight: helpfulVotes[rev.id] ? "700" : "500",
-                      padding: "4px"
+                      padding: "4px",
+                      opacity: isStoreOffline ? 0.5 : 1
                     }}
                   >
                     👍 {t.helpful} ({rev.helpfulCount + (helpfulVotes[rev.id] ? 1 : 0)})

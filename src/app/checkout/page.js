@@ -21,10 +21,13 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(1); // 1 = Unified Checkout, 2 = Order Placed Success
 
   // Selection States
-  const [deliveryOption, setDeliveryOption] = useState("standard"); // standard, cold
+  const [deliveryOption, setDeliveryOption] = useState("standard"); // standard, fast, cold
   const [paymentMethod, setPaymentMethod] = useState("mada"); // mada, apple, stc, cod
   const [useWallet, setUseWallet] = useState(false);
   const [useLoyalty, setUseLoyalty] = useState(false);
+
+  // SFDA safety instructions gating
+  const [acceptedSfda, setAcceptedSfda] = useState(false);
 
   // Address modal form
   const [showNewAddress, setShowNewAddress] = useState(false);
@@ -52,16 +55,29 @@ export default function CheckoutPage() {
   // Cost Computations
   const itemsSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Group split delivery counts
-  const pharmaciesCount = Object.keys(
-    cart.reduce((acc, item) => {
-      acc[item.pharmacyId] = true;
-      return acc;
-    }, {})
-  ).length;
+  // Group cart items by pharmacy
+  const groupedCart = cart.reduce((acc, item) => {
+    if (!acc[item.pharmacyId]) {
+      acc[item.pharmacyId] = [];
+    }
+    acc[item.pharmacyId].push(item);
+    return acc;
+  }, {});
 
-  const baseDeliveryFee = deliveryOption === "cold" ? 25 : 10;
-  const deliveryFees = baseDeliveryFee * pharmaciesCount;
+  const pharmaciesCount = Object.keys(groupedCart).length;
+
+  // Split Delivery Fee calculations (incorporates the 100 SAR free shipping threshold per pharmacy)
+  const deliveryFees = Object.keys(groupedCart).reduce((sum, pharmacyId) => {
+    const items = groupedCart[pharmacyId];
+    const subtotal = items.reduce((s, item) => s + item.price * item.quantity, 0);
+    if (subtotal >= 100) return sum + 0; // FREE Delivery hit!
+    
+    // Delivery pricing based on selected mode
+    if (deliveryOption === "cold") return sum + 25;
+    if (deliveryOption === "fast") return sum + 18;
+    return sum + 10;
+  }, 0);
+
   const initialVat = itemsSubtotal * 0.15;
   const initialTotal = itemsSubtotal + deliveryFees + initialVat;
 
@@ -81,6 +97,9 @@ export default function CheckoutPage() {
 
   const finalTotal = initialTotal - walletDeduction - loyaltyDeduction;
 
+  // Dynamic Loyalty Points Earned (1 point per 2 SAR spent on checkout subtotal)
+  const pointsEarned = Math.floor(itemsSubtotal / 2);
+
   const t = {
     checkout: language === "ar" ? "عملية الدفع الآمنة" : "Secure Checkout",
     sar: language === "ar" ? "ر.س" : "SAR",
@@ -92,6 +111,7 @@ export default function CheckoutPage() {
     selectAddress: language === "ar" ? "اختر عنوان التوصيل" : "Select Delivery Address",
     addAddress: language === "ar" ? "إضافة عنوان جديد" : "Add New Address",
     standardDel: language === "ar" ? "توصيل عادي (١٠ ر.س لكل صيدلية)" : "Standard Delivery (10 SAR/pharmacy)",
+    fastDel: language === "ar" ? "توصيل سريع مجدول (١٨ ر.س لكل صيدلية)" : "Express Courier Delivery (18 SAR/pharmacy)",
     coldDel: language === "ar" ? "توصيل مبرد طبي (٢٥ ر.س لكل صيدلية)" : "Insulated Cold-Chain Delivery (25 SAR/pharmacy)",
     walletTitle: language === "ar" ? "استخدام رصيد المحفظة" : "Use Wallet Balance",
     walletDesc: language === "ar" ? `رصيدك الحالي: ${walletBalance.toFixed(2)} ر.س. خصم هذا الرصيد من الإجمالي.` : `Your balance: ${walletBalance.toFixed(2)} SAR. Apply this to deduct from total.`,
@@ -110,7 +130,10 @@ export default function CheckoutPage() {
     homeBtn: language === "ar" ? "العودة للرئيسية" : "Back to Home",
     orderSummary: language === "ar" ? "ملخص الطلب" : "Order Summary",
     checkoutSteps: language === "ar" ? "شحن ودفع سريع" : "Express Shipping & Payment",
-    successSteps: language === "ar" ? "تأكيد الطلب" : "Order Completed"
+    successSteps: language === "ar" ? "تأكيد الطلب" : "Order Completed",
+    sfdaCheckbox: language === "ar" 
+      ? "أقر بأنني قد اطلعت على تحذيرات وتعليمات الاستخدام المعتمدة من الهيئة العامة للغذاء والدواء (SFDA) للمنتجات الطبية المطلوبة."
+      : "I certify that I have read and accepted the SFDA (Saudi Food & Drug Authority) medical use safety warnings for the requested items."
   };
 
   const steps = [
@@ -119,6 +142,7 @@ export default function CheckoutPage() {
   ];
 
   const handlePlaceOrder = () => {
+    if (!acceptedSfda) return;
     const redeemedPoints = useLoyalty ? Math.min(loyaltyPoints, Math.floor(loyaltyDeduction * 50)) : 0;
     const ordersResult = createOrder(walletDeduction, redeemedPoints, paymentMethod, deliveryOption);
     setPlacedOrders(ordersResult);
@@ -158,31 +182,95 @@ export default function CheckoutPage() {
       </div>
 
       {step === 2 ? (
-        /* SUCCESS PAGE (Desktop Centered Single Column Layout) */
+        /* SUCCESS PAGE (Desktop Centered Single Column Layout - Screen 19) */
         <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center", textAlign: "center", paddingBlock: "20px", maxWidth: "600px", margin: "0 auto" }}>
-          <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "rgba(24,182,122,0.1)", color: "var(--secondary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "32px", fontWeight: "bold" }}>
+          
+          {/* Animated Success Checkmark Ring */}
+          <div 
+            style={{ 
+              width: "80px", 
+              height: "80px", 
+              borderRadius: "50%", 
+              backgroundColor: "rgba(24,182,122,0.1)", 
+              color: "var(--secondary)", 
+              display: "flex", 
+              alignItems: "center", 
+              justifyContent: "center", 
+              fontSize: "40px", 
+              fontWeight: "bold",
+              boxShadow: "0 0 0 10px rgba(24,182,122,0.02)"
+            }}
+          >
             ✓
           </div>
           
           <div>
-            <h2 style={{ fontSize: "20px", fontWeight: "800", color: "var(--text-1)" }}>{t.congrats}</h2>
-            <p style={{ fontSize: "13px", color: "var(--text-2)", marginTop: "4px" }}>{t.successSubtitle}</p>
+            <h2 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text-1)" }}>{t.congrats}</h2>
+            <p style={{ fontSize: "13.5px", color: "var(--text-2)", marginTop: "4px" }}>{t.successSubtitle}</p>
           </div>
 
-          {/* Split Packages */}
+          {/* Split Packages (Screen 19 Split Order map) */}
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%", textAlign: "start", marginTop: "10px" }}>
-            {placedOrders.map((ord) => (
-              <div key={ord.id} style={{ padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--surface)", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", fontSize: "13px", marginBottom: "4px" }}>
-                  <span>📦 Shipment #{ord.id}</span>
-                  <span style={{ color: "var(--primary)" }}>{ord.total.toFixed(2)} {t.sar}</span>
+            {placedOrders.map((ord) => {
+              // Custom ETAs based on active option
+              const shipmentEta = deliveryOption === "cold" 
+                ? (language === "ar" ? "٤٥-٦٠ دقيقة (حاوية معزولة)" : "45-60 mins (Cold-chain Box)")
+                : deliveryOption === "fast" 
+                ? (language === "ar" ? "١٥-٢٥ دقيقة (توصيل سريع)" : "15-25 mins (Fast Courier)")
+                : (language === "ar" ? "٣٠-٤٥ دقيقة (توصيل عادي)" : "30-45 mins (Standard)");
+
+              return (
+                <div key={ord.id} style={{ padding: "16px", border: "1px solid var(--border)", backgroundColor: "var(--surface)", borderRadius: "12px", boxShadow: "var(--shadow-sm)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontWeight: "700", fontSize: "13.5px", marginBottom: "4px" }}>
+                    <span style={{ color: "var(--text-1)" }}>📦 Shipment #{ord.id}</span>
+                    <span style={{ color: "var(--primary)" }}>{ord.total.toFixed(2)} {t.sar}</span>
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "2px" }}>
+                    🏥 {language === "ar" ? ord.pharmacyName_ar : ord.pharmacyName_en} | ⏱️ {shipmentEta}
+                  </div>
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--text-2)" }}>
-                  🏥 {language === "ar" ? ord.pharmacyName_ar : ord.pharmacyName_en} | ETA: {language === "ar" ? ord.eta_ar : ord.eta_en}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+
+          {/* Dynamic Golden Loyalty Reward Card (Screen 19 Rewards points) */}
+          {pointsEarned > 0 && (
+            <div 
+              style={{ 
+                width: "100%", 
+                background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)", 
+                color: "white", 
+                padding: "16px 20px", 
+                borderRadius: "16px", 
+                boxShadow: "var(--shadow-md)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                textAlign: "start",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              {/* Crown silhouette */}
+              <div style={{ position: "absolute", right: "-10px", top: "-10px", fontSize: "72px", opacity: 0.12 }}>
+                👑
+              </div>
+              <div>
+                <span style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "800", opacity: 0.9 }}>
+                  {language === "ar" ? "نقاط الولاء المكتسبة" : "LOYALTY POINTS EARNED"}
+                </span>
+                <h4 style={{ fontSize: "18px", fontWeight: "800", marginTop: "2px", color: "white" }}>
+                  +{pointsEarned} {language === "ar" ? "نقطة جديدة مضافة!" : "New Points Added!"}
+                </h4>
+                <p style={{ fontSize: "11px", opacity: 0.9, marginTop: "4px" }}>
+                  {language === "ar" 
+                    ? `تعادل خصم بقيمة ${(pointsEarned / 50).toFixed(2)} ر.س لطلباتك القادمة.` 
+                    : `Equal to ${(pointsEarned / 50).toFixed(2)} SAR discount on your next orders.`}
+                </p>
+              </div>
+              <div style={{ fontSize: "36px" }}>👑</div>
+            </div>
+          )}
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", marginTop: "10px" }}>
             <button className="btn-primary" onClick={() => router.push("/profile?action=orders")}>
@@ -238,13 +326,14 @@ export default function CheckoutPage() {
               </button>
             </div>
 
-            {/* PANEL 2: Delivery Option Selection */}
+            {/* PANEL 2: Delivery Option Selection (Screen 18 standard, fast, cold) */}
             <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "14px", boxShadow: "var(--shadow-sm)" }}>
               <h3 style={{ fontSize: "16px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
                 🚗 {t.delivery}
               </h3>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {/* Standard */}
                 <label
                   style={{
                     padding: "16px",
@@ -273,6 +362,36 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
+                {/* Fast Express Courier */}
+                <label
+                  style={{
+                    padding: "16px",
+                    borderRadius: "12px",
+                    border: `1.5px solid ${deliveryOption === "fast" ? "var(--primary)" : "var(--border)"}`,
+                    backgroundColor: deliveryOption === "fast" ? "rgba(15, 108, 189, 0.05)" : "var(--surface)",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    transition: "all 0.15s"
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="delivery"
+                    value="fast"
+                    checked={deliveryOption === "fast"}
+                    onChange={() => setDeliveryOption("fast")}
+                  />
+                  <div>
+                    <strong style={{ display: "block", fontSize: "14px", marginBottom: "2px" }}>⚡ {t.fastDel}</strong>
+                    <span style={{ fontSize: "11px", color: "var(--text-2)" }}>
+                      {language === "ar" ? "توصيل سريع فائق بواسطة مندوب خاص خلال ١٥-٢٥ دقيقة" : "Ultra-fast courier dispatch to your location in 15-25 mins"}
+                    </span>
+                  </div>
+                </label>
+
+                {/* Cold Chain */}
                 <label
                   style={{
                     padding: "16px",
@@ -296,52 +415,73 @@ export default function CheckoutPage() {
                   <div>
                     <strong style={{ display: "block", fontSize: "14px", marginBottom: "2px" }}>❄️ {t.coldDel}</strong>
                     <span style={{ fontSize: "11px", color: "var(--text-2)" }}>
-                      {language === "ar" ? "يضمن سلامة الأدوية الحساسة للحرارة" : "Guarantees temperature sensitive drug safety"}
+                      {language === "ar" ? "يضمن سلامة الأدوية الحساسة للحرارة في حاوية طبية" : "Guarantees temperature sensitive drug safety inside insulated cargo"}
                     </span>
                   </div>
                 </label>
               </div>
             </div>
 
-            {/* PANEL 3: Payment Method Selection */}
+            {/* PANEL 3: Payment Method Selection (Local KSA branded payment selections) */}
             <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "14px", boxShadow: "var(--shadow-sm)" }}>
               <h3 style={{ fontSize: "16px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
                 💳 {t.payment}
               </h3>
               
-              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                 {[
-                  { id: "mada", name: t.mada, logo: "💳" },
-                  { id: "apple", name: t.applePay, logo: "🍏 Apple Pay" },
-                  { id: "stc", name: t.stcPay, logo: "💜 STC Pay" },
-                  { id: "cod", name: t.cod, logo: "💵" }
-                ].map((pm) => (
-                  <label
-                    key={pm.id}
-                    style={{
-                      padding: "16px",
-                      borderRadius: "12px",
-                      border: `1.5px solid ${paymentMethod === pm.id ? "var(--primary)" : "var(--border)"}`,
-                      backgroundColor: paymentMethod === pm.id ? "rgba(15, 108, 189, 0.05)" : "var(--surface)",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                      <span style={{ fontSize: "20px" }}>{pm.logo}</span>
-                    </div>
-                    <input
-                      type="radio"
-                      name="payment"
-                      value={pm.id}
-                      checked={paymentMethod === pm.id}
-                      onChange={() => setPaymentMethod(pm.id)}
-                    />
-                  </label>
-                ))}
+                  { id: "mada", logo: "💳", brandColor: "linear-gradient(90deg, #0A5F35 0%, #15B064 100%)", label: "Mada Card / مدى" },
+                  { id: "apple", logo: "🍏", brandColor: "#000000", label: "Apple Pay" },
+                  { id: "stc", logo: "💜", brandColor: "#4F46E5", label: "STC Pay / إس تي سي باي" },
+                  { id: "cod", logo: "💵", brandColor: "#64748B", label: language === "ar" ? "الدفع عند الاستلام" : "Cash on Delivery" }
+                ].map((pm) => {
+                  const isChosen = paymentMethod === pm.id;
+                  return (
+                    <label
+                      key={pm.id}
+                      style={{
+                        padding: "14px 18px",
+                        borderRadius: "12px",
+                        border: `1.5px solid ${isChosen ? pm.brandColor : "var(--border)"}`,
+                        backgroundColor: isChosen ? "rgba(0,0,0,0.01)" : "var(--surface)",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        transition: "all 0.15s",
+                        boxShadow: isChosen ? "var(--shadow-sm)" : "none"
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span 
+                          style={{ 
+                            width: "36px", 
+                            height: "24px", 
+                            borderRadius: "4px", 
+                            background: pm.brandColor, 
+                            color: "white", 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "center",
+                            fontSize: "12px",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {pm.id === "mada" ? "mada" : pm.id === "stc" ? "stc" : pm.logo}
+                        </span>
+                        <strong style={{ fontSize: "13px", color: "var(--text-1)" }}>{pm.label}</strong>
+                      </div>
+                      <input
+                        type="radio"
+                        name="payment"
+                        value={pm.id}
+                        checked={isChosen}
+                        onChange={() => setPaymentMethod(pm.id)}
+                        style={{ width: "16px", height: "16px", accentColor: pm.id === "mada" ? "#15B064" : "#4F46E5" }}
+                      />
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
@@ -428,8 +568,27 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Confirm CTA purchase */}
-              <button onClick={handlePlaceOrder} className="btn-primary" style={{ width: "100%", marginTop: "8px" }}>
+              {/* SFDA Legal Safety Disclaimer Requirement */}
+              <div style={{ display: "flex", gap: "8px", alignItems: "flex-start", marginTop: "12px", borderTop: "1px solid var(--border)", paddingTop: "12px" }}>
+                <input
+                  id="sfda-safety-check"
+                  type="checkbox"
+                  checked={acceptedSfda}
+                  onChange={() => setAcceptedSfda(!acceptedSfda)}
+                  style={{ width: "18px", height: "18px", marginTop: "2px", cursor: "pointer" }}
+                />
+                <label htmlFor="sfda-safety-check" style={{ fontSize: "11px", color: "var(--text-2)", lineHeight: "1.4", cursor: "pointer" }}>
+                  {t.sfdaCheckbox}
+                </label>
+              </div>
+
+              {/* Place Order CTA gated by checkbox */}
+              <button 
+                onClick={handlePlaceOrder} 
+                className="btn-primary" 
+                style={{ width: "100%", marginTop: "8px" }}
+                disabled={!acceptedSfda}
+              >
                 {t.placeOrder}
               </button>
 

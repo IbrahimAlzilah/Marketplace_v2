@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import { mockProducts, mockPharmacies } from "@/mock/data";
@@ -10,13 +9,78 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  const { language, recentlyViewed } = useApp();
+  const { language, toggleLanguage, recentlyViewed } = useApp();
   const router = useRouter();
 
   const [showSplash, setShowSplash] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
+  const [isOffline, setIsOffline] = useState(false);
+  
+  // Group 2 Screen 7 skeleton loading state
+  const [loading, setLoading] = useState(true);
 
+  // Group 2 Screen 7 Promo Slider state
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const promoSlides = [
+    {
+      title_en: "Mother & Baby Week",
+      title_ar: "عروض الأم والطفل",
+      desc_en: "Save up to 20% on formulas and care items",
+      desc_ar: "خصم يصل إلى ٢٠٪ على جميع الحليب والمستلزمات",
+      code_en: "CODE: BABY20",
+      code_ar: "رمز: BABY20",
+      graphic: "🍼",
+      bgColor: "linear-gradient(135deg, #0284c7, #0369a1)"
+    },
+    {
+      title_en: "Free Delivery Milestone",
+      title_ar: "شحن مجاني بالكامل",
+      desc_en: "Get free delivery from any pharmacy on orders above 100 SAR!",
+      desc_ar: "احصل على توصيل مجاني من أي صيدلية للطلبات أكثر من ١٠٠ ريال!",
+      code_en: "No Code Needed",
+      code_ar: "بدون رمز ترويجي",
+      graphic: "⚡",
+      bgColor: "linear-gradient(135deg, #10b981, #047857)"
+    },
+    {
+      title_en: "Chronic Medicines Support",
+      title_ar: "رعاية الأمراض المزمنة",
+      desc_en: "Fast insulated cold-chain deliveries for essential prescriptions.",
+      desc_ar: "توصيل سريع ومبرد للأدوية الحساسة والوصفات الطبية الهامة.",
+      code_en: "CODE: YUSURCARE",
+      code_ar: "رمز: YUSURCARE",
+      graphic: "❄️",
+      bgColor: "linear-gradient(135deg, #6366f1, #4f46e5)"
+    }
+  ];
+
+  // Auto scroll logic for Promo Slider
+  useEffect(() => {
+    if (loading) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % promoSlides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  // Network connection checks (Screen 1 Offline Dialog support)
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    if (typeof window !== "undefined" && !navigator.onLine) {
+      setIsOffline(true);
+    }
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // Simulator loading and onboarding check
   useEffect(() => {
     const hasSeenSplash = sessionStorage.getItem("hasSeenSplash");
     if (!hasSeenSplash) {
@@ -25,17 +89,25 @@ export default function HomePage() {
 
       const timer = setTimeout(() => {
         setShowSplash(false);
+        setLoading(false);
         const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
         if (!hasSeenOnboarding) {
           setShowOnboarding(true);
         }
-      }, 1900);
+      }, 2500); // 2.5s duration
       return () => clearTimeout(timer);
     } else {
+      // Shimmer loading simulation for returning users
+      setLoading(true);
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 1200);
+
       const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
       if (!hasSeenOnboarding) {
         setShowOnboarding(true);
       }
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -82,10 +154,9 @@ export default function HomePage() {
     offers: language === "ar" ? "العروض والتخفيضات" : "Offers & Deals",
     recommended: language === "ar" ? "منتجات موصى بها" : "Recommended for You",
     viewAll: language === "ar" ? "عرض الكل" : "View All",
-    promoTitle: language === "ar" ? "عروض الأم والطفل" : "Mother & Baby Week",
-    promoDesc: language === "ar" ? "خصم يصل إلى ٢٠٪ على جميع الحليب والمستلزمات" : "Save up to 20% on formulas and care items",
-    promoCode: language === "ar" ? "رمز: BABY20" : "CODE: BABY20",
-    recentlyViewed: language === "ar" ? "تصفحتها مؤخراً" : "Recently Viewed"
+    recentlyViewed: language === "ar" ? "تصفحتها مؤخراً" : "Recently Viewed",
+    offlineWarning: language === "ar" ? "أنت تتصفح حالياً في وضع عدم الاتصال بالشبكة. يرجى إعادة الاتصال لإتمام عمليات الشراء." : "You are browsing offline mode. Sync to purchase.",
+    loadingText: language === "ar" ? "جاري تحميل لوحة التحكم..." : "Loading Dashboard..."
   };
 
   const categories = [
@@ -99,176 +170,416 @@ export default function HomePage() {
     { id: "herbal", title_en: "Herbal", title_ar: "المنتجات العشبية", icon: "🌿" }
   ];
 
-  // Filter products for carousels
   const offerProducts = mockProducts.filter((p) => p.originalPrice);
   const recommendedProducts = mockProducts.filter((p) => !p.originalPrice);
 
-  // Recently viewed products
   const recentlyViewedProducts = (recentlyViewed || [])
     .map((id) => mockProducts.find((p) => p.id === id))
     .filter(Boolean);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      
+      {/* Dynamic Keyframe Shimmer Animations and Slide transitions */}
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(0.9); filter: drop-shadow(0 0 4px rgba(255,255,255,0.4)); }
+          100% { transform: scale(1.1); filter: drop-shadow(0 0 16px rgba(255,255,255,0.8)); }
+        }
+        @keyframes crossBackgroundShift {
+          0% { background-position: 0 0; }
+          100% { background-position: 40px 40px; }
+        }
+        @keyframes slideInFromRight {
+          from { transform: translateX(40px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideInFromLeft {
+          from { transform: translateX(-40px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .onboarding-slide-content {
+          animation: ${language === "ar" ? "slideInFromLeft 0.35s ease" : "slideInFromRight 0.35s ease"};
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .shimmer-box {
+          background: linear-gradient(90deg, var(--bg) 25%, var(--border) 50%, var(--bg) 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.6s infinite linear;
+          border-radius: 12px;
+        }
+        .bullet-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.4);
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .bullet-dot-active {
+          background-color: white;
+          width: 20px;
+          border-radius: 4px;
+        }
+      `}</style>
 
-      {/* Campaign Offer Banner (Hero) */}
-      <div className="offer-banner">
-        <div className="offer-content">
-          <span className="offer-title">{t.promoTitle}</span>
-          <span className="offer-desc">{t.promoDesc}</span>
-          <span className="offer-promo-code">{t.promoCode}</span>
-        </div>
-        <div className="offer-graphic">🍼</div>
-      </div>
-
-      {/* Health & Benefits Dashboard (Wallet & Loyalty Highlights) */}
-      <div className="benefits-dashboard">
-        <WalletLoyaltyUnifiedCard
-          onPointsHistoryClick={() => router.push("/profile?action=loyalty")}
-          onTransactionDetailsClick={() => router.push("/profile?action=wallet")}
-          onViewAllClick={() => router.push("/profile?action=wallet")}
-        />
-      </div>
-
-      {/* Categories Grid */}
-      <div>
-        <div className="carousel-header">
-          <h3 className="carousel-title">{t.categories}</h3>
-          <Link href="/search" className="carousel-link">
-            {t.viewAll}
-          </Link>
-        </div>
-        <div className="category-grid">
-          {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="category-card"
-              onClick={() => router.push(`/search?cat=${cat.id}`)}
-            >
-              <div className="category-icon">{cat.icon}</div>
-              <span className="category-title">
-                {language === "ar" ? cat.title_ar : cat.title_en}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Nearby Pharmacies Section */}
-      <div>
-        <div className="carousel-header">
-          <h3 className="carousel-title">{t.nearby}</h3>
-          <Link href="/pharmacies" className="carousel-link">
-            {t.viewAll}
-          </Link>
-        </div>
-
-        {/* Mobile view: Carousel */}
-        <div className="mobile-only">
-          <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
-            {mockPharmacies.map((pharmacy) => (
-              <div key={pharmacy.id} style={{ width: "280px", flexShrink: 0 }}>
-                <PharmacyCard pharmacy={pharmacy} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Desktop view: Grid */}
-        <div className="desktop-only">
-          <div className="responsive-grid-3">
-            {mockPharmacies.slice(0, 4).map((pharmacy) => (
-              <PharmacyCard key={pharmacy.id} pharmacy={pharmacy} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Offers & Deals Product Carousel / Grid */}
-      <div>
-        <div className="carousel-header">
-          <h3 className="carousel-title">{t.offers}</h3>
-          <Link href="/search?filter=offers" className="carousel-link">
-            {t.viewAll}
-          </Link>
-        </div>
-
-        {/* Mobile view: Carousel */}
-        <div className="mobile-only">
-          <div className="product-grid horizontal-scroll">
-            {offerProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-
-        {/* Desktop view: Grid */}
-        <div className="desktop-only">
-          <div className="product-grid">
-            {offerProducts.slice(0, 4).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recommended Products Grid */}
-      <div>
-        <div className="carousel-header">
-          <h3 className="carousel-title">{t.recommended}</h3>
-        </div>
-        <div className="product-grid">
-          {recommendedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-
-      {/* Recently Viewed Carousel */}
-      {recentlyViewedProducts.length > 0 && (
-        <div style={{ marginBottom: "20px" }}>
-          <div className="carousel-header">
-            <h3 className="carousel-title">{t.recentlyViewed}</h3>
-          </div>
-          <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
-            {recentlyViewedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+      {/* Screen 7 Offline banner replacement card */}
+      {isOffline && (
+        <div 
+          style={{
+            backgroundColor: "var(--danger-light, #fee2e2)",
+            border: "1px solid var(--danger, #ef4444)",
+            color: "var(--danger, #ef4444)",
+            padding: "12px 16px",
+            borderRadius: "16px",
+            fontSize: "13px",
+            fontWeight: "700",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            boxShadow: "var(--shadow-sm)"
+          }}
+        >
+          <span>📡</span>
+          <span>{t.offlineWarning}</span>
         </div>
       )}
 
-      {/* 1. Splash Screen Overlay */}
+      {loading ? (
+        /* Screen 7: Shimmer Skeletons representing Dashboard components */
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          {/* Banner Shimmer */}
+          <div className="shimmer-box" style={{ height: "140px", width: "100%" }}></div>
+
+          {/* Balance/Points Card Shimmer */}
+          <div className="shimmer-box" style={{ height: "90px", width: "100%" }}></div>
+
+          {/* Categories Grid Shimmer */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div className="shimmer-box" style={{ height: "20px", width: "100px" }}></div>
+              <div className="shimmer-box" style={{ height: "16px", width: "60px" }}></div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+              {[...Array(8)].map((_, idx) => (
+                <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                  <div className="shimmer-box" style={{ height: "50px", width: "50px", borderRadius: "50%" }}></div>
+                  <div className="shimmer-box" style={{ height: "12px", width: "40px" }}></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Nearby Stores Shimmer */}
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+              <div className="shimmer-box" style={{ height: "20px", width: "140px" }}></div>
+              <div className="shimmer-box" style={{ height: "16px", width: "60px" }}></div>
+            </div>
+            <div style={{ display: "flex", gap: "16px" }}>
+              <div className="shimmer-box" style={{ height: "120px", flex: 1 }}></div>
+              <div className="shimmer-box" style={{ height: "120px", flex: 1 }}></div>
+            </div>
+          </div>
+
+          {/* Recommended Shimmer */}
+          <div>
+            <div className="shimmer-box" style={{ height: "20px", width: "160px", marginBottom: "12px" }}></div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
+              <div className="shimmer-box" style={{ height: "200px" }}></div>
+              <div className="shimmer-box" style={{ height: "200px" }}></div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Actual Dashboard Contents */
+        <>
+          {/* Campaign Offer Banner - Active Sliding Carousel (Screen 7 Specs) */}
+          <div 
+            className="offer-banner"
+            style={{ 
+              background: promoSlides[currentSlide].bgColor,
+              transition: "background 0.5s ease",
+              position: "relative",
+              overflow: "hidden"
+            }}
+          >
+            <div className="offer-content" key={currentSlide} style={{ animation: "slideInFromRight 0.4s ease" }}>
+              <span className="offer-title">
+                {language === "ar" ? promoSlides[currentSlide].title_ar : promoSlides[currentSlide].title_en}
+              </span>
+              <span className="offer-desc">
+                {language === "ar" ? promoSlides[currentSlide].desc_ar : promoSlides[currentSlide].desc_en}
+              </span>
+              <span className="offer-promo-code">
+                {language === "ar" ? promoSlides[currentSlide].code_ar : promoSlides[currentSlide].code_en}
+              </span>
+            </div>
+            <div className="offer-graphic" style={{ fontSize: "56px" }}>{promoSlides[currentSlide].graphic}</div>
+
+            {/* Slider progress bullets / indicator dots */}
+            <div 
+              style={{ 
+                position: "absolute", 
+                bottom: "12px", 
+                left: "0", 
+                right: "0", 
+                display: "flex", 
+                justifyContent: "center", 
+                gap: "6px" 
+              }}
+            >
+              {promoSlides.map((_, idx) => (
+                <div 
+                  key={idx} 
+                  className={`bullet-dot ${currentSlide === idx ? "bullet-dot-active" : ""}`}
+                  onClick={() => setCurrentSlide(idx)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Health & Benefits Dashboard (Wallet & Loyalty Highlights) */}
+          <div className="benefits-dashboard">
+            <WalletLoyaltyUnifiedCard
+              onPointsHistoryClick={() => router.push("/profile?action=loyalty")}
+              onTransactionDetailsClick={() => router.push("/profile?action=wallet")}
+              onViewAllClick={() => router.push("/profile?action=wallet")}
+            />
+          </div>
+
+          {/* Categories Grid */}
+          <div>
+            <div className="carousel-header">
+              <h3 className="carousel-title">{t.categories}</h3>
+              <Link href="/categories" className="carousel-link">
+                {t.viewAll}
+              </Link>
+            </div>
+            <div className="category-grid">
+              {categories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="category-card"
+                  onClick={() => router.push(`/search?cat=${cat.id}`)}
+                >
+                  <div className="category-icon">{cat.icon}</div>
+                  <span className="category-title">
+                    {language === "ar" ? cat.title_ar : cat.title_en}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Nearby Pharmacies Section */}
+          <div>
+            <div className="carousel-header">
+              <h3 className="carousel-title">{t.nearby}</h3>
+              <Link href="/pharmacies" className="carousel-link">
+                {t.viewAll}
+              </Link>
+            </div>
+
+            {/* Mobile view: Carousel */}
+            <div className="mobile-only">
+              <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
+                {mockPharmacies.map((pharmacy) => (
+                  <div key={pharmacy.id} style={{ width: "280px", flexShrink: 0 }}>
+                    <PharmacyCard pharmacy={pharmacy} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop view: Grid */}
+            <div className="desktop-only">
+              <div className="responsive-grid-3">
+                {mockPharmacies.slice(0, 4).map((pharmacy) => (
+                  <PharmacyCard key={pharmacy.id} pharmacy={pharmacy} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Offers & Deals Product Carousel / Grid */}
+          <div>
+            <div className="carousel-header">
+              <h3 className="carousel-title">{t.offers}</h3>
+              <Link href="/search?filter=offers" className="carousel-link">
+                {t.viewAll}
+              </Link>
+            </div>
+
+            {/* Mobile view: Carousel */}
+            <div className="mobile-only">
+              <div className="product-grid horizontal-scroll">
+                {offerProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop view: Grid */}
+            <div className="desktop-only">
+              <div className="product-grid">
+                {offerProducts.slice(0, 4).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Recommended Products Grid */}
+          <div>
+            <div className="carousel-header">
+              <h3 className="carousel-title">{t.recommended}</h3>
+            </div>
+            <div className="product-grid">
+              {recommendedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+
+          {/* Recently Viewed Carousel */}
+          {recentlyViewedProducts.length > 0 && (
+            <div style={{ marginBottom: "20px" }}>
+              <div className="carousel-header">
+                <h3 className="carousel-title">{t.recentlyViewed}</h3>
+              </div>
+              <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
+                {recentlyViewedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 1. Splash Screen Overlay with Versioning, Custom Animation & Pattern (Screen 1) */}
       {showSplash && (
-        <div className="splash-overlay">
-          <div className="splash-logo">🟢</div>
+        <div
+          className="splash-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "var(--primary)",
+            backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g fill='white' fill-opacity='0.08'><rect x='18' y='8' width='4' height='24'/><rect x='8' y='18' width='24' height='4'/></g></svg>")`,
+            animation: "crossBackgroundShift 10s linear infinite, fade-out-splash 0.5s ease-in 2.0s forwards",
+            zIndex: 10000
+          }}
+        >
+          <div className="splash-logo" style={{ animation: "pulse 1.2s infinite alternate", fontSize: "80px" }}>🟢</div>
           <h1 className="splash-title">YUSUR</h1>
           <p className="splash-subtitle">
             {language === "ar" ? "منصتك الصحية الموثوقة" : "Your Trusted Healthcare Marketplace"}
           </p>
           <div className="spinner"></div>
+
+          {/* Footer KSA version label */}
+          <div style={{ position: "absolute", bottom: "30px", fontSize: "11px", opacity: 0.8, fontWeight: "700", letterSpacing: "0.5px" }}>
+            Version 1.0.0 (KSA)
+          </div>
+
+          {/* Screen 1 States: Offline Retry Modal */}
+          {isOffline && (
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(15, 23, 42, 0.95)",
+              zIndex: 11000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px"
+            }}>
+              <div style={{
+                backgroundColor: "var(--surface)",
+                border: "1px solid var(--border)",
+                borderRadius: "24px",
+                padding: "28px",
+                width: "100%",
+                maxWidth: "340px",
+                textAlign: "center",
+                color: "var(--text-1)",
+                boxShadow: "var(--shadow-lg)"
+              }}>
+                <span style={{ fontSize: "40px", display: "block", marginBottom: "12px" }}>⚠️</span>
+                <strong style={{ fontSize: "16px", display: "block", marginBottom: "8px" }}>
+                  {language === "ar" ? "لا يوجد اتصال بالشبكة" : "No Internet Connection"}
+                </strong>
+                <p style={{ fontSize: "12px", color: "var(--text-2)", lineHeight: "1.5", margin: "0 0 20px 0" }}>
+                  {language === "ar" 
+                    ? "يرجى التحقق من اتصال البيانات أو الواي فاي وإعادة المحاولة للمتابعة." 
+                    : "Please check your mobile data or Wi-Fi settings and try again."}
+                </p>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <button className="btn-primary" type="button" onClick={() => {
+                    if (navigator.onLine) {
+                      setIsOffline(false);
+                    } else {
+                      alert(language === "ar" ? "لا يزال الاتصال مقطوعاً" : "Connection still offline");
+                    }
+                  }}>
+                    🔄 {language === "ar" ? "إعادة المحاولة" : "Retry Connection"}
+                  </button>
+                  <button className="btn-secondary" type="button" style={{ fontSize: "11px", paddingBlock: "6px" }} onClick={() => setIsOffline(false)}>
+                    🔍 {language === "ar" ? "استمر في وضع التجربة" : "Continue in Demo Mode"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* 2. Onboarding Carousel Overlay */}
+      {/* 2. Onboarding Carousel Overlay with Language switcher and Sliding transitions (Screen 2) */}
       {showOnboarding && !showSplash && (
         <div className="onboarding-overlay">
           <div className="onboarding-card">
-            <div className="onboarding-icon">
-              {onboardingSlides[onboardingStep].icon}
+            
+            {/* Top-End Language Switcher Toggle */}
+            <div style={{ display: "flex", justifyContent: "flex-end", width: "100%", marginBottom: "12px" }}>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: "4px 10px", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", width: "auto" }}
+                onClick={toggleLanguage}
+              >
+                🌐 {language === "en" ? "العربية" : "English"}
+              </button>
             </div>
 
-            <h2 className="onboarding-title">
-              {language === "ar"
-                ? onboardingSlides[onboardingStep].title_ar
-                : onboardingSlides[onboardingStep].title_en}
-            </h2>
+            {/* Sliding animation key context container */}
+            <div key={onboardingStep} className="onboarding-slide-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div className="onboarding-icon">
+                {onboardingSlides[onboardingStep].icon}
+              </div>
 
-            <p className="onboarding-desc">
-              {language === "ar"
-                ? onboardingSlides[onboardingStep].desc_ar
-                : onboardingSlides[onboardingStep].desc_en}
-            </p>
+              <h2 className="onboarding-title">
+                {language === "ar"
+                  ? onboardingSlides[onboardingStep].title_ar
+                  : onboardingSlides[onboardingStep].title_en}
+              </h2>
+
+              <p className="onboarding-desc" style={{ minHeight: "60px" }}>
+                {language === "ar"
+                  ? onboardingSlides[onboardingStep].desc_ar
+                  : onboardingSlides[onboardingStep].desc_en}
+              </p>
+            </div>
 
             <div className="onboarding-dots">
               {onboardingSlides.map((_, idx) => (

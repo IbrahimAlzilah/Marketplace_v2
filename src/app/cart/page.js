@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import CartItem from "@/components/CartItem";
 import { useRouter } from "next/navigation";
+import AuthModal from "@/components/AuthModal";
 
 export default function CartPage() {
   const { language, cart, attachPrescription, walletBalance, loyaltyPoints, currentAddress, addresses, setCurrentAddress, isLoggedIn, login } = useApp();
@@ -16,8 +17,14 @@ export default function CartPage() {
 
   const [showLocationGating, setShowLocationGating] = useState(false);
   const [showLoginGating, setShowLoginGating] = useState(false);
-  const [loginPhone, setLoginPhone] = useState("");
-  const [loginPass, setLoginPass] = useState("");
+
+  // New features states
+  const [showDeliverySplitPopover, setShowDeliverySplitPopover] = useState(false);
+  const [rxTab, setRxTab] = useState("image"); // image, digital
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [isFetchingDigitalRx, setIsFetchingDigitalRx] = useState(false);
+  const [digitalRxList, setDigitalRxList] = useState([]);
+  const [selectedDigitalRxId, setSelectedDigitalRxId] = useState(null);
 
   const handleCheckoutClick = () => {
     if (!currentAddress) {
@@ -31,15 +38,6 @@ export default function CartPage() {
     router.push("/checkout");
   };
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (loginPhone.trim()) {
-      login(loginPhone, loginPass);
-      setShowLoginGating(false);
-      router.push("/checkout");
-    }
-  };
-
   const t = {
     cart: language === "ar" ? "سلة المشتريات" : "Shopping Cart",
     coupon: language === "ar" ? "رمز الكوبون" : "Coupon Code",
@@ -49,7 +47,7 @@ export default function CartPage() {
     empty: language === "ar" ? "السلة فارغة" : "Your Cart is Empty",
     emptyDesc: language === "ar" ? "تصفح الأدوية والمنتجات الصحية لإضافتها هنا." : "Browse medicines and wellness products to add them here.",
     subtotal: language === "ar" ? "إجمالي المنتجات" : "Items Subtotal",
-    delivery: language === "ar" ? "رسوم التوصيل" : "Delivery Fees",
+    delivery: language === "ar" ? "رسوم الشحن والتوصيل" : "Delivery Fees",
     vat: language === "ar" ? "ضريبة القيمة المضافة (١٥٪)" : "VAT (15%)",
     total: language === "ar" ? "الإجمالي الكلي" : "Total Amount",
     sar: language === "ar" ? "ر.س" : "SAR",
@@ -62,7 +60,8 @@ export default function CartPage() {
     selectAddress: language === "ar" ? "حدد موقع التوصيل" : "Select Delivery Location",
     loginRequired: language === "ar" ? "تسجيل الدخول مطلوب" : "Login Required",
     loginDesc: language === "ar" ? "يرجى تسجيل الدخول أو إنشاء حساب للمتابعة إلى إتمام الشراء." : "Please login or register to proceed to checkout.",
-    locationDesc: language === "ar" ? "يرجى تحديد عنوان التوصيل أولاً لحساب رسوم الشحن بدقة." : "Please select your delivery address to calculate shipping fees."
+    locationDesc: language === "ar" ? "يرجى تحديد عنوان التوصيل أولاً لحساب رسوم الشحن بدقة." : "Please select your delivery address to calculate shipping fees.",
+    free: language === "ar" ? "مجاني" : "Free"
   };
 
   // Group items by pharmacy
@@ -80,12 +79,26 @@ export default function CartPage() {
 
   const itemsSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Delivery calculation (10 SAR per pharmacy, unless they have hit a free shipping threshold or if cold chain requires more)
-  const deliveryFees = Object.keys(groupedCart).reduce((sum, pharmacyId) => {
-    const items = groupedCart[pharmacyId].items;
+  // Delivery calculation (10 SAR standard, 25 SAR cold chain, per pharmacy, unless subtotal >= 100 SAR)
+  const getDeliveryFeeForGroup = (items) => {
+    const subtotal = items.reduce((s, item) => s + item.price * item.quantity, 0);
+    if (subtotal >= 100) return 0;
     const isCold = items.some(item => item.isColdChain);
-    return sum + (isCold ? 25 : 10);
-  }, 0);
+    return isCold ? 25 : 10;
+  };
+
+  const deliveryFeesDetails = Object.keys(groupedCart).map((pharmacyId) => {
+    const group = groupedCart[pharmacyId];
+    const fee = getDeliveryFeeForGroup(group.items);
+    return {
+      pharmacyId,
+      name_en: group.name_en,
+      name_ar: group.name_ar,
+      fee
+    };
+  });
+
+  const deliveryFees = deliveryFeesDetails.reduce((sum, item) => sum + item.fee, 0);
 
   const appliedDiscount = itemsSubtotal * couponDiscount;
   const vat = (itemsSubtotal - appliedDiscount) * 0.15;
@@ -103,11 +116,13 @@ export default function CartPage() {
 
   const triggerRxUpload = (item) => {
     setUploadingItem(item);
+    setSelectedFileName("");
+    setRxTab("image");
   };
 
   const handleConfirmRxFile = (e) => {
     e.preventDefault();
-    const mockFile = `prescription_${uploadingItem.id}.pdf`;
+    const mockFile = selectedFileName || `prescription_${uploadingItem.id}.pdf`;
     attachPrescription(uploadingItem.id, mockFile);
     setUploadingItem(null);
   };
@@ -139,9 +154,14 @@ export default function CartPage() {
             const pharmacyName = language === "ar" ? group.name_ar : group.name_en;
             const sub = group.items.reduce((s, item) => s + item.price * item.quantity, 0);
 
+            // Free delivery progress calculations
+            const freeDeliveryThreshold = 100;
+            const remainingForFree = freeDeliveryThreshold - sub;
+            const progressPercent = Math.min((sub / freeDeliveryThreshold) * 100, 100);
+
             return (
-              <div key={pharmacyId} className="order-group-box">
-                <div className="order-group-header">
+              <div key={pharmacyId} className="order-group-box" style={{ border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", backgroundColor: "var(--surface)", display: "flex", flexDirection: "column", gap: "12px", boxShadow: "var(--shadow-sm)" }}>
+                <div className="order-group-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
                   <span style={{ fontSize: "15px", fontWeight: "700", color: "var(--primary)" }}>🏥 {pharmacyName}</span>
                   <span style={{ fontSize: "12px", color: "var(--text-2)" }}>
                     {t.eta} {group.items.some(i => i.isColdChain) ? "1 Hour" : "25 mins"}
@@ -158,7 +178,27 @@ export default function CartPage() {
                   ))}
                 </div>
 
-                <div style={{ display: "flex", justifycontent: "space-between", justifyContent: "space-between", fontSize: "13px", borderTop: "1px solid var(--border)", paddingTop: "10px", fontWeight: "700" }}>
+                {/* Free delivery progression meter (Screen 16 requirements) */}
+                <div style={{ marginTop: "6px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", padding: "10px 14px", borderRadius: "12px" }}>
+                  {remainingForFree > 0 ? (
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "4px", color: "var(--text-2)" }}>
+                        <span>🚚 {language === "ar" ? `أضف ${remainingForFree.toFixed(2)} ر.س للتوصيل المجاني` : `Add ${remainingForFree.toFixed(2)} SAR more for FREE delivery`}</span>
+                        <span>{Math.round(progressPercent)}%</span>
+                      </div>
+                      <div style={{ width: "100%", height: "6px", backgroundColor: "var(--border)", borderRadius: "3px", overflow: "hidden" }}>
+                        <div style={{ width: `${progressPercent}%`, height: "100%", backgroundColor: "var(--primary)", transition: "width 0.3s ease" }} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--success)", fontSize: "11.5px", fontWeight: "700" }}>
+                      <span>🎉</span>
+                      <span>{language === "ar" ? "تهانينا! لقد حصلت على توصيل مجاني من هذه الصيدلية" : "Congratulations! You've unlocked FREE delivery from this branch"}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", borderTop: "1px solid var(--border)", paddingTop: "10px", fontWeight: "700" }}>
                   <span>{language === "ar" ? "المجموع الفرعي للصيدلية:" : "Pharmacy Subtotal:"}</span>
                   <span>{sub.toFixed(2)} {t.sar}</span>
                 </div>
@@ -176,10 +216,10 @@ export default function CartPage() {
 
         </div>
 
-        {/* RIGHT COLUMN: Sticky summary panel (Billing checkout totals) */}
+        {/* RIGHT COLUMN: Sticky summary panel */}
         <div className="layout-side-col" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           
-          <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px", boxShadow: "var(--shadow-sm)" }}>
+          <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
             <h3 style={{ fontSize: "16px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
               📋 {t.orderSummary}
             </h3>
@@ -198,9 +238,65 @@ export default function CartPage() {
                 </div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
-                <span>{t.delivery}</span>
+              {/* Delivery Fees Clickable Split Popover */}
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", position: "relative" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowDeliverySplitPopover(!showDeliverySplitPopover)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    padding: 0,
+                    color: "var(--primary)",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                    fontSize: "13px",
+                    fontWeight: "600"
+                  }}
+                >
+                  {t.delivery} (Split 🔁)
+                </button>
                 <span style={{ fontWeight: "600" }}>{deliveryFees.toFixed(2)} {t.sar}</span>
+
+                {showDeliverySplitPopover && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "24px",
+                      right: language === "ar" ? "auto" : "0",
+                      left: language === "ar" ? "0" : "auto",
+                      backgroundColor: "var(--surface)",
+                      border: "1.5px solid var(--primary)",
+                      borderRadius: "12px",
+                      padding: "12px",
+                      boxShadow: "var(--shadow-lg)",
+                      zIndex: 100,
+                      width: "240px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>
+                      <strong style={{ fontSize: "11px", color: "var(--text-1)" }}>
+                        {language === "ar" ? "تفاصيل الشحن المجزأ" : "Split Shipping Details"}
+                      </strong>
+                      <button
+                        type="button"
+                        onClick={() => setShowDeliverySplitPopover(false)}
+                        style={{ border: "none", background: "none", cursor: "pointer", fontSize: "12px", color: "var(--text-2)" }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    {deliveryFeesDetails.map((det) => (
+                      <div key={det.pharmacyId} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px" }}>
+                        <span>🏥 {language === "ar" ? det.name_ar : det.name_en}</span>
+                        <strong>{det.fee === 0 ? t.free : `${det.fee} SAR`}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
@@ -236,7 +332,7 @@ export default function CartPage() {
               </div>
             )}
 
-            {/* Wallet & Loyalty Preview Highlights */}
+            {/* Wallet & Loyalty Benefits Preview */}
             <div style={{ display: "flex", flexDirection: "column", gap: "8px", borderTop: "1px solid var(--border)", paddingTop: "12px", marginTop: "4px" }}>
               <span style={{ fontSize: "11px", color: "var(--text-2)", textTransform: "uppercase", fontWeight: "700", display: "block" }}>
                 {language === "ar" ? "المزايا المتاحة" : "Available Benefits"}
@@ -265,30 +361,180 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Prescription upload scan modal */}
+      {/* Prescription upload scan modal (Screen 17 method selector tabs & Sehaty link retrieval) */}
       {uploadingItem && (
-        <div className="modal-overlay" onClick={() => setUploadingItem(null)}>
-          <form className="modal-sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleConfirmRxFile}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>{t.uploadTitle}</h3>
-              <button className="btn-icon" type="button" onClick={() => setUploadingItem(null)}>✕</button>
+        <div className="modal-overlay" onClick={() => { setUploadingItem(null); setDigitalRxList([]); setSelectedFileName(""); }}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "440px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "10px", marginBottom: "12px" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>📋 {t.uploadTitle}</h3>
+              <button className="btn-icon" onClick={() => { setUploadingItem(null); setDigitalRxList([]); setSelectedFileName(""); }}>✕</button>
             </div>
             
-            <p style={{ fontSize: "12px", color: "var(--text-2)", marginBottom: "10px" }}>
-              {language === "ar" ? `يرجى إرفاق الوصفة الطبية لـ ${uploadingItem.name_ar}` : `Please attach a doctor scan file to verify ${uploadingItem.name_en}`}
+            <p style={{ fontSize: "12px", color: "var(--text-2)", marginBottom: "14px" }}>
+              {language === "ar" ? `يرجى إرفاق الوصفة الطبية لـ ${uploadingItem.name_ar}` : `Please attach a doctor prescription file to verify ${uploadingItem.name_en}`}
             </p>
 
-            <input
-              type="file"
-              className="form-input"
-              required
-              style={{ padding: "20px", borderStyle: "dashed" }}
-            />
+            {/* Tab Header Selector (Screen 17 tabs) */}
+            <div style={{ display: "flex", borderBottom: "2px solid var(--border)", marginBottom: "16px", gap: "16px" }}>
+              <button
+                type="button"
+                onClick={() => setRxTab("image")}
+                style={{
+                  paddingBlock: "8px",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: `2px solid ${rxTab === "image" ? "var(--primary)" : "transparent"}`,
+                  color: rxTab === "image" ? "var(--primary)" : "var(--text-2)",
+                  cursor: "pointer",
+                  marginBottom: "-2px"
+                }}
+              >
+                📷 {language === "ar" ? "تحميل صورة الوصفة" : "Upload File/Photo"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setRxTab("digital")}
+                style={{
+                  paddingBlock: "8px",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: `2px solid ${rxTab === "digital" ? "var(--primary)" : "transparent"}`,
+                  color: rxTab === "digital" ? "var(--primary)" : "var(--text-2)",
+                  cursor: "pointer",
+                  marginBottom: "-2px"
+                }}
+              >
+                🏥 {language === "ar" ? "ربط وصفة إلكترونية (وصفتي/صحتي)" : "Link Digital Rx (Sehaty/Wasfaty)"}
+              </button>
+            </div>
 
-            <button type="submit" className="btn-primary">
-              {t.submit}
-            </button>
-          </form>
+            {rxTab === "image" ? (
+              <form onSubmit={handleConfirmRxFile} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <label
+                  style={{
+                    border: "2px dashed var(--border)",
+                    borderRadius: "12px",
+                    padding: "24px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "8px"
+                  }}
+                >
+                  <span style={{ fontSize: "28px" }}>📷</span>
+                  <span style={{ fontSize: "13px", fontWeight: "700" }}>{language === "ar" ? "التقاط صورة أو رفع ملف" : "Take Photo or Upload PDF/Image"}</span>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    required
+                    onChange={(e) => {
+                      const name = e.target.files[0]?.name || "uploaded_rx.pdf";
+                      setSelectedFileName(name);
+                    }}
+                    style={{ display: "none" }}
+                  />
+                </label>
+
+                {selectedFileName && (
+                  <div style={{ fontSize: "12px", backgroundColor: "rgba(24,182,122,0.1)", color: "var(--secondary)", padding: "8px 12px", borderRadius: "8px", fontWeight: "600" }}>
+                    ✓ {t.rxAttached}: {selectedFileName}
+                  </div>
+                )}
+
+                <button type="submit" className="btn-primary" disabled={!selectedFileName}>
+                  {t.submit}
+                </button>
+              </form>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder={language === "ar" ? "أدخل رقم الهوية الوطنية / الإقامة" : "Enter National ID / Iqama"}
+                    style={{ flex: 1, padding: "8px 12px", fontSize: "13px" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    onClick={() => {
+                      setIsFetchingDigitalRx(true);
+                      setDigitalRxList([]);
+                      setTimeout(() => {
+                        setIsFetchingDigitalRx(false);
+                        setDigitalRxList([
+                          { id: "rx-1", doctor: "Dr. Sarah Al-Otaibi", hospital: "King Khalid Hospital", code: "MOH-8829-X", date: "2026-06-15" },
+                          { id: "rx-2", doctor: "Dr. Fahad Al-Mutairi", hospital: "Riyadh Medical City", code: "WASFATY-7739-B", date: "2026-05-10" }
+                        ]);
+                      }, 800);
+                    }}
+                    style={{ width: "auto", fontSize: "12px", paddingInline: "16px" }}
+                  >
+                    {language === "ar" ? "جلب" : "Fetch"}
+                  </button>
+                </div>
+
+                {isFetchingDigitalRx && (
+                  <div style={{ textAlign: "center", paddingBlock: "10px" }}>
+                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", border: "2px solid var(--border)", borderTopColor: "var(--primary)", animation: "pulsePin 1s infinite linear", margin: "0 auto" }} />
+                    <span style={{ fontSize: "11px", color: "var(--text-2)", marginTop: "4px", display: "block" }}>
+                      {language === "ar" ? "جاري الاستعلام من وزارة الصحة..." : "Querying MOH database..."}
+                    </span>
+                  </div>
+                )}
+
+                {digitalRxList.length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "160px", overflowY: "auto" }}>
+                    {digitalRxList.map((rx) => (
+                      <div
+                        key={rx.id}
+                        onClick={() => setSelectedDigitalRxId(rx.id)}
+                        style={{
+                          padding: "10px 12px",
+                          borderRadius: "8px",
+                          border: `1.5px solid ${selectedDigitalRxId === rx.id ? "var(--primary)" : "var(--border)"}`,
+                          backgroundColor: selectedDigitalRxId === rx.id ? "rgba(15, 108, 189, 0.04)" : "var(--surface)",
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center"
+                        }}
+                      >
+                        <div>
+                          <strong style={{ fontSize: "12px", display: "block", color: "var(--text-1)" }}>{rx.doctor}</strong>
+                          <span style={{ fontSize: "10px", color: "var(--text-2)" }}>{rx.hospital} • {rx.date}</span>
+                        </div>
+                        <code style={{ fontSize: "10px", backgroundColor: "rgba(0,0,0,0.05)", padding: "2px 6px", borderRadius: "4px" }}>{rx.code}</code>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn-primary"
+                  disabled={!selectedDigitalRxId}
+                  onClick={() => {
+                    const chosen = digitalRxList.find((r) => r.id === selectedDigitalRxId);
+                    if (chosen) {
+                      attachPrescription(uploadingItem.id, `${chosen.code} (${chosen.doctor})`);
+                      setUploadingItem(null);
+                      setDigitalRxList([]);
+                      setSelectedDigitalRxId(null);
+                    }
+                  }}
+                >
+                  ✓ {language === "ar" ? "ربط الوصفة الطبية" : "Link Selected Prescription"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -338,47 +584,11 @@ export default function CartPage() {
       )}
 
       {/* Login gating modal */}
-      {showLoginGating && (
-        <div className="modal-overlay" onClick={() => setShowLoginGating(false)}>
-          <form className="modal-sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleLoginSubmit}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>🔑 {t.loginRequired}</h3>
-              <button className="btn-icon" type="button" onClick={() => setShowLoginGating(false)}>✕</button>
-            </div>
-            
-            <p style={{ fontSize: "12px", color: "var(--text-2)" }}>
-              {t.loginDesc}
-            </p>
-
-            <div className="form-group">
-              <label className="form-label">{language === "ar" ? "رقم الجوال" : "Mobile Phone"}</label>
-              <input
-                type="text"
-                placeholder="05xxxxxxxx"
-                className="form-input"
-                required
-                value={loginPhone}
-                onChange={(e) => setLoginPhone(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">{language === "ar" ? "كلمة المرور" : "Password"}</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="form-input"
-                value={loginPass}
-                onChange={(e) => setLoginPass(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" className="btn-primary">
-              {language === "ar" ? "تسجيل الدخول والمتابعة للدفع" : "Log In & Proceed"}
-            </button>
-          </form>
-        </div>
-      )}
+      <AuthModal
+        isOpen={showLoginGating}
+        onClose={() => setShowLoginGating(false)}
+        onSuccess={() => router.push("/checkout")}
+      />
     </div>
   );
 }

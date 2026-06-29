@@ -4,7 +4,7 @@ import React from "react";
 import { useApp } from "@/context/AppContext";
 import Link from "next/link";
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, disabled = false }) {
   const { language, cart, addToCart, updateCartQuantity, wishlist, toggleWishlist } = useApp();
 
   const cartItem = cart.find((item) => item.id === product.id);
@@ -21,8 +21,8 @@ export default function ProductCard({ product }) {
   const pharmName = language === "ar" ? product.pharmacyName_ar : product.pharmacyName_en;
 
   return (
-    <div className="product-card">
-      <button className="wishlist-btn" onClick={() => toggleWishlist(product.id)}>
+    <div className="product-card" style={{ opacity: disabled ? 0.75 : 1 }}>
+      <button className="wishlist-btn" disabled={disabled} onClick={() => toggleWishlist(product.id)}>
         {isWishlisted ? "❤️" : "🤍"}
       </button>
 
@@ -32,7 +32,7 @@ export default function ProductCard({ product }) {
         {product.originalPrice && <span className="badge badge-offer">%{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}</span>}
       </div>
 
-      <Link href={`/product/${product.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+      <Link href={disabled ? "#" : `/product/${product.id}`} style={{ textDecoration: "none", color: "inherit", pointerEvents: disabled ? "none" : "auto" }}>
         <div className="product-image">{product.image}</div>
         <span className="product-pharmacy">🏥 {pharmName}</span>
         <h4 className="product-name">{name}</h4>
@@ -51,13 +51,13 @@ export default function ProductCard({ product }) {
         </div>
 
         {cartItem ? (
-          <div className="qty-counter">
-            <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity - 1)}>-</button>
+          <div className="qty-counter" style={{ pointerEvents: disabled ? "none" : "auto", opacity: disabled ? 0.5 : 1 }}>
+            <button className="qty-btn" disabled={disabled} onClick={() => updateCartQuantity(product.id, cartItem.quantity - 1)}>-</button>
             <span className="qty-val">{cartItem.quantity}</span>
-            <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity + 1)}>+</button>
+            <button className="qty-btn" disabled={disabled} onClick={() => updateCartQuantity(product.id, cartItem.quantity + 1)}>+</button>
           </div>
         ) : (
-          <button className="add-qty-btn" onClick={() => addToCart(product, 1)}>
+          <button className="add-qty-btn" disabled={disabled} style={{ pointerEvents: disabled ? "none" : "auto", opacity: disabled ? 0.5 : 1 }} onClick={() => addToCart(product, 1)}>
             +
           </button>
         )}

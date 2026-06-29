@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import AuthModal from "./AuthModal";
 
 export default function Header() {
   const { language, toggleLanguage, currentAddress, addresses, setCurrentAddress, cart, isLoggedIn, login, logout } = useApp();
@@ -13,16 +14,47 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [loginPhone, setLoginPhone] = useState("");
-  const [loginPass, setLoginPass] = useState("");
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (loginPhone.trim()) {
-      login(loginPhone, loginPass);
-      setShowLoginModal(false);
+  // Notification center states
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      text_en: "Order #YS-812 has been dispatched with Driver Ahmed Al-Harbi (ETA: 15 mins).",
+      text_ar: "تم شحن الطلب #YS-812 مع السائق أحمد الحربي (الوقت المتوقع: ١٥ دقيقة).",
+      time_en: "10 mins ago",
+      time_ar: "قبل ١٠ دقائق",
+      read: false,
+      icon: "🚗"
+    },
+    {
+      id: 2,
+      text_en: "Your e-prescription from MOH Sehaty has been successfully verified for order preparation.",
+      text_ar: "تم التحقق من وصفتك الطبية الرقمية من وزارة الصحة (صحتي) بنجاح لبدء تجهيز الطلب.",
+      time_en: "1 hour ago",
+      time_ar: "قبل ساعة",
+      read: false,
+      icon: "✅"
+    },
+    {
+      id: 3,
+      text_en: "Congratulations! You earned 120 Loyalty points from your last order #YS-701.",
+      text_ar: "تهانينا! لقد حصلت على ١٢٠ نقطة ولاء من طلبك الأخير #YS-701.",
+      time_en: "Yesterday",
+      time_ar: "أمس",
+      read: true,
+      icon: "👑"
+    },
+    {
+      id: 4,
+      text_en: "Temperature Control Check: Your insulin prescription will be delivered in certified cold-chain cooling bags.",
+      text_ar: "فحص الحفاظ على البرودة: سيتم توصيل الأنسولين الخاص بك في حقيبة تبريد معتمدة لضمان سلامته.",
+      time_en: "2 days ago",
+      time_ar: "قبل يومين",
+      read: true,
+      icon: "❄️"
     }
-  };
+  ]);
 
   const megaMenuData = {
     medications: {
@@ -167,10 +199,91 @@ export default function Header() {
             </Link>
 
             {/* Notifications */}
-            <button className="btn-icon">
-              <span>🔔</span>
-              <span className="badge-dot"></span>
-            </button>
+            <div style={{ position: "relative" }}>
+              <button 
+                className="btn-icon" 
+                onClick={() => setShowNotifications(!showNotifications)}
+                style={{ position: "relative" }}
+                type="button"
+              >
+                <span>🔔</span>
+                {notifications.some(n => !n.read) && <span className="badge-dot" style={{ position: "absolute", top: "2px", right: "2px", width: "8px", height: "8px", backgroundColor: "#ef4444", borderRadius: "50%" }}></span>}
+              </button>
+              {showNotifications && (
+                <div 
+                  className="dropdown-menu-panel"
+                  style={{
+                    position: "absolute",
+                    top: "40px",
+                    right: language === "ar" ? "auto" : "0",
+                    left: language === "ar" ? "0" : "auto",
+                    width: "350px",
+                    backgroundColor: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "16px",
+                    boxShadow: "var(--shadow-lg)",
+                    zIndex: 1000,
+                    padding: "16px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                    textAlign: language === "ar" ? "right" : "left"
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
+                    <strong style={{ fontSize: "13px", color: "var(--text-1)" }}>
+                      {language === "ar" ? "الإشعارات" : "Notifications"} ({notifications.filter(n => !n.read).length})
+                    </strong>
+                    <button 
+                      onClick={() => {
+                        setNotifications(notifications.map(n => ({ ...n, read: true })));
+                      }}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        color: "var(--primary)",
+                        fontSize: "11px",
+                        cursor: "pointer",
+                        fontWeight: "700"
+                      }}
+                      type="button"
+                    >
+                      {language === "ar" ? "تحديد الكل كمقروء" : "Mark all as read"}
+                    </button>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
+                    {notifications.map((n) => (
+                      <div 
+                        key={n.id} 
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          padding: "8px",
+                          borderRadius: "10px",
+                          backgroundColor: n.read ? "transparent" : "rgba(15, 108, 189, 0.04)",
+                          border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)",
+                          fontSize: "11px",
+                          lineHeight: "1.4"
+                        }}
+                      >
+                        <span style={{ fontSize: "16px" }}>{n.icon}</span>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
+                          <span style={{ color: "var(--text-1)", fontWeight: n.read ? "500" : "700" }}>
+                            {language === "ar" ? n.text_ar : n.text_en}
+                          </span>
+                          <span style={{ fontSize: "9px", color: "var(--text-2)" }}>
+                            {language === "ar" ? n.time_ar : n.time_en}
+                          </span>
+                        </div>
+                        {!n.read && (
+                          <span style={{ width: "5px", height: "5px", backgroundColor: "var(--primary)", borderRadius: "50%", alignSelf: "center", flexShrink: 0 }} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Cart link with count badge */}
             <Link href="/cart" className="nav-link-item" style={{ position: "relative" }}>
@@ -311,10 +424,91 @@ export default function Header() {
               <button className="lang-toggle" onClick={toggleLanguage}>
                 {language === "en" ? "العربية" : "English"}
               </button>
-              <button className="btn-icon">
-                <span>🔔</span>
-                <span className="badge-dot"></span>
-              </button>
+              <div style={{ position: "relative" }}>
+                <button 
+                  className="btn-icon" 
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  style={{ position: "relative" }}
+                  type="button"
+                >
+                  <span>🔔</span>
+                  {notifications.some(n => !n.read) && <span className="badge-dot" style={{ position: "absolute", top: "2px", right: "2px", width: "8px", height: "8px", backgroundColor: "#ef4444", borderRadius: "50%" }}></span>}
+                </button>
+                {showNotifications && (
+                  <div 
+                    className="dropdown-menu-panel"
+                    style={{
+                      position: "absolute",
+                      top: "40px",
+                      right: language === "ar" ? "0" : "auto",
+                      left: language === "ar" ? "auto" : "0",
+                      width: "290px",
+                      backgroundColor: "var(--surface)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "16px",
+                      boxShadow: "var(--shadow-lg)",
+                      zIndex: 1000,
+                      padding: "12px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                      textAlign: language === "ar" ? "right" : "left"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>
+                      <strong style={{ fontSize: "12px", color: "var(--text-1)" }}>
+                        {language === "ar" ? "الإشعارات" : "Notifications"} ({notifications.filter(n => !n.read).length})
+                      </strong>
+                      <button 
+                        onClick={() => {
+                          setNotifications(notifications.map(n => ({ ...n, read: true })));
+                        }}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          color: "var(--primary)",
+                          fontSize: "10px",
+                          cursor: "pointer",
+                          fontWeight: "700"
+                        }}
+                        type="button"
+                      >
+                        {language === "ar" ? "تحديد الكل" : "Mark all"}
+                      </button>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "240px", overflowY: "auto" }}>
+                      {notifications.map((n) => (
+                        <div 
+                          key={n.id} 
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            padding: "6px",
+                            borderRadius: "8px",
+                            backgroundColor: n.read ? "transparent" : "rgba(15, 108, 189, 0.04)",
+                            border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)",
+                            fontSize: "10px",
+                            lineHeight: "1.4"
+                          }}
+                        >
+                          <span style={{ fontSize: "14px" }}>{n.icon}</span>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "1px", flex: 1 }}>
+                            <span style={{ color: "var(--text-1)", fontWeight: n.read ? "500" : "700" }}>
+                              {language === "ar" ? n.text_ar : n.text_en}
+                            </span>
+                            <span style={{ fontSize: "8px", color: "var(--text-2)" }}>
+                              {language === "ar" ? n.time_ar : n.time_en}
+                            </span>
+                          </div>
+                          {!n.read && (
+                            <span style={{ width: "4px", height: "4px", backgroundColor: "var(--primary)", borderRadius: "50%", alignSelf: "center", flexShrink: 0 }} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -370,47 +564,10 @@ export default function Header() {
       )}
 
       {/* Global Login modal */}
-      {showLoginModal && (
-        <div className="modal-overlay" onClick={() => setShowLoginModal(false)}>
-          <form className="modal-sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleLoginSubmit}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>{language === "ar" ? "تسجيل الدخول أو الاشتراك" : "Login or Register"}</h3>
-              <button className="btn-icon" type="button" onClick={() => setShowLoginModal(false)}>✕</button>
-            </div>
-
-            <p style={{ fontSize: "12px", color: "var(--text-2)" }}>
-              {language === "ar" ? "أدخل رقم الجوال للمتابعة." : "Enter your mobile phone number to log in or register."}
-            </p>
-
-            <div className="form-group">
-              <label className="form-label">{language === "ar" ? "رقم الجوال" : "Mobile Phone"}</label>
-              <input
-                type="text"
-                placeholder="05xxxxxxxx"
-                className="form-input"
-                required
-                value={loginPhone}
-                onChange={(e) => setLoginPhone(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">{language === "ar" ? "كلمة المرور" : "Password"}</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="form-input"
-                value={loginPass}
-                onChange={(e) => setLoginPass(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" className="btn-primary">
-              {language === "ar" ? "تسجيل الدخول" : "Log In"}
-            </button>
-          </form>
-        </div>
-      )}
+      <AuthModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </>
   );
 }
