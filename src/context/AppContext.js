@@ -153,7 +153,14 @@ export function AppProvider({ children }) {
       const pharmacyName_ar = items[0].pharmacyName_ar;
       
       const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const deliveryFee = deliveryOption === "cold" ? 25 : 10;
+      let deliveryFee = 0;
+      if (deliveryOption === "pickup") {
+        deliveryFee = 0;
+      } else if (subtotal >= 100) {
+        deliveryFee = 0;
+      } else {
+        deliveryFee = deliveryOption === "cold" ? 25 : 10;
+      }
       const vat = subtotal * 0.15;
       const total = subtotal + deliveryFee + vat;
 
@@ -254,6 +261,35 @@ export function AppProvider({ children }) {
     });
   };
 
+  const cancelOrder = (orderId, refundType) => {
+    setOrders((prev) =>
+      prev.map((ord) =>
+        ord.id === orderId ? { ...ord, status: "canceled" } : ord
+      )
+    );
+    if (refundType === "wallet") {
+      setOrders((prev) => {
+        const targetOrder = prev.find(o => o.id === orderId);
+        if (targetOrder) {
+          const refundAmount = targetOrder.total;
+          setWalletBalance((wPrev) => wPrev + refundAmount);
+          setWalletTransactions((tPrev) => [
+            {
+              id: `wt-${Date.now()}`,
+              type: "refund",
+              title_en: `Refund for Order #${orderId}`,
+              title_ar: `استرجاع رصيد الطلب #${orderId}`,
+              date: new Date().toISOString().split("T")[0],
+              amount: refundAmount
+            },
+            ...tPrev
+          ]);
+        }
+        return prev;
+      });
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -285,7 +321,8 @@ export function AppProvider({ children }) {
         login,
         logout,
         recentlyViewed,
-        addToRecentlyViewed
+        addToRecentlyViewed,
+        cancelOrder
       }}
     >
       {children}

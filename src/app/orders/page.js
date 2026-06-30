@@ -5,9 +5,30 @@ import { useApp } from "@/context/AppContext";
 import OrderCard from "@/components/OrderCard";
 
 export default function OrdersPage() {
-  const { language, orders } = useApp();
+  const { language, orders, cancelOrder } = useApp();
   const [activeTab, setActiveTab] = useState("active"); // active, history
   const [trackingOrder, setTrackingOrder] = useState(null);
+  const [showRefundSelector, setShowRefundSelector] = useState(false);
+
+  const handleCancelConfirm = (refundType) => {
+    if (!trackingOrder) return;
+    cancelOrder(trackingOrder.id, refundType);
+    if (refundType === "wallet") {
+      alert(
+        language === "ar"
+          ? `تم إلغاء الطلب #${trackingOrder.id} بنجاح. وتم إرجاع المبلغ لمحفظتك الإلكترونية.`
+          : `Order #${trackingOrder.id} was canceled successfully. The amount was refunded to your wallet.`
+      );
+    } else {
+      alert(
+        language === "ar"
+          ? `تم إلغاء الطلب #${trackingOrder.id} بنجاح. وجاري استرجاع المبلغ لبطاقتك المصرفية خلال ٣-٥ أيام عمل.`
+          : `Order #${trackingOrder.id} was canceled successfully. Refund will be processed to your card in 3-5 business days.`
+      );
+    }
+    setShowRefundSelector(false);
+    setTrackingOrder(null);
+  };
 
   const t = {
     title: language === "ar" ? "طلباتي" : "My Orders",
@@ -155,6 +176,103 @@ export default function OrdersPage() {
             >
               🏥 {t.support} (Licensed Pharmacist Line)
             </button>
+
+            <button
+              type="button"
+              className="btn-danger"
+              onClick={() => setShowRefundSelector(true)}
+              style={{
+                padding: "8px",
+                fontSize: "12px",
+                marginTop: "8px",
+                backgroundColor: "var(--danger)",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: "700",
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              🛑 {language === "ar" ? "إلغاء الطلب" : "Cancel Order"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Refund Selector Modal overlay */}
+      {showRefundSelector && (
+        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setShowRefundSelector(false)}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "400px" }}>
+            <h3 style={{ fontSize: "15px", fontWeight: "800", margin: "0 0 10px 0" }}>
+              {language === "ar" ? "اختر طريقة استرداد الأموال" : "Choose Refund Method"}
+            </h3>
+            <p style={{ fontSize: "12px", color: "var(--text-2)", marginBottom: "16px", lineHeight: "1.4" }}>
+              {language === "ar" 
+                ? "إذا قمت بإلغاء هذا الطلب، يرجى اختيار طريقة استرداد المبلغ المدفوع:" 
+                : "If you cancel this order, please choose how you would like to receive your refund:"}
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+              {/* Option 1: Wallet */}
+              <button
+                type="button"
+                onClick={() => handleCancelConfirm("wallet")}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  padding: "12px",
+                  border: "1.5px solid var(--primary)",
+                  borderRadius: "12px",
+                  backgroundColor: "rgba(15, 108, 189, 0.03)",
+                  textAlign: "start",
+                  cursor: "pointer"
+                }}
+              >
+                <strong style={{ fontSize: "12.5px", color: "var(--primary)" }}>
+                  💳 {language === "ar" ? "استرداد إلى المحفظة الإلكترونية (فوري)" : "Refund to Electronic Wallet (Instant)"}
+                </strong>
+                <span style={{ fontSize: "10.5px", color: "var(--text-2)", marginTop: "4px" }}>
+                  {language === "ar" ? "سيتم إيداع الرصيد في محفظتك فوراً لاستخدامه في طلباتك القادمة." : "Funds will be credited immediately to your wallet for future purchases."}
+                </span>
+              </button>
+
+              {/* Option 2: Payment Method */}
+              <button
+                type="button"
+                onClick={() => handleCancelConfirm("card")}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  padding: "12px",
+                  border: "1px solid var(--border)",
+                  borderRadius: "12px",
+                  backgroundColor: "var(--surface)",
+                  textAlign: "start",
+                  cursor: "pointer"
+                }}
+              >
+                <strong style={{ fontSize: "12.5px", color: "var(--text-1)" }}>
+                  🏦 {language === "ar" ? "استرداد إلى بطاقة الدفع (٣-٥ أيام عمل)" : "Refund to Original Payment Card (3-5 Days)"}
+                </strong>
+                <span style={{ fontSize: "10.5px", color: "var(--text-2)", marginTop: "4px" }}>
+                  {language === "ar" ? "سيتم إرجاع المبلغ لبطاقة الدفع (مدى/فيزا) خلال ٣-٥ أيام عمل حسب البنك." : "Refund will return to your card (Mada/Visa) in 3-5 business days."}
+                </span>
+              </button>
+            </div>
+
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => setShowRefundSelector(false)}
+                className="btn-secondary"
+                style={{ flex: 1, padding: "8px", fontSize: "12px" }}
+              >
+                {language === "ar" ? "تراجع" : "Go Back"}
+              </button>
+            </div>
           </div>
         </div>
       )}

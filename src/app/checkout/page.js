@@ -22,7 +22,31 @@ export default function CheckoutPage() {
 
   // State Machine steps: 'review', 'processing_approval', 'approval_status', 'rejection_status', 'payment', 'processing_payment', 'confirmation', 'tracking'
   const [checkoutStep, setCheckoutStep] = useState("review");
+  const [fulfillmentType, setFulfillmentType] = useState("delivery"); // 'delivery' or 'pickup'
   const [scenario, setScenario] = useState("partial_success"); // 'partial_success', 'full_rejection', 'full_success'
+
+  const handleAcceptSubstitute = (rejectedItem, alternative) => {
+    setPurchasedCart((prev) => {
+      const filtered = prev.filter(i => !(i.id === rejectedItem.id && i.pharmacyId === "ph-3"));
+      const newItem = {
+        ...rejectedItem,
+        id: alternative.id,
+        name_en: alternative.name_en,
+        name_ar: alternative.name_ar,
+        price: alternative.price,
+        pharmacyId: alternative.pharmacyId,
+        pharmacyName_en: alternative.pharmacyName_en,
+        pharmacyName_ar: alternative.pharmacyName_ar
+      };
+      return [...filtered, newItem];
+    });
+  };
+
+  const handleRemoveRejectedItem = (rejectedItem) => {
+    setPurchasedCart((prev) =>
+      prev.filter(i => !(i.id === rejectedItem.id && i.pharmacyId === "ph-3"))
+    );
+  };
 
   // Input states
   const [deliveryOption, setDeliveryOption] = useState("standard");
@@ -150,7 +174,15 @@ export default function CheckoutPage() {
       close: "Close",
       additionalDiscount: "Additional discount",
       totalAmount: "Total Amount",
-      availableBenefits: "Available Benefits"
+      availableBenefits: "Available Benefits",
+      alternativesHeader: "Alternatives Found in Marketplace",
+      acceptSub: "Accept Substitute",
+      removeContinue: "Remove & Continue",
+      pickupOption: "Store Pickup",
+      deliveryOption: "Home Delivery",
+      pickupTitle: "Pickup Store Location",
+      pickupReady: "Ready for pickup in 15 mins (Free)",
+      substituteTitle: "For your unavailable item:"
     },
     ar: {
       checkout: "عملية الدفع الآمنة",
@@ -231,7 +263,15 @@ export default function CheckoutPage() {
       close: "إغلاق",
       additionalDiscount: "خصم إضافي",
       totalAmount: "المبلغ الإجمالي",
-      availableBenefits: "المزايا المتاحة"
+      availableBenefits: "المزايا المتاحة",
+      alternativesHeader: "البدائل المتاحة في السوق",
+      acceptSub: "قبول البديل",
+      removeContinue: "إزالة ومتابعة",
+      pickupOption: "استلام من الصيدلية",
+      deliveryOption: "توصيل للمنزل",
+      pickupTitle: "موقع فرع الاستلام",
+      pickupReady: "جاهز للاستلام خلال ١٥ دقيقة (مجاني)",
+      substituteTitle: "بديل لمنتجك غير المتوفر:"
     }
   };
 
@@ -375,7 +415,7 @@ export default function CheckoutPage() {
         const redeemedPoints = loyaltyDeduct * 50;
 
         // Place order in system context
-        const placed = createOrder(walletDeduct, redeemedPoints, paymentMethod, deliveryOption);
+        const placed = createOrder(walletDeduct, redeemedPoints, paymentMethod, fulfillmentType === "pickup" ? "pickup" : deliveryOption);
         setCheckoutPlacedOrders(placed);
 
         setCheckoutStep("confirmation");
@@ -401,6 +441,7 @@ export default function CheckoutPage() {
   };
 
   const getApprovedDeliveryFee = () => {
+    if (fulfillmentType === "pickup") return 0;
     return Object.keys(groupedCart).reduce((sum, key) => {
       if (scenario === "partial_success" && key === "ph-3") return sum;
       return sum + getDeliveryFeeForPharmacy(groupedCart[key].items);
@@ -510,28 +551,83 @@ export default function CheckoutPage() {
           <div className="two-col-layout">
             <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
-              {/* Delivery Address Block */}
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-1)" }}>📍 {t.deliveryAddress}</span>
-                  <button
-                    onClick={() => { setShowAddressModal(true); setAddressModalMode("select"); }}
-                    style={{ background: "none", border: "none", color: "var(--primary)", fontWeight: "700", fontSize: "12px", cursor: "pointer" }}
-                  >
-                    {t.changeBtn}
-                  </button>
-                </div>
-                {activeAddress ? (
-                  <div>
-                    <strong style={{ fontSize: "13.5px", display: "block" }}>{language === "ar" ? activeAddress.tag_ar : activeAddress.tag}</strong>
-                    <p style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "2px" }}>
-                      {language === "ar" ? activeAddress.street_ar : activeAddress.street}, {language === "ar" ? activeAddress.city_ar : activeAddress.city}
-                    </p>
-                  </div>
-                ) : (
-                  <button onClick={() => { setShowAddressModal(true); setAddressModalMode("add"); }} className="btn-secondary" style={{ width: "100%" }}>+ {t.addNewAddress}</button>
-                )}
+              {/* Fulfillment Option Toggle (Flowchart requirement: Pickup vs Delivery) */}
+              <div style={{ display: "flex", gap: "10px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "12px", padding: "6px" }}>
+                <button
+                  type="button"
+                  onClick={() => setFulfillmentType("delivery")}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "none",
+                    backgroundColor: fulfillmentType === "delivery" ? "var(--primary)" : "transparent",
+                    color: fulfillmentType === "delivery" ? "white" : "var(--text-2)",
+                    fontWeight: "700",
+                    fontSize: "12.5px",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  🚚 {t.deliveryOption}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFulfillmentType("pickup")}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "8px",
+                    border: "none",
+                    backgroundColor: fulfillmentType === "pickup" ? "var(--primary)" : "transparent",
+                    color: fulfillmentType === "pickup" ? "white" : "var(--text-2)",
+                    fontWeight: "700",
+                    fontSize: "12.5px",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  🏪 {t.pickupOption}
+                </button>
               </div>
+
+              {fulfillmentType === "pickup" ? (
+                /* Pickup Location Block */
+                <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-1)" }}>🏪 {t.pickupTitle}</span>
+                  <div style={{ padding: "12px", border: "1.5px solid var(--primary)", borderRadius: "12px", backgroundColor: "rgba(15, 108, 189, 0.04)" }}>
+                    <strong style={{ fontSize: "13.5px", display: "block" }}>📍 {language === "ar" ? "فرع حي الياسمين (الرئيسي)" : "Al-Yasmin Branch (Main)"}</strong>
+                    <span style={{ fontSize: "12px", color: "var(--text-2)", display: "block", marginTop: "2px" }}>{language === "ar" ? "الرياض، طريق أنس بن مالك" : "Riyadh, Anas Ibn Malik Road"}</span>
+                    <span style={{ display: "block", fontSize: "11px", color: "var(--secondary)", fontWeight: "700", marginTop: "6px" }}>
+                      ⏱️ {t.pickupReady}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                /* Delivery Address Block */
+                <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
+                    <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-1)" }}>📍 {t.deliveryAddress}</span>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddressModal(true); setAddressModalMode("select"); }}
+                      style={{ background: "none", border: "none", color: "var(--primary)", fontWeight: "700", fontSize: "12px", cursor: "pointer" }}
+                    >
+                      {t.changeBtn}
+                    </button>
+                  </div>
+                  {activeAddress ? (
+                    <div>
+                      <strong style={{ fontSize: "13.5px", display: "block" }}>{language === "ar" ? activeAddress.tag_ar : activeAddress.tag}</strong>
+                      <p style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "2px" }}>
+                        {language === "ar" ? activeAddress.street_ar : activeAddress.street}, {language === "ar" ? activeAddress.city_ar : activeAddress.city}
+                      </p>
+                    </div>
+                  ) : (
+                    <button onClick={() => { setShowAddressModal(true); setAddressModalMode("add"); }} className="btn-secondary" style={{ width: "100%" }}>+ {t.addNewAddress}</button>
+                  )}
+                </div>
+              )}
 
               {/* Items Detail breakdown */}
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -587,7 +683,7 @@ export default function CheckoutPage() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>{t.deliveryFees}</span>
-                    <strong>{Object.keys(groupedCart).reduce((sum, id) => sum + getDeliveryFeeForPharmacy(groupedCart[id].items), 0).toFixed(2)} {t.sar}</strong>
+                    <strong>{(fulfillmentType === "pickup" ? 0 : Object.keys(groupedCart).reduce((sum, id) => sum + getDeliveryFeeForPharmacy(groupedCart[id].items), 0)).toFixed(2)} {t.sar}</strong>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span>{t.vat}</span>
@@ -598,7 +694,7 @@ export default function CheckoutPage() {
                     <span>
                       {(
                         activeItemsList.reduce((s, i) => s + i.price * i.quantity, 0) +
-                        Object.keys(groupedCart).reduce((sum, id) => sum + getDeliveryFeeForPharmacy(groupedCart[id].items), 0) +
+                        (fulfillmentType === "pickup" ? 0 : Object.keys(groupedCart).reduce((sum, id) => sum + getDeliveryFeeForPharmacy(groupedCart[id].items), 0)) +
                         activeItemsList.reduce((s, i) => s + i.price * i.quantity, 0) * 0.15
                       ).toFixed(2)} {t.sar}
                     </span>
@@ -607,7 +703,13 @@ export default function CheckoutPage() {
 
                 <button
                   className="btn-primary"
-                  onClick={() => setCheckoutStep("processing_approval")}
+                  onClick={() => {
+                    if (fulfillmentType === "delivery" && !activeAddress) {
+                      alert(language === "ar" ? "الرجاء تحديد عنوان التوصيل أولاً" : "Please select a delivery address first");
+                      return;
+                    }
+                    setCheckoutStep("processing_approval");
+                  }}
                   style={{ width: "100%", marginTop: "8px" }}
                 >
                   {t.continueBtn}
@@ -757,13 +859,90 @@ export default function CheckoutPage() {
                       ⚠️ {t.reasonLabel}: {t.rejectedOutStock}
                     </p>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-                      {groupedCart["ph-3"].items.map(item => (
-                        <div key={item.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", opacity: 0.6 }}>
-                          <span>{language === "ar" ? item.name_ar : item.name_en} × {item.quantity}</span>
-                          <strong>{(item.price * item.quantity).toFixed(2)} {t.sar}</strong>
-                        </div>
-                      ))}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px", borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
+                      {groupedCart["ph-3"].items.map(item => {
+                        const mockAlternatives = [
+                          {
+                            id: "pr-6-alt1",
+                            name_en: "CeraVe Hydrating Cleanser (Alt. from Al-Dawaa)",
+                            name_ar: "سيرافي منظف مرطب (بديل من الدواء)",
+                            price: 78.00,
+                            pharmacyId: "ph-1",
+                            pharmacyName_en: "Al-Dawaa Pharmacy",
+                            pharmacyName_ar: "صيدلية الدواء"
+                          },
+                          {
+                            id: "pr-6-alt2",
+                            name_en: "Cetaphil Gentle Cleanser (Alt. from Nahdi)",
+                            name_ar: "سيتافيل منظف لطيف (بديل من النهدي)",
+                            price: 68.00,
+                            pharmacyId: "ph-2",
+                            pharmacyName_en: "Nahdi Pharmacy",
+                            pharmacyName_ar: "صيدلية النهدي"
+                          }
+                        ];
+
+                        return (
+                          <div key={item.id} style={{ display: "flex", flexDirection: "column", gap: "8px", borderBottom: "1px dashed var(--border)", paddingBottom: "12px", marginBottom: "8px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px", opacity: 0.8 }}>
+                              <span style={{ fontWeight: "700" }}>{language === "ar" ? item.name_ar : item.name_en} × {item.quantity}</span>
+                              <strong style={{ color: "var(--danger)" }}>{(item.price * item.quantity).toFixed(2)} {t.sar}</strong>
+                            </div>
+
+                            {/* Alternatives box container */}
+                            <div style={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", padding: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                              <strong style={{ fontSize: "11px", color: "var(--text-2)", display: "block" }}>🔍 {t.alternativesHeader}:</strong>
+                              
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                {mockAlternatives.map(alt => (
+                                  <div key={alt.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11.5px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", padding: "6px 8px", borderRadius: "6px" }}>
+                                    <div>
+                                      <span style={{ fontWeight: "600", display: "block", fontSize: "11px" }}>{language === "ar" ? alt.name_ar : alt.name_en}</span>
+                                      <span style={{ fontSize: "9px", color: "var(--text-3)" }}>🏥 {language === "ar" ? alt.pharmacyName_ar : alt.pharmacyName_en}</span>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                      <strong style={{ color: "var(--primary)", fontSize: "11.5px" }}>{alt.price.toFixed(2)} {t.sar}</strong>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAcceptSubstitute(item, alt)}
+                                        style={{
+                                          backgroundColor: "var(--secondary)",
+                                          color: "white",
+                                          border: "none",
+                                          padding: "4px 8px",
+                                          borderRadius: "4px",
+                                          fontSize: "10px",
+                                          fontWeight: "700",
+                                          cursor: "pointer"
+                                        }}
+                                      >
+                                        {t.acceptSub}
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveRejectedItem(item)}
+                                style={{
+                                  alignSelf: "flex-end",
+                                  background: "none",
+                                  border: "none",
+                                  color: "var(--danger)",
+                                  fontSize: "10.5px",
+                                  fontWeight: "700",
+                                  cursor: "pointer",
+                                  marginTop: "2px"
+                                }}
+                              >
+                                ✕ {t.removeContinue}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
