@@ -148,7 +148,9 @@ export default function CheckoutPage() {
       paymentMethodLabel: "Payment Method",
       paidAmount: "Paid Amount",
       close: "Close",
-      additionalDiscount: "Additional discount"
+      additionalDiscount: "Additional discount",
+      totalAmount: "Total Amount",
+      availableBenefits: "Available Benefits"
     },
     ar: {
       checkout: "عملية الدفع الآمنة",
@@ -227,7 +229,9 @@ export default function CheckoutPage() {
       paymentMethodLabel: "طريقة الدفع",
       paidAmount: "المبلغ المدفوع",
       close: "إغلاق",
-      additionalDiscount: "خصم إضافي"
+      additionalDiscount: "خصم إضافي",
+      totalAmount: "المبلغ الإجمالي",
+      availableBenefits: "المزايا المتاحة"
     }
   };
 
@@ -832,34 +836,12 @@ export default function CheckoutPage() {
                   <strong style={{ fontSize: "14px", display: "block" }}>💳 {t.useWallet}</strong>
                   <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{t.walletBalance}: {walletBalance.toFixed(2)} {t.sar}</span>
                 </div>
-                <label className="toggle-switch" style={{ position: "relative", display: "inline-block", width: "46px", height: "24px" }}>
-                  <input
-                    type="checkbox"
-                    checked={useWallet}
-                    onChange={() => setUseWallet(!useWallet)}
-                    style={{ opacity: 0, width: 0, height: 0 }}
-                  />
-                  <span style={{
-                    position: "absolute",
-                    cursor: "pointer",
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: useWallet ? "var(--secondary)" : "#ccc",
-                    transition: "0.2s",
-                    borderRadius: "24px"
-                  }}>
-                    <span style={{
-                      position: "absolute",
-                      content: "",
-                      height: "18px",
-                      width: "18px",
-                      left: useWallet ? "24px" : "3px",
-                      bottom: "3px",
-                      backgroundColor: "white",
-                      transition: "0.2s",
-                      borderRadius: "50%"
-                    }} />
-                  </span>
-                </label>
+                <input
+                  type="checkbox"
+                  checked={useWallet}
+                  onChange={() => setUseWallet(!useWallet)}
+                  style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                />
               </div>
 
               {/* Loyalty points Benefit */}
@@ -884,10 +866,8 @@ export default function CheckoutPage() {
                   {[
                     { id: "visa", name_en: "Visa (**** 4209)", name_ar: "فيزا (**** ٤٢٠٩)", logo: "💳" },
                     { id: "apple", name_en: "Apple Pay", name_ar: "آبل باي", logo: "🍏" },
-                    { id: "tabby", name_en: "Tabby (Pay in 4 interest-free installments)", name_ar: "تابي (تقسيط على 4 دفعات بدون فوائد)", logo: "🟢" },
                     { id: "stc", name_en: "STC Pay", name_ar: "إس تي سي باي", logo: "💜" },
                     { id: "cod", name_en: "Cash payment", name_ar: "الدفع عند الاستلام", logo: "💵" },
-                    { id: "mada", name_en: "Mada Payment", name_ar: "مدى", logo: "💳" }
                   ].map(method => {
                     const isSelected = paymentMethod === method.id;
                     const name = language === "ar" ? method.name_ar : method.name_en;
@@ -934,34 +914,6 @@ export default function CheckoutPage() {
               <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "14px" }}>
                 <h3 style={{ fontSize: "15px", fontWeight: "800", margin: 0, borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>{t.orderSummary}</h3>
 
-                {/* Promo Code Form */}
-                <form onSubmit={handleApplyCoupon} style={{ display: "flex", gap: "8px", borderBottom: "1px solid var(--border)", paddingBottom: "12px", marginBottom: "4px" }}>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder={t.promoCode}
-                    value={couponCode}
-                    disabled={couponApplied}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    style={{ flex: 1, padding: "8px 12px", fontSize: "12px" }}
-                  />
-                  <button type="submit" className="btn-secondary" style={{ width: "auto", paddingInline: "16px", fontSize: "12px" }} disabled={couponApplied}>
-                    {t.apply}
-                  </button>
-                </form>
-                {couponApplied && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(24, 182, 122, 0.08)", padding: "8px 10px", borderRadius: "8px", fontSize: "12px", color: "var(--secondary)", fontWeight: "700", marginTop: "-8px", marginBottom: "8px" }}>
-                    <span>✓ {t.promoApplied}</span>
-                    <button
-                      type="button"
-                      onClick={() => { setCouponApplied(false); setCouponDiscount(0); setCouponCode(""); }}
-                      style={{ border: "none", background: "none", color: "var(--danger)", cursor: "pointer", fontWeight: "700" }}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-
                 {(() => {
                   const itemsSub = getApprovedSubtotal();
                   const deliveryFee = getApprovedDeliveryFee();
@@ -983,7 +935,7 @@ export default function CheckoutPage() {
                   const finalPayable = totalBeforeDeduct - walletDeduct - loyaltyDeduct;
 
                   return (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "12.5px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "12.5px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <span>{t.subtotal}</span>
                         <strong>{itemsSub.toFixed(2)} {t.sar}</strong>
@@ -996,31 +948,96 @@ export default function CheckoutPage() {
                         <span>{t.vat}</span>
                         <strong>{vat.toFixed(2)} {t.sar}</strong>
                       </div>
-                      {discount > 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--danger)" }}>
-                          <span>{t.additionalDiscount}</span>
-                          <strong>-{discount.toFixed(2)} {t.sar}</strong>
-                        </div>
-                      )}
-                      {useWallet && walletDeduct > 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--secondary)", fontWeight: "700" }}>
-                          <span>{t.paymentFromBalance}</span>
-                          <span>-{walletDeduct.toFixed(2)} {t.sar}</span>
-                        </div>
-                      )}
-                      {useLoyalty && loyaltyDeduct > 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", color: "var(--secondary)", fontWeight: "700" }}>
-                          <span>{t.redeemLoyalty}</span>
-                          <span>-{loyaltyDeduct.toFixed(2)} {t.sar}</span>
-                        </div>
-                      )}
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "15px", fontWeight: "800", borderTop: "1px solid var(--border)", paddingTop: "10px", marginTop: "4px", color: "var(--primary)" }}>
-                        <span>{t.totalPayable}</span>
-                        <span>{finalPayable.toFixed(2)} {t.sar}</span>
+
+                      {/* Line Separator */}
+                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+
+                      {/* Total Amount Row */}
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "15.5px", fontWeight: "800", color: "var(--text-1)" }}>
+                        <span>{t.totalAmount}</span>
+                        <span>{totalBeforeDeduct.toFixed(2)} {t.sar}</span>
                       </div>
 
-                      <div style={{ fontSize: "11px", color: "var(--text-2)", textAlign: "end", marginTop: "-4px" }}>
-                        Includes 15% VAT ({(itemsSub * 0.15).toFixed(2)} {t.sar})
+                      {/* Line Separator */}
+                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+
+                      {/* Promo Code Form */}
+                      <form onSubmit={handleApplyCoupon} style={{ display: "flex", gap: "8px", marginTop: "4px", marginBottom: "4px" }}>
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder={t.promoCode}
+                          value={couponCode}
+                          disabled={couponApplied}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          style={{ flex: 1, padding: "8px 12px", fontSize: "12px" }}
+                        />
+                        <button type="submit" className="btn-secondary" style={{ width: "auto", paddingInline: "16px", fontSize: "12px" }} disabled={couponApplied}>
+                          {t.apply}
+                        </button>
+                      </form>
+                      {couponApplied && (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "rgba(24, 182, 122, 0.08)", padding: "8px 10px", borderRadius: "8px", fontSize: "12px", color: "var(--secondary)", fontWeight: "700", marginTop: "-6px" }}>
+                          <span>✓ {t.promoApplied}</span>
+                          <button
+                            type="button"
+                            onClick={() => { setCouponApplied(false); setCouponDiscount(0); setCouponCode(""); }}
+                            style={{ border: "none", background: "none", color: "var(--danger)", cursor: "pointer", fontWeight: "700" }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Line Separator */}
+                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+
+                      {/* AVAILABLE BENEFITS */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "2px" }}>
+                        <span style={{ fontSize: "11px", color: "var(--text-2)", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                          {t.availableBenefits}
+                        </span>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>💳 {language === "ar" ? "رصيد المحفظة" : "Wallet Balance"}</span>
+                          <strong style={{ color: "var(--primary)" }}>{walletBalance.toFixed(2)} {t.sar}</strong>
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12.5px" }}>
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>👑 {language === "ar" ? "نقاط الولاء" : "Loyalty Points"}</span>
+                          <strong style={{ color: "#f59e0b" }}>{loyaltyPoints} pts ({(loyaltyPoints / 50).toFixed(2)} {t.sar})</strong>
+                        </div>
+                      </div>
+
+                      {/* Deductions applied list */}
+                      {(walletDeduct > 0 || loyaltyDeduct > 0 || discount > 0) && (
+                        <>
+                          <div style={{ borderTop: "1.5px dashed var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                            {discount > 0 && (
+                              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--danger)", fontWeight: "700" }}>
+                                <span>{t.additionalDiscount}</span>
+                                <span>-{discount.toFixed(2)} {t.sar}</span>
+                              </div>
+                            )}
+                            {useWallet && walletDeduct > 0 && (
+                              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--secondary)", fontWeight: "700" }}>
+                                <span>{t.paymentFromBalance}</span>
+                                <span>-{walletDeduct.toFixed(2)} {t.sar}</span>
+                              </div>
+                            )}
+                            {useLoyalty && loyaltyDeduct > 0 && (
+                              <div style={{ display: "flex", justifyContent: "space-between", color: "var(--secondary)", fontWeight: "700" }}>
+                                <span>{t.redeemLoyalty}</span>
+                                <span>-{loyaltyDeduct.toFixed(2)} {t.sar}</span>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Final Net Amount Row */}
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "15px", fontWeight: "800", borderTop: "1px solid var(--border)", paddingTop: "10px", marginTop: "4px", color: "var(--primary)" }}>
+                        <span>{t.paidAmount}</span>
+                        <span style={{ color: "#7C3AED" }}>{finalPayable.toFixed(2)} {t.sar}</span>
                       </div>
 
                       <button onClick={() => setCheckoutStep("processing_payment")} className="btn-primary" style={{ width: "100%", marginTop: "10px", paddingVertical: "14px" }}>

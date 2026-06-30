@@ -58,7 +58,6 @@ export default function CartPage() {
     selectAddress: language === "ar" ? "حدد موقع التوصيل" : "Select Delivery Location",
     loginRequired: language === "ar" ? "تسجيل الدخول مطلوب" : "Login Required",
     loginDesc: language === "ar" ? "يرجى تسجيل الدخول أو إنشاء حساب للمتابعة إلى إتمام الشراء." : "Please login or register to proceed to checkout.",
-    locationDesc: language === "ar" ? "يرجى تحديد عنوان التوصيل أولاً لحساب رسوم الشحن بدقة." : "Please select your delivery address to calculate shipping fees.",
     free: language === "ar" ? "مجاني" : "Free"
   };
 
@@ -530,14 +529,10 @@ export default function CartPage() {
         <div className="modal-overlay" onClick={() => setShowLocationGating(false)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>📍 {t.selectAddress}</h3>
+              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>{t.selectAddress}</h3>
               <button className="btn-icon" onClick={() => setShowLocationGating(false)}>✕</button>
             </div>
             
-            <p style={{ fontSize: "12px", color: "var(--text-2)", marginBottom: "12px" }}>
-              {t.locationDesc}
-            </p>
-
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "200px", overflowY: "auto" }}>
               {addresses.map((addr) => (
                 <div
