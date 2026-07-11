@@ -331,7 +331,7 @@ export default function ProductDetailPage({ params }) {
   };
 
   return (
-    <div style={{ paddingBottom: "100px" }}>
+    <div className="pdp-wrapper-main">
       {/* Styles for PDP animations */}
       <style>{`
         .collapsible-header:hover {
@@ -365,141 +365,65 @@ export default function ProductDetailPage({ params }) {
       `}</style>
 
       {/* Breadcrumbs */}
-      <nav 
-        style={{ 
-          fontSize: "12px", 
-          color: "var(--text-2)", 
-          marginBottom: "16px", 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "6px",
-          flexWrap: "wrap" 
-        }}
-      >
-        <Link href="/home" style={{ color: "var(--text-2)", textDecoration: "none" }} onMouseEnter={(e) => e.target.style.color = 'var(--primary)'} onMouseLeave={(e) => e.target.style.color = 'var(--text-2)'}>
+      <nav className="pdp-breadcrumbs">
+        <Link href="/home" className="pdp-breadcrumb-link">
           {language === "ar" ? "الرئيسية" : "Home"}
         </Link>
         <span>&gt;</span>
-        <Link href={`/search?cat=${product.category}`} style={{ color: "var(--text-2)", textDecoration: "none" }} onMouseEnter={(e) => e.target.style.color = 'var(--primary)'} onMouseLeave={(e) => e.target.style.color = 'var(--text-2)'}>
+        <Link href={`/search?cat=${product.category}`} className="pdp-breadcrumb-link">
           {categoryLabel}
         </Link>
         <span>&gt;</span>
-        <span style={{ color: "var(--text-1)", fontWeight: "600" }}>{productName}</span>
+        <span className="pdp-breadcrumb-current">{productName}</span>
       </nav>
 
       {/* Product Gating alerts (SFDA warnings) */}
       {product.isRx && (
-        <div 
-          className="rx-alert-pulse"
-          style={{
-            backgroundColor: "rgba(225, 29, 72, 0.06)",
-            border: "1.5px solid var(--danger)",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            marginBottom: "16px",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px"
-          }}
-        >
-          <span style={{ fontSize: "22px" }}>⚠️</span>
+        <div className="rx-alert-pulse pdp-rx-alert">
+          <span className="pdp-rx-alert-icon">⚠️</span>
           <div>
-            <strong style={{ display: "block", color: "var(--danger)", fontSize: "13px", fontWeight: "800" }}>{t.rxBadge}</strong>
-            <span style={{ fontSize: "11px", color: "var(--text-1)", marginTop: "2px", display: "block" }}>{t.rxDesc}</span>
+            <strong className="pdp-rx-alert-title">{t.rxBadge}</strong>
+            <span className="pdp-rx-alert-desc">{t.rxDesc}</span>
           </div>
         </div>
       )}
 
       <div className="pdp-container">
         {/* LEFT COLUMN: Gallery */}
-        <div className="pdp-image-col" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div className="pdp-image-col">
           
           {/* Main Image 1:1 Box */}
-          <div 
-            className="pdp-gallery" 
-            style={{ 
-              width: "100%",
-              aspectRatio: "1/1",
-              height: "auto",
-              maxHeight: "360px",
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              fontSize: "96px", 
-              position: "relative",
-              border: "1px solid var(--border)",
-              borderRadius: "16px",
-              backgroundColor: "var(--surface)",
-              overflow: "hidden"
-            }}
-          >
+          <div className="pdp-gallery pdp-gallery-container">
             <span>{galleryImages[activeImg]}</span>
             
             {/* Wishlist toggle */}
             <button
               onClick={() => toggleWishlist(product.id)}
-              style={{
-                position: "absolute",
-                top: "16px",
-                insetInlineEnd: "16px",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                fontSize: "18px",
-                boxShadow: "var(--shadow-sm)",
-                zIndex: 10
-              }}
+              className="pdp-wishlist-btn"
             >
               {isWishlisted ? "❤️" : "🤍"}
             </button>
           </div>
 
           {/* Interactive dot indicators (Screen 14 specification) */}
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBlock: "6px" }}>
+          <div className="pdp-slider-dots">
             {galleryImages.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveImg(idx)}
-                style={{
-                  width: activeImg === idx ? "20px" : "8px",
-                  height: "8px",
-                  borderRadius: "4px",
-                  backgroundColor: activeImg === idx ? "var(--primary)" : "var(--border)",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  transition: "all 0.25s ease"
-                }}
+                className={`pdp-slider-dot ${activeImg === idx ? "active" : ""}`}
                 aria-label={`Slide ${idx + 1}`}
               />
             ))}
           </div>
 
           {/* Thumbnails grid */}
-          <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+          <div className="pdp-thumbnails-row">
             {galleryImages.map((img, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveImg(idx)}
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "8px",
-                  border: `2px solid ${activeImg === idx ? "var(--primary)" : "var(--border)"}`,
-                  backgroundColor: "var(--surface)",
-                  fontSize: "24px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.15s"
-                }}
+                className={`pdp-thumbnail-btn ${activeImg === idx ? "active" : ""}`}
               >
                 {img}
               </button>
@@ -508,47 +432,38 @@ export default function ProductDetailPage({ params }) {
         </div>
 
         {/* CENTER COLUMN: Details */}
-        <div className="pdp-details-col" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="pdp-details-col">
           
           {/* Pharmacy source linking */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div className="pdp-vendor-link-row">
             <Link
               href={`/pharmacies/${activeVendor.id}`}
-              style={{ 
-                fontSize: "12px", 
-                color: "var(--primary)", 
-                fontWeight: "800", 
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center"
-              }}
-              onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-              onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
+              className="pdp-vendor-link"
             >
               🏥 {language === "ar" ? activeVendor.name_ar : activeVendor.name_en}
             </Link>
-            <span style={{ fontSize: "11px", color: "var(--text-2)" }}>|</span>
-            <span style={{ fontSize: "11px", color: "var(--text-2)" }}>⭐ {activeVendor.rating}</span>
+            <span className="pdp-meta-span">|</span>
+            <span className="pdp-meta-span">⭐ {activeVendor.rating}</span>
           </div>
           
           {/* Product name & rating */}
-          <h1 style={{ fontSize: "22px", fontWeight: "800", color: "var(--text-1)", margin: 0 }}>{productName}</h1>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px" }}>
-            <span style={{ color: "var(--warning)", fontWeight: "700" }}>★ {product.rating}</span>
-            <span style={{ color: "var(--text-2)" }}>({product.reviewsCount} reviews / مراجعة)</span>
+          <h1 className="pdp-product-name">{productName}</h1>
+          <div className="pdp-rating-row">
+            <span className="pdp-rating-star">★ {product.rating}</span>
+            <span className="pdp-rating-count">({product.reviewsCount} reviews / مراجعة)</span>
           </div>
 
           {/* Pricing Row matching active vendor selection */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: "8px", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>
-            <span style={{ fontSize: "26px", fontWeight: "800", color: "var(--primary)" }}>
+          <div className="pdp-price-row">
+            <span className="pdp-price-main">
               {activeVendor.price.toFixed(2)} {t.sar}
             </span>
             {activeVendor.originalPrice && activeVendor.originalPrice > activeVendor.price && (
               <>
-                <span style={{ fontSize: "14px", textDecoration: "line-through", color: "var(--text-2)" }}>
+                <span className="pdp-price-original">
                   {activeVendor.originalPrice.toFixed(2)} {t.sar}
                 </span>
-                <span style={{ fontSize: "11px", backgroundColor: "rgba(225, 29, 72, 0.1)", color: "var(--danger)", padding: "2px 6px", borderRadius: "4px", fontWeight: "700" }}>
+                <span className="pdp-price-discount">
                   %{Math.round(((activeVendor.originalPrice - activeVendor.price) / activeVendor.originalPrice) * 100)} {language === "ar" ? "خصم" : "OFF"}
                 </span>
               </>
@@ -556,12 +471,12 @@ export default function ProductDetailPage({ params }) {
           </div>
 
           {/* Multi-Vendor alternative sellers picker (Radio selections) */}
-          <div style={{ backgroundColor: "var(--surface)", border: "1.5px solid var(--primary)", borderRadius: "16px", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-            <h4 style={{ fontSize: "13px", fontWeight: "800", marginBottom: "12px", color: "var(--text-1)", display: "flex", alignItems: "center", gap: "6px" }}>
+          <div className="pdp-alternatives-card">
+            <h4 className="pdp-alternatives-header">
               <span>🔁</span> {t.alternative}
             </h4>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div className="pdp-alternatives-list">
               {availableVendors.map((vendor) => {
                 const isSelected = selectedVendorId === vendor.id;
                 const vName = language === "ar" ? vendor.name_ar : vendor.name_en;
@@ -570,37 +485,27 @@ export default function ProductDetailPage({ params }) {
                 return (
                   <label 
                     key={vendor.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      border: `1px solid ${isSelected ? "var(--primary)" : "var(--border)"}`,
-                      backgroundColor: isSelected ? "rgba(15, 108, 189, 0.02)" : "transparent",
-                      padding: "10px 14px",
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
+                    className={`pdp-alternative-label ${isSelected ? "selected" : ""}`}
                   >
                     <input 
                       type="radio" 
                       name="vendor-selection"
                       checked={isSelected}
                       onChange={() => setSelectedVendorId(vendor.id)}
-                      style={{ width: "16px", height: "16px", accentColor: "var(--primary)" }}
+                      className="pdp-alternative-radio"
                     />
                     
-                    <span style={{ fontSize: "20px" }}>{vendor.logo}</span>
+                    <span className="pdp-alternative-logo">{vendor.logo}</span>
                     
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-1)" }}>{vName}</span>
-                        <strong style={{ fontSize: "13px", color: isSelected ? "var(--primary)" : "var(--text-1)" }}>
+                    <div className="pdp-alternative-info">
+                      <div className="pdp-alternative-row-header">
+                        <span className="pdp-alternative-name">{vName}</span>
+                        <strong className="pdp-alternative-price">
                           {vendor.price.toFixed(2)} {t.sar}
                         </strong>
                       </div>
                       
-                      <div style={{ display: "flex", gap: "8px", fontSize: "10px", color: "var(--text-2)", marginTop: "2px" }}>
+                      <div className="pdp-alternative-meta-row">
                         <span>⭐ {vendor.rating}</span>
                         <span>•</span>
                         <span>📍 {vendor.distance} {t.km}</span>
@@ -617,71 +522,67 @@ export default function ProductDetailPage({ params }) {
           </div>
 
           {/* Collapsible Accordions (Description, Directions, Warnings, Ingredients) */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div className="pdp-accordion-container">
             
             {/* Description Tab */}
-            <div style={{ border: "1px solid var(--border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--surface)" }}>
+            <div className="pdp-accordion-card">
               <div 
-                className="collapsible-header"
+                className="collapsible-header pdp-accordion-header"
                 onClick={() => toggleTab("description")}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", cursor: "pointer", fontWeight: "700", fontSize: "13px", color: "var(--text-1)" }}
               >
                 <span>📝 {t.description}</span>
-                <span style={{ transition: "transform 0.2s", transform: openTabs.description ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                <span className="pdp-accordion-arrow" style={{ transform: openTabs.description ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
               </div>
               {openTabs.description && (
-                <div style={{ padding: "12px 16px", fontSize: "12.5px", color: "var(--text-2)", borderTop: "1px solid var(--border)", lineHeight: "1.5" }}>
+                <div className="pdp-accordion-body">
                   {desc}
                 </div>
               )}
             </div>
 
             {/* Directions Tab */}
-            <div style={{ border: "1px solid var(--border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--surface)" }}>
+            <div className="pdp-accordion-card">
               <div 
-                className="collapsible-header"
+                className="collapsible-header pdp-accordion-header"
                 onClick={() => toggleTab("directions")}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", cursor: "pointer", fontWeight: "700", fontSize: "13px", color: "var(--text-1)" }}
               >
                 <span>💡 {t.directions}</span>
-                <span style={{ transition: "transform 0.2s", transform: openTabs.directions ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                <span className="pdp-accordion-arrow" style={{ transform: openTabs.directions ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
               </div>
               {openTabs.directions && (
-                <div style={{ padding: "12px 16px", fontSize: "12.5px", color: "var(--text-2)", borderTop: "1px solid var(--border)", lineHeight: "1.5" }}>
+                <div className="pdp-accordion-body">
                   {language === "ar" ? extraProductDetails.directions.ar : extraProductDetails.directions.en}
                 </div>
               )}
             </div>
 
             {/* Warnings Tab */}
-            <div style={{ border: "1px solid var(--border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--surface)" }}>
+            <div className="pdp-accordion-card">
               <div 
-                className="collapsible-header"
+                className="collapsible-header pdp-accordion-header"
                 onClick={() => toggleTab("warnings")}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", cursor: "pointer", fontWeight: "700", fontSize: "13px", color: "var(--text-1)" }}
               >
                 <span>⚠️ {t.warnings}</span>
-                <span style={{ transition: "transform 0.2s", transform: openTabs.warnings ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                <span className="pdp-accordion-arrow" style={{ transform: openTabs.warnings ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
               </div>
               {openTabs.warnings && (
-                <div style={{ padding: "12px 16px", fontSize: "12.5px", color: "var(--danger)", borderTop: "1px solid var(--border)", lineHeight: "1.5", fontWeight: "500" }}>
+                <div className="pdp-accordion-body-warning">
                   {language === "ar" ? extraProductDetails.warnings.ar : extraProductDetails.warnings.en}
                 </div>
               )}
             </div>
 
             {/* Ingredients Tab */}
-            <div style={{ border: "1px solid var(--border)", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--surface)" }}>
+            <div className="pdp-accordion-card">
               <div 
-                className="collapsible-header"
+                className="collapsible-header pdp-accordion-header"
                 onClick={() => toggleTab("ingredients")}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", cursor: "pointer", fontWeight: "700", fontSize: "13px", color: "var(--text-1)" }}
               >
                 <span>🧪 {t.ingredients}</span>
-                <span style={{ transition: "transform 0.2s", transform: openTabs.ingredients ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                <span className="pdp-accordion-arrow" style={{ transform: openTabs.ingredients ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
               </div>
               {openTabs.ingredients && (
-                <div style={{ padding: "12px 16px", fontSize: "12.5px", color: "var(--text-2)", borderTop: "1px solid var(--border)", lineHeight: "1.5" }}>
+                <div className="pdp-accordion-body">
                   {language === "ar" ? extraProductDetails.ingredients.ar : extraProductDetails.ingredients.en}
                 </div>
               )}
@@ -691,71 +592,70 @@ export default function ProductDetailPage({ params }) {
 
           {/* Cold chain / Expiry tags */}
           {product.isColdChain && (
-            <div style={{ backgroundColor: "rgba(14, 165, 233, 0.05)", border: "1px dashed var(--info)", padding: "12px", borderRadius: "12px", color: "var(--info)", fontSize: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
-              <strong style={{ fontWeight: "700" }}>❄️ {t.coldChain}</strong>
+            <div className="pdp-cold-chain-banner">
+              <strong className="font-bold">❄️ {t.coldChain}</strong>
               <span>{t.coldDesc}</span>
             </div>
           )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", backgroundColor: "var(--bg)", padding: "8px 12px", borderRadius: "8px" }}>
+          <div className="pdp-expiry-banner">
             <span>📅</span>
             <div>
-              <strong style={{ display: "block", fontWeight: "700" }}>{t.expiry}</strong>
-              <span style={{ color: "var(--text-2)" }}>{t.expiryDate}</span>
+              <strong className="pdp-expiry-label">{t.expiry}</strong>
+              <span className="pdp-expiry-date-text">{t.expiryDate}</span>
             </div>
           </div>
 
         </div>
 
         {/* RIGHT COLUMN: Purchase Panel Sidebar */}
-        <div className="pdp-purchase-col" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "16px", height: "fit-content", position: "sticky", top: "100px" }}>
+        <div className="pdp-purchase-col">
           <div>
-            <span style={{ fontSize: "11px", color: "var(--text-2)", textTransform: "uppercase", fontWeight: "700" }}>Price / الإجمالي</span>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginTop: "4px" }}>
-              <span style={{ fontSize: "26px", fontWeight: "800", color: "var(--primary)" }}>
+            <span className="pdp-purchase-label">Price / الإجمالي</span>
+            <div className="pdp-purchase-price-row">
+              <span className="pdp-purchase-price-val">
                 {((cartItem ? cartItem.quantity : 1) * activeVendor.price).toFixed(2)}
               </span>
-              <span style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-2)" }}>{t.sar}</span>
+              <span className="pdp-purchase-currency">{t.sar}</span>
             </div>
           </div>
 
-          <div style={{ fontSize: "12px", color: "var(--text-2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", paddingBlock: "10px" }}>
+          <div className="pdp-delivery-panel">
             <div>🚗 {language === "ar" ? `التوصيل بواسطة ${activeVendor.name_ar}` : `Delivery by ${activeVendor.name_en}`}</div>
-            <div style={{ fontWeight: "700", color: "var(--text-1)", marginTop: "4px" }}>
+            <div className="pdp-delivery-eta">
               ⏱️ {language === "ar" ? `الوقت المتوقع: ${activeVendor.deliveryEta_ar}` : `Estimated Time: ${activeVendor.deliveryEta_en}`}
             </div>
           </div>
 
           {/* Saved Prescription Checker for POM Gating */}
           {product.isRx && !cartItem && (
-            <div style={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-              <strong style={{ fontSize: "11px", color: "var(--text-1)", fontWeight: "700" }}>📋 {t.checkRx}</strong>
+            <div className="pdp-prescription-box">
+              <strong className="pdp-prescription-header">📋 {t.checkRx}</strong>
               
               {!isPrescriptionLinked ? (
                 <>
-                  <span style={{ fontSize: "10px", color: "var(--text-2)" }}>{t.savedRxHeader}:</span>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <span className="pdp-prescription-saved-label">{t.savedRxHeader}:</span>
+                  <div className="pdp-prescription-list">
                     {savedPrescriptions.map((rx) => (
                       <button
                         key={rx.id}
                         onClick={() => handleLinkPrescription(rx.id)}
-                        className="btn-secondary"
-                        style={{ padding: "6px 8px", fontSize: "10px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px", textAlign: "start", height: "auto" }}
+                        className="btn-secondary pdp-prescription-select-btn"
                       >
-                        <strong style={{ color: "var(--primary)" }}>{language === "ar" ? rx.doctor_ar : rx.doctor}</strong>
+                        <strong className="pdp-prescription-doctor">{language === "ar" ? rx.doctor_ar : rx.doctor}</strong>
                         <span>{language === "ar" ? rx.hospital_ar : rx.hospital} • {rx.date}</span>
-                        <code style={{ fontSize: "9px", backgroundColor: "rgba(0,0,0,0.05)", padding: "1px 4px", borderRadius: "3px" }}>{rx.code}</code>
+                        <code className="pdp-prescription-code-badge">{rx.code}</code>
                       </button>
                     ))}
                   </div>
                 </>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <div style={{ color: "var(--secondary)", fontSize: "11.5px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
+                <div className="pdp-linked-success-wrapper">
+                  <div className="pdp-linked-success-line">
                     <span>✓</span>
                     <span>{t.rxLinkedSuccess}</span>
                   </div>
-                  <div style={{ fontSize: "10px", color: "var(--text-2)", backgroundColor: "var(--surface)", border: "1px solid var(--border)", padding: "6px 8px", borderRadius: "6px" }}>
+                  <div className="pdp-linked-details-card">
                     <strong>{language === "ar" ? linkedPrescriptionDetails.doctor_ar : linkedPrescriptionDetails.doctor}</strong>
                     <div>{linkedPrescriptionDetails.code}</div>
                   </div>
@@ -765,7 +665,7 @@ export default function ProductDetailPage({ params }) {
                       setLinkedPrescriptionDetails(null);
                       setSelectedFileName("");
                     }} 
-                    style={{ background: "transparent", border: "none", color: "var(--danger)", fontSize: "10px", cursor: "pointer", textDecoration: "underline", alignSelf: "flex-end" }}
+                    className="pdp-unlink-btn"
                   >
                     {language === "ar" ? "إلغاء الربط" : "Unlink Prescription"}
                   </button>
@@ -776,12 +676,12 @@ export default function ProductDetailPage({ params }) {
 
           {/* Add / Adjust quantity flow */}
           {cartItem ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "var(--bg)", padding: "8px 16px", borderRadius: "12px", border: "1px solid var(--border)" }}>
-                <span style={{ fontSize: "13px", fontWeight: "700" }}>Qty / الكمية</span>
-                <div className="qty-counter" style={{ padding: "4px 8px" }}>
+            <div className="pdp-quantity-panel">
+              <div className="pdp-qty-row">
+                <span className="pdp-qty-label">Qty / الكمية</span>
+                <div className="qty-counter">
                   <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity - 1)}>-</button>
-                  <span className="qty-val" style={{ minWidth: "16px" }}>{cartItem.quantity}</span>
+                  <span className="qty-val qty-val-min">{cartItem.quantity}</span>
                   <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity + 1)}>+</button>
                 </div>
               </div>
@@ -790,11 +690,10 @@ export default function ProductDetailPage({ params }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div className="pdp-purchase-actions">
               <button
                 onClick={handleAddAction}
-                className="btn-primary"
-                style={{ width: "100%" }}
+                className="btn-primary pdp-add-to-cart-btn"
               >
                 {product.isRx && !isPrescriptionLinked ? `📋 ${t.uploadRx}` : `🛒 ${t.addToCart}`}
               </button>
@@ -802,8 +701,7 @@ export default function ProductDetailPage({ params }) {
               {/* Consult Pharmacist Help trigger */}
               <button
                 onClick={handleOpenChat}
-                className="btn-secondary"
-                style={{ width: "100%", gap: "6px" }}
+                className="btn-secondary pdp-consult-btn"
               >
                 💬 {t.consult}
               </button>
@@ -811,7 +709,7 @@ export default function ProductDetailPage({ params }) {
           )}
 
           {cartItem && cartItem.isRx && cartItem.rxFile && (
-            <div style={{ fontSize: "11px", color: "var(--secondary)", backgroundColor: "rgba(24, 182, 122, 0.05)", padding: "8px", borderRadius: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+            <div className="pdp-attachment-attached-badge">
               <span>✓</span>
               <span>{t.rxAttached}: {cartItem.rxFile}</span>
             </div>
@@ -821,34 +719,32 @@ export default function ProductDetailPage({ params }) {
       </div>
 
       {/* MOBILE STICKY BOTTOM BAR (Always holds primary & secondary actions for conversion route) */}
-      <div className="sticky-bottom-bar mobile-only" style={{ gap: "10px" }}>
-        <div style={{ minWidth: "80px" }}>
-          <span style={{ fontSize: "10px", color: "var(--text-2)", display: "block" }}>Total Price</span>
-          <strong style={{ fontSize: "17px", color: "var(--primary)" }}>
+      <div className="sticky-bottom-bar mobile-only sticky-bottom-bar gap-10">
+        <div className="pdp-mobile-price-container">
+          <span className="pdp-mobile-price-label">Total Price</span>
+          <strong className="pdp-mobile-price-value">
             {((cartItem ? cartItem.quantity : 1) * activeVendor.price).toFixed(2)} {t.sar}
           </strong>
         </div>
 
         {cartItem ? (
-          <div className="qty-counter" style={{ padding: "6px 12px", gap: "16px", flex: 1, justifyContent: "space-between" }}>
-            <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity - 1)} style={{ width: "28px", height: "28px", fontSize: "16px" }}>-</button>
-            <span className="qty-val" style={{ fontSize: "14px", minWidth: "20px" }}>{cartItem.quantity}</span>
-            <button className="qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity + 1)} style={{ width: "28px", height: "28px", fontSize: "16px" }}>+</button>
+          <div className="qty-counter pdp-mobile-qty-counter">
+            <button className="qty-btn pdp-mobile-qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity - 1)}>-</button>
+            <span className="qty-val qty-val-w20-f14">{cartItem.quantity}</span>
+            <button className="qty-btn pdp-mobile-qty-btn" onClick={() => updateCartQuantity(product.id, cartItem.quantity + 1)}>+</button>
           </div>
         ) : (
-          <div style={{ display: "flex", flex: 1, gap: "6px" }}>
+          <div className="pdp-mobile-actions-row">
             <button
               onClick={handleOpenChat}
-              className="btn-secondary"
-              style={{ width: "auto", paddingInline: "12px", fontSize: "11px" }}
+              className="btn-secondary pdp-mobile-consult-btn"
               title={t.consult}
             >
               💬
             </button>
             <button
               onClick={handleAddAction}
-              className="btn-primary"
-              style={{ width: "auto", flex: 1, fontSize: "12px", padding: "8px" }}
+              className="btn-primary pdp-mobile-add-btn"
             >
               {product.isRx && !isPrescriptionLinked ? `📋 ${t.uploadRx}` : `🛒 ${t.addToCart}`}
             </button>
@@ -860,19 +756,19 @@ export default function ProductDetailPage({ params }) {
       {showRxModal && (
         <div className="modal-overlay" onClick={() => setShowRxModal(false)}>
           <form className="modal-sheet" onClick={(e) => e.stopPropagation()} onSubmit={handleRxSubmit}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>📋 {t.uploadRx}</h3>
+            <div className="pdp-modal-header">
+              <h3 className="pdp-modal-title">📋 {t.uploadRx}</h3>
               <button className="btn-icon" type="button" onClick={() => setShowRxModal(false)}>✕</button>
             </div>
             
-            <p style={{ fontSize: "12px", color: "var(--text-2)" }}>
+            <p className="pdp-modal-desc">
               {language === "ar" ? "يرجى تحميل صورة الوصفة الطبية للاستمرار في شراء هذا الدواء." : "Please upload a photo of your doctor's prescription to purchase this medicine."}
             </p>
 
             {/* Quick Selection Dropdown in Modal as well */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBlock: "8px", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>
-              <strong style={{ fontSize: "11px" }}>{language === "ar" ? "أو اختر من الوصفات المسجلة" : "Or Select Saved Prescription:"}</strong>
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div className="pdp-modal-quick-select">
+              <strong className="pdp-modal-quick-select-title">{language === "ar" ? "أو اختر من الوصفات المسجلة" : "Or Select Saved Prescription:"}</strong>
+              <div className="pdp-modal-quick-select-list">
                 {savedPrescriptions.map((rx) => (
                   <button
                     key={rx.id}
@@ -881,35 +777,22 @@ export default function ProductDetailPage({ params }) {
                       handleLinkPrescription(rx.id);
                       setShowRxModal(false);
                     }}
-                    className="btn-secondary"
-                    style={{ padding: "8px", fontSize: "11px", textAlign: "start", height: "auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                    className="btn-secondary pdp-modal-rx-select-btn"
                   >
                     <div>
                       <strong>{language === "ar" ? rx.doctor_ar : rx.doctor}</strong>
-                      <div style={{ fontSize: "9px", color: "var(--text-2)" }}>{language === "ar" ? rx.hospital_ar : rx.hospital}</div>
+                      <div className="pdp-modal-hospital-name">{language === "ar" ? rx.hospital_ar : rx.hospital}</div>
                     </div>
-                    <code style={{ fontSize: "9px" }}>{rx.code}</code>
+                    <code className="pdp-modal-code">{rx.code}</code>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBlock: "10px" }}>
-              <label
-                style={{
-                  border: "2px dashed var(--border)",
-                  borderRadius: "12px",
-                  padding: "24px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "8px"
-                }}
-              >
-                <span style={{ fontSize: "28px" }}>📷</span>
-                <span style={{ fontSize: "13px", fontWeight: "700" }}>{t.camera}</span>
+            <div className="pdp-modal-upload-block">
+              <label className="pdp-modal-upload-dashed">
+                <span className="pdp-modal-upload-icon">📷</span>
+                <span className="pdp-modal-upload-label-text">{t.camera}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -921,7 +804,7 @@ export default function ProductDetailPage({ params }) {
                 />
               </label>
 
-              <div style={{ textAlign: "center", fontSize: "11px", color: "var(--text-2)" }}>OR</div>
+              <div className="pdp-modal-or-divider">OR</div>
 
               <input
                 type="text"
@@ -933,7 +816,7 @@ export default function ProductDetailPage({ params }) {
             </div>
 
             {selectedFileName && (
-              <div style={{ fontSize: "12px", backgroundColor: "rgba(24,182,122,0.1)", color: "var(--secondary)", padding: "8px 12px", borderRadius: "8px", fontWeight: "600" }}>
+              <div className="pdp-modal-attached-badge">
                 ✓ {t.rxAttached}: {selectedFileName}
               </div>
             )}
@@ -948,38 +831,26 @@ export default function ProductDetailPage({ params }) {
       {/* Pharmacist Helpline chat drawer (Modal sheets style) */}
       {showPharmacistChat && (
         <div className="modal-overlay" onClick={() => setShowPharmacistChat(false)}>
-          <div 
-            className="modal-sheet" 
-            onClick={(e) => e.stopPropagation()} 
-            style={{ 
-              maxWidth: "400px", 
-              height: "85vh", 
-              display: "flex", 
-              flexDirection: "column", 
-              padding: 0,
-              borderRadius: "20px 20px 0 0",
-              overflow: "hidden"
-            }}
-          >
+          <div className="modal-sheet pdp-chat-sheet" onClick={(e) => e.stopPropagation()}>
             {/* Chat header */}
-            <div style={{ padding: "16px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "var(--primary)", color: "white" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span style={{ fontSize: "28px" }}>👨‍⚕️</span>
+            <div className="pdp-chat-header">
+              <div className="pdp-chat-header-left">
+                <span className="pdp-chat-header-avatar">👨‍⚕️</span>
                 <div>
-                  <h3 style={{ fontSize: "14px", fontWeight: "800", margin: 0, color: "white" }}>{t.chatTitle}</h3>
-                  <span style={{ fontSize: "11px", opacity: 0.9 }}>{t.chatSubtitle}</span>
+                  <h3 className="pdp-chat-header-title">{t.chatTitle}</h3>
+                  <span className="pdp-chat-header-subtitle">{t.chatSubtitle}</span>
                 </div>
               </div>
               <button 
                 onClick={() => setShowPharmacistChat(false)} 
-                style={{ background: "transparent", border: "none", color: "white", fontSize: "18px", cursor: "pointer" }}
+                className="pdp-chat-close-btn"
               >
                 ✕
               </button>
             </div>
 
             {/* Chat messages canvas */}
-            <div style={{ flex: 1, padding: "16px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "12px", backgroundColor: "#F1F5F9" }}>
+            <div className="pdp-chat-canvas">
               {chatMessages.map((msg) => {
                 const isPharmacist = msg.sender === "pharmacist";
                 const text = language === "ar" ? msg.text_ar : msg.text_en;
@@ -988,13 +859,6 @@ export default function ProductDetailPage({ params }) {
                   <div 
                     key={msg.id} 
                     className={`chat-bubble ${isPharmacist ? "chat-bubble-ph" : "chat-bubble-user"}`}
-                    style={{
-                      alignSelf: isPharmacist ? "flex-start" : "flex-end",
-                      backgroundColor: isPharmacist ? "var(--surface)" : "var(--primary)",
-                      color: isPharmacist ? "var(--text-1)" : "white",
-                      borderInlineStart: isPharmacist ? "3px solid var(--primary)" : "none",
-                      boxShadow: "var(--shadow-sm)"
-                    }}
                   >
                     {text}
                   </div>
@@ -1002,55 +866,51 @@ export default function ProductDetailPage({ params }) {
               })}
 
               {isTyping && (
-                <div 
-                  className="chat-bubble chat-bubble-ph"
-                  style={{ alignSelf: "flex-start", backgroundColor: "var(--surface)", borderInlineStart: "3px solid var(--primary)", display: "flex", gap: "4px", padding: "10px 18px" }}
-                >
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--text-2)", display: "inline-block", animation: "pulsePin 1s infinite alternate" }}></span>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--text-2)", display: "inline-block", animation: "pulsePin 1s infinite alternate", animationDelay: "0.2s" }}></span>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "var(--text-2)", display: "inline-block", animation: "pulsePin 1s infinite alternate", animationDelay: "0.4s" }}></span>
+                <div className="chat-bubble chat-bubble-ph chat-typing-bubble">
+                  <span className="chat-typing-dot"></span>
+                  <span className="chat-typing-dot" style={{ animationDelay: "0.2s" }}></span>
+                  <span className="chat-typing-dot" style={{ animationDelay: "0.4s" }}></span>
                 </div>
               )}
             </div>
 
             {/* Smart Option Chips */}
-            <div style={{ padding: "10px", borderTop: "1px solid var(--border)", display: "flex", gap: "8px", overflowX: "auto", backgroundColor: "var(--surface)" }}>
+            <div className="pdp-chat-chips-row">
               <button 
                 type="button" 
                 onClick={() => triggerChatResponse(language === "ar" ? "ما هي الجرعة الصحيحة؟" : "What is the dosage?", "dosage")}
-                style={{ padding: "6px 12px", borderRadius: "20px", border: "1px solid var(--border)", backgroundColor: "var(--bg)", fontSize: "11px", fontWeight: "700", cursor: "pointer", whiteSpace: "nowrap" }}
+                className="pdp-chat-chip-btn"
               >
                 💊 {language === "ar" ? "الجرعة" : "Dosage"}
               </button>
               <button 
                 type="button" 
                 onClick={() => triggerChatResponse(language === "ar" ? "هل هناك أعراض جانبية؟" : "Are there side effects?", "side_effects")}
-                style={{ padding: "6px 12px", borderRadius: "20px", border: "1px solid var(--border)", backgroundColor: "var(--bg)", fontSize: "11px", fontWeight: "700", cursor: "pointer", whiteSpace: "nowrap" }}
+                className="pdp-chat-chip-btn"
               >
                 ⚠️ {language === "ar" ? "الأعراض الجانبية" : "Side Effects"}
               </button>
               <button 
                 type="button" 
                 onClick={() => triggerChatResponse(language === "ar" ? "التداخلات الدوائية؟" : "Drug interactions?", "interactions")}
-                style={{ padding: "6px 12px", borderRadius: "20px", border: "1px solid var(--border)", backgroundColor: "var(--bg)", fontSize: "11px", fontWeight: "700", cursor: "pointer", whiteSpace: "nowrap" }}
+                className="pdp-chat-chip-btn"
               >
                 🔁 {language === "ar" ? "التداخلات" : "Interactions"}
               </button>
             </div>
 
             {/* Chat Input panel */}
-            <form onSubmit={handleSendCustomMessage} style={{ padding: "10px", borderTop: "1px solid var(--border)", display: "flex", gap: "8px", backgroundColor: "var(--surface)" }}>
+            <form onSubmit={handleSendCustomMessage} className="pdp-chat-input-row">
               <input
                 type="text"
                 placeholder={t.chatPlaceholder}
                 value={customQuestion}
                 onChange={(e) => setCustomQuestion(e.target.value)}
-                style={{ flex: 1, padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border)", fontSize: "13px" }}
+                className="pdp-chat-input-box"
               />
               <button 
                 type="submit" 
-                className="btn-primary" 
-                style={{ width: "auto", paddingInline: "16px", fontSize: "12px" }}
+                className="btn-primary pdp-chat-send-btn"
               >
                 {t.btnSend}
               </button>

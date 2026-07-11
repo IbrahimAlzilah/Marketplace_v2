@@ -58,8 +58,8 @@ export default function OrdersPage() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", paddingBottom: "30px" }}>
-      <h1 style={{ fontSize: "20px", fontWeight: "800" }}>{t.title}</h1>
+    <div className="profile-panel-container-gap16-pb30">
+      <h1 className="profile-mobile-title">{t.title}</h1>
 
       {/* Tabs */}
       <div className="tab-container">
@@ -78,7 +78,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="profile-panel-container-gap16">
         {shownOrders.length > 0 ? (
           shownOrders.map((order) => (
             <OrderCard key={order.id} order={order} onTrackClick={handleOpenTracker} />
@@ -96,49 +96,28 @@ export default function OrdersPage() {
       {trackingOrder && (
         <div className="modal-overlay" onClick={() => setTrackingOrder(null)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>
+            <div className="search-filter-row-between">
+              <h3 className="profile-modal-title">
                 {t.trackTitle} #{trackingOrder.id}
               </h3>
               <button className="btn-icon" onClick={() => setTrackingOrder(null)}>✕</button>
             </div>
 
             {/* Map visual */}
-            <div
-              style={{
-                height: "120px",
-                background: "linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.15)), url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect width=%22100%22 height=%22100%22 fill=%22%23b1e2c6%22/><path d=%22M20,0 L20,100 M80,0 L80,100 M0,30 L100,30 M0,70 L100,70%22 stroke=%22%23ffffff%22 stroke-width=%223%22/><circle cx=%2250%22 cy=%2250%22 r=%224%22 fill=%22%230F6CBD%22/><circle cx=%2270%22 cy=%2260%22 r=%226%22 fill=%22%2318B67A%22/></svg>')",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--text-1)",
-                fontWeight: "700",
-                fontSize: "12px",
-                border: "1px solid var(--border)"
-              }}
-            >
-              🛵 Courier Route Live Pin
+            <div className="profile-tracker-map-preview">
+              Live Courier Route Map
             </div>
 
             {/* Driver section */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", backgroundColor: "var(--bg)", borderRadius: "12px" }}>
+            <div className="profile-tx-card">
               <div>
-                <span style={{ fontSize: "11px", color: "var(--text-2)", display: "block" }}>{t.driver}</span>
-                <strong style={{ fontSize: "13px" }}>{trackingOrder.driverName}</strong>
+                <span className="profile-sidebar-email">{t.driver}</span>
+                <strong className="profile-driver-name">{trackingOrder.driverName}</strong>
               </div>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div className="profile-btn-row-gap8">
                 <a
                   href={`tel:${trackingOrder.driverPhone}`}
-                  style={{
-                    backgroundColor: "var(--secondary)",
-                    color: "white",
-                    textDecoration: "none",
-                    padding: "6px 12px",
-                    borderRadius: "8px",
-                    fontSize: "11px",
-                    fontWeight: "700"
-                  }}
+                  className="profile-driver-call-btn"
                 >
                   📞 {t.call}
                 </a>
@@ -170,29 +149,16 @@ export default function OrdersPage() {
             </div>
 
             <button
-              className="btn-secondary"
+              className="btn-secondary profile-preset-btn"
               onClick={() => alert("Connecting to pharmacist support line...")}
-              style={{ padding: "8px", fontSize: "12px" }}
             >
               🏥 {t.support} (Licensed Pharmacist Line)
             </button>
 
             <button
               type="button"
-              className="btn-danger"
+              className="orders-cancel-btn"
               onClick={() => setShowRefundSelector(true)}
-              style={{
-                padding: "8px",
-                fontSize: "12px",
-                marginTop: "8px",
-                backgroundColor: "var(--danger)",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: "700",
-                cursor: "pointer",
-                width: "100%"
-              }}
             >
               🛑 {language === "ar" ? "إلغاء الطلب" : "Cancel Order"}
             </button>
@@ -202,38 +168,28 @@ export default function OrdersPage() {
 
       {/* Refund Selector Modal overlay */}
       {showRefundSelector && (
-        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setShowRefundSelector(false)}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "400px" }}>
-            <h3 style={{ fontSize: "15px", fontWeight: "800", margin: "0 0 10px 0" }}>
+        <div className="modal-overlay orders-refund-overlay" onClick={() => setShowRefundSelector(false)}>
+          <div className="modal-sheet orders-refund-sheet" onClick={(e) => e.stopPropagation()}>
+            <h3 className="orders-refund-title">
               {language === "ar" ? "اختر طريقة استرداد الأموال" : "Choose Refund Method"}
             </h3>
-            <p style={{ fontSize: "12px", color: "var(--text-2)", marginBottom: "16px", lineHeight: "1.4" }}>
+            <p className="orders-refund-desc">
               {language === "ar" 
                 ? "إذا قمت بإلغاء هذا الطلب، يرجى اختيار طريقة استرداد المبلغ المدفوع:" 
                 : "If you cancel this order, please choose how you would like to receive your refund:"}
             </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+            <div className="orders-refund-options-list">
               {/* Option 1: Wallet */}
               <button
                 type="button"
                 onClick={() => handleCancelConfirm("wallet")}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  padding: "12px",
-                  border: "1.5px solid var(--primary)",
-                  borderRadius: "12px",
-                  backgroundColor: "rgba(15, 108, 189, 0.03)",
-                  textAlign: "start",
-                  cursor: "pointer"
-                }}
+                className="orders-refund-wallet-btn"
               >
-                <strong style={{ fontSize: "12.5px", color: "var(--primary)" }}>
+                <strong className="orders-refund-wallet-title">
                   | {language === "ar" ? "استرداد إلى المحفظة الإلكترونية (فوري)" : "Refund to Electronic Wallet (Instant)"}
                 </strong>
-                <span style={{ fontSize: "10.5px", color: "var(--text-2)", marginTop: "4px" }}>
+                <span className="orders-refund-wallet-desc">
                   {language === "ar" ? "سيتم إيداع الرصيد في محفظتك فوراً لاستخدامه في طلباتك القادمة." : "Funds will be credited immediately to your wallet for future purchases."}
                 </span>
               </button>
@@ -242,33 +198,22 @@ export default function OrdersPage() {
               <button
                 type="button"
                 onClick={() => handleCancelConfirm("card")}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  padding: "12px",
-                  border: "1px solid var(--border)",
-                  borderRadius: "12px",
-                  backgroundColor: "var(--surface)",
-                  textAlign: "start",
-                  cursor: "pointer"
-                }}
+                className="orders-refund-card-btn"
               >
-                <strong style={{ fontSize: "12.5px", color: "var(--text-1)" }}>
+                <strong className="orders-refund-card-title">
                   🏦 {language === "ar" ? "استرداد إلى بطاقة الدفع (٣-٥ أيام عمل)" : "Refund to Original Payment Card (3-5 Days)"}
                 </strong>
-                <span style={{ fontSize: "10.5px", color: "var(--text-2)", marginTop: "4px" }}>
+                <span className="orders-refund-wallet-desc">
                   {language === "ar" ? "سيتم إرجاع المبلغ لبطاقة الدفع (مدى/فيزا) خلال ٣-٥ أيام عمل حسب البنك." : "Refund will return to your card (Mada/Visa) in 3-5 business days."}
                 </span>
               </button>
             </div>
 
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div className="profile-btn-row-gap8">
               <button
                 type="button"
                 onClick={() => setShowRefundSelector(false)}
-                className="btn-secondary"
-                style={{ flex: 1, padding: "8px", fontSize: "12px" }}
+                className="btn-secondary profile-preset-btn"
               >
                 {language === "ar" ? "تراجع" : "Go Back"}
               </button>

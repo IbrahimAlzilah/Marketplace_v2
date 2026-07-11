@@ -174,7 +174,7 @@ export default function PharmacyDetailPage({ params }) {
   const activeBanner = brandBanners[pharmacyId] || "linear-gradient(135deg, #0f766e 0%, #115e59 100%)";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div className="pharmacy-detail-container">
       <PharmacyHeader
         pharmacy={pharmacy}
         isOffline={isStoreOffline}
@@ -184,21 +184,7 @@ export default function PharmacyDetailPage({ params }) {
 
       {/* Store Closed Warning Alert Banner (Screen 13 Offline alerts) */}
       {isStoreOffline && (
-        <div
-          style={{
-            backgroundColor: "rgba(239, 68, 68, 0.08)",
-            border: "1.5px solid var(--danger)",
-            borderRadius: "12px",
-            padding: "14px 18px",
-            color: "var(--danger)",
-            fontSize: "13px",
-            fontWeight: "700",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            animation: "pulsePin 1s infinite alternate"
-          }}
-        >
+        <div className="pharmacy-closed-alert">
           <span>🛑</span>
           <span>
             {language === "ar" 
@@ -209,35 +195,12 @@ export default function PharmacyDetailPage({ params }) {
       )}
 
       {/* Tab Navigation */}
-      <div 
-        style={{ 
-          display: "flex", 
-          gap: "20px", 
-          borderBottom: "2px solid var(--border)", 
-          marginBottom: "8px",
-          paddingBottom: "0px",
-          overflowX: "auto",
-          scrollbarWidth: "none" // Firefox
-        }}
-      >
+      <div className="pharmacy-tabs-nav">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            style={{
-              paddingBlock: "12px",
-              paddingInline: "4px",
-              fontSize: "14px",
-              fontWeight: "700",
-              color: activeTab === tab.id ? "var(--primary)" : "var(--text-2)",
-              border: "none",
-              borderBottom: `3px solid ${activeTab === tab.id ? "var(--primary)" : "transparent"}`,
-              backgroundColor: "transparent",
-              cursor: "pointer",
-              transition: "all 0.15s ease-in-out",
-              marginBottom: "-2px",
-              whiteSpace: "nowrap"
-            }}
+            className={`pharmacy-tab-btn ${activeTab === tab.id ? "active" : ""}`}
           >
             {tab.label}
           </button>
@@ -246,25 +209,14 @@ export default function PharmacyDetailPage({ params }) {
 
       {/* PRODUCTS TAB */}
       {activeTab === "products" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="pharmacy-detail-container">
           {/* Product Categories row */}
-          <div className="horizontal-scroll" style={{ display: "flex", gap: "8px", borderBottom: "1px solid var(--border)", paddingBottom: "12px" }}>
+          <div className="horizontal-scroll pharmacy-cat-row">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCat(cat.id)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: "20px",
-                  border: `1.5px solid ${selectedCat === cat.id ? "var(--primary)" : "var(--border)"}`,
-                  backgroundColor: selectedCat === cat.id ? "var(--primary)" : "var(--surface)",
-                  color: selectedCat === cat.id ? "var(--text-on-primary)" : "var(--text-2)",
-                  fontSize: "12px",
-                  fontWeight: "700",
-                  cursor: "pointer",
-                  flexShrink: 0,
-                  transition: "all 0.15s"
-                }}
+                className={`pharmacy-cat-btn ${selectedCat === cat.id ? "active" : ""}`}
               >
                 {cat.label}
               </button>
@@ -273,9 +225,9 @@ export default function PharmacyDetailPage({ params }) {
 
           {/* Products Grid */}
           <div>
-            <h3 style={{ fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{t.catalog} ({filteredProducts.length})</h3>
+            <h3 className="pharmacy-section-title">{t.catalog} ({filteredProducts.length})</h3>
             {filteredProducts.length > 0 ? (
-              <div className="product-grid" style={{ marginBottom: "20px" }}>
+              <div className="product-grid product-grid-margin">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} disabled={isStoreOffline} />
                 ))}
@@ -294,37 +246,24 @@ export default function PharmacyDetailPage({ params }) {
       {activeTab === "offers" && (
         <div>
           {offersList.length > 0 ? (
-            <div className="product-grid" style={{ marginBottom: "20px" }}>
+            <div className="product-grid product-grid-margin">
               {offersList.map((product) => (
                 <ProductCard key={product.id} product={product} disabled={isStoreOffline} />
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: "center", padding: "48px 24px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px", marginBlock: "10px" }}>
-              <span style={{ fontSize: "48px", animation: "bounce 2s infinite" }}>🔔</span>
-              <h3 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-1)" }}>{t.noOffers}</h3>
-              <p style={{ fontSize: "12px", color: "var(--text-2)", maxWidth: "320px", lineHeight: "1.5" }}>{t.noOffersDesc}</p>
+            <div className="pharmacy-empty-offers">
+              <span className="pharmacy-bouncing-bell">🔔</span>
+              <h3 className="pharmacy-tab-empty-title">{t.noOffers}</h3>
+              <p className="pharmacy-tab-empty-desc">{t.noOffersDesc}</p>
               {notified ? (
-                <span style={{ fontSize: "12px", color: "var(--secondary)", fontWeight: "700", padding: "8px 16px", backgroundColor: "rgba(24, 182, 122, 0.05)", borderRadius: "20px" }}>
+                <span className="pharmacy-subscribed-badge">
                   ✓ {t.subscribed}
                 </span>
               ) : (
                 <button 
                   onClick={() => setNotified(true)}
-                  style={{
-                    padding: "8px 24px",
-                    backgroundColor: "var(--primary)",
-                    color: "var(--text-on-primary)",
-                    border: "none",
-                    borderRadius: "20px",
-                    fontWeight: "700",
-                    fontSize: "12px",
-                    cursor: "pointer",
-                    boxShadow: "var(--shadow-sm)",
-                    transition: "background-color 0.15s"
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary)'}
+                  className="pharmacy-notify-btn"
                 >
                   {t.notifyMe}
                 </button>
@@ -336,16 +275,16 @@ export default function PharmacyDetailPage({ params }) {
 
       {/* REVIEWS TAB */}
       {activeTab === "reviews" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="pharmacy-detail-container">
           {/* Reviews Breakdown Header */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "24px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: "120px", borderInlineEnd: "1px solid var(--border)", paddingInlineEnd: "24px" }}>
-              <span style={{ fontSize: "48px", fontWeight: "800", color: "var(--text-1)", lineHeight: 1 }}>{pharmacy.rating.toFixed(1)}</span>
-              <span style={{ fontSize: "16px", color: "var(--warning)", marginTop: "8px" }}>★★★★★</span>
-              <span style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "4px" }}>{pharmacy.reviewsCount} {t.reviews}</span>
+          <div className="pharmacy-reviews-header">
+            <div className="pharmacy-rating-summary-col">
+              <span className="pharmacy-rating-score">{pharmacy.rating.toFixed(1)}</span>
+              <span className="pharmacy-rating-stars">★★★★★</span>
+              <span className="pharmacy-rating-count-label">{pharmacy.reviewsCount} {t.reviews}</span>
             </div>
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px", minWidth: "200px" }}>
-              <h4 style={{ fontSize: "14px", fontWeight: "700", marginBottom: "4px" }}>{t.ratingSummary}</h4>
+            <div className="pharmacy-breakdown-col">
+              <h4 className="pharmacy-breakdown-title">{t.ratingSummary}</h4>
               {[
                 { stars: 5, pct: 82 },
                 { stars: 4, pct: 12 },
@@ -353,57 +292,45 @@ export default function PharmacyDetailPage({ params }) {
                 { stars: 2, pct: 1 },
                 { stars: 1, pct: 1 }
               ].map((item) => (
-                <div key={item.stars} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px" }}>
-                  <span style={{ width: "16px", fontWeight: "600" }}>{item.stars}</span>
-                  <span style={{ color: "var(--warning)" }}>★</span>
-                  <div style={{ flex: 1, height: "6px", backgroundColor: "var(--bg)", borderRadius: "3px", overflow: "hidden" }}>
-                    <div style={{ width: `${item.pct}%`, height: "100%", backgroundColor: "var(--warning)", borderRadius: "3px" }}></div>
+                <div key={item.stars} className="pharmacy-breakdown-row">
+                  <span className="pharmacy-breakdown-digit">{item.stars}</span>
+                  <span className="star-yellow">★</span>
+                  <div className="pharmacy-progress-track">
+                    <div className="pharmacy-progress-fill" style={{ width: `${item.pct}%` }}></div>
                   </div>
-                  <span style={{ width: "28px", color: "var(--text-2)", textAlign: language === "ar" ? "left" : "right" }}>{item.pct}%</span>
+                  <span className="pharmacy-progress-percent" style={{ textAlign: language === "ar" ? "left" : "right" }}>{item.pct}%</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Detailed Review Feed */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+          <div className="pharmacy-reviews-list">
             {mockReviewsList.map((rev) => (
-              <div key={rev.id} style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "700", color: "var(--primary)" }}>
+              <div key={rev.id} className="pharmacy-review-card">
+                <div className="pharmacy-review-header-row">
+                  <div className="pharmacy-review-author-group">
+                    <div className="pharmacy-review-avatar">
                       {rev.author[0]}
                     </div>
                     <div>
-                      <h5 style={{ fontSize: "13px", fontWeight: "700", margin: 0, color: "var(--text-1)" }}>{rev.author}</h5>
-                      <span style={{ fontSize: "10px", color: "var(--secondary)", fontWeight: "700" }}>✓ {t.verifiedPurchase}</span>
+                      <h5 className="pharmacy-review-author-name">{rev.author}</h5>
+                      <span className="pharmacy-review-verified">✓ {t.verifiedPurchase}</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                    <span style={{ color: "var(--warning)", fontSize: "12px" }}>{"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}</span>
-                    <span style={{ fontSize: "10px", color: "var(--text-2)" }}>{rev.date}</span>
+                  <div className="pharmacy-review-meta-col">
+                    <span className="pharmacy-review-stars-text">{"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}</span>
+                    <span className="pharmacy-review-date">{rev.date}</span>
                   </div>
                 </div>
-                <p style={{ fontSize: "13px", color: "var(--text-1)", lineHeight: "1.5", marginBlock: "4px" }}>
+                <p className="pharmacy-review-comment">
                   {language === "ar" ? rev.comment_ar : rev.comment_en}
                 </p>
-                <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "1px solid var(--border)", paddingTop: "8px" }}>
+                <div className="pharmacy-review-helpful-row">
                   <button 
                     disabled={isStoreOffline}
                     onClick={() => handleHelpfulClick(rev.id)}
-                    style={{ 
-                      background: "transparent", 
-                      border: "none", 
-                      fontSize: "11px", 
-                      color: helpfulVotes[rev.id] ? "var(--primary)" : "var(--text-2)", 
-                      cursor: "pointer", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      gap: "4px",
-                      fontWeight: helpfulVotes[rev.id] ? "700" : "500",
-                      padding: "4px",
-                      opacity: isStoreOffline ? 0.5 : 1
-                    }}
+                    className={`pharmacy-review-helpful-btn ${helpfulVotes[rev.id] ? "active" : ""} ${isStoreOffline ? "disabled" : ""}`}
                   >
                     👍 {t.helpful} ({rev.helpfulCount + (helpfulVotes[rev.id] ? 1 : 0)})
                   </button>
@@ -416,65 +343,31 @@ export default function PharmacyDetailPage({ params }) {
 
       {/* BRANCHES TAB */}
       {activeTab === "branches" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px", marginBottom: "20px" }}>
+        <div className="pharmacy-branches-grid">
           {branches.map((branch) => (
-            <div key={branch.id} style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <h4 style={{ fontSize: "14px", fontWeight: "700", margin: 0, color: "var(--text-1)" }}>
+            <div key={branch.id} className="pharmacy-branch-card">
+              <div className="pharmacy-branch-header">
+                <h4 className="pharmacy-branch-name">
                   {language === "ar" ? branch.name_ar : branch.name_en}
                 </h4>
-                <span style={{ 
-                  fontSize: "10px", 
-                  padding: "2px 8px", 
-                  borderRadius: "12px", 
-                  fontWeight: "700",
-                  backgroundColor: branch.is24Hours ? "rgba(24, 182, 122, 0.1)" : "rgba(15, 108, 189, 0.1)",
-                  color: branch.is24Hours ? "var(--secondary)" : "var(--primary)",
-                  whiteSpace: "nowrap"
-                }}>
+                <span className={`pharmacy-branch-hours ${branch.is24Hours ? "open-24" : ""}`}>
                   {language === "ar" ? branch.hours_ar : branch.hours_en}
                 </span>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "12px", color: "var(--text-2)" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>📍 {language === "ar" ? branch.address_ar : branch.address_en}</span>
-                <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>📞 {branch.phone}</span>
+              <div className="pharmacy-branch-details">
+                <span className="pharmacy-branch-address">📍 {language === "ar" ? branch.address_ar : branch.address_en}</span>
+                <span className="pharmacy-branch-phone">📞 {branch.phone}</span>
               </div>
-              <div style={{ display: "flex", gap: "8px", marginTop: "auto", paddingTop: "12px", borderTop: "1px solid var(--border)" }}>
+              <div className="pharmacy-branch-actions">
                 <button 
                   onClick={() => alert(language === "ar" ? "تم نسخ إحداثيات الفرع!" : "Branch coordinates copied!")}
-                  style={{
-                    flex: 1,
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--border)",
-                    backgroundColor: "var(--bg)",
-                    fontSize: "11px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    transition: "background-color 0.15s"
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--border)'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--bg)'}
+                  className="pharmacy-branch-map-btn"
                 >
                   🗺️ {t.viewOnMap}
                 </button>
                 <a 
                   href={`tel:${branch.phone}`}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--primary)",
-                    backgroundColor: "var(--primary)",
-                    color: "var(--text-on-primary)",
-                    fontSize: "11px",
-                    fontWeight: "700",
-                    textDecoration: "none",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    transition: "background-color 0.15s"
-                  }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--primary-hover)'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--primary)'}
+                  className="pharmacy-branch-call-btn"
                 >
                   📞 {t.callBranch}
                 </a>

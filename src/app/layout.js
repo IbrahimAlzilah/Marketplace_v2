@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
         <AppProvider>
           <div id="app-shell">
             <HeaderWrapper />
-            <main style={{ flex: 1 }}>
+            <main>
               {children}
             </main>
             <Footer />

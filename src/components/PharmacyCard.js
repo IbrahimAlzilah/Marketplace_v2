@@ -33,10 +33,10 @@ export default function PharmacyCard({ pharmacy }) {
             🚗 {t.fee} {pharmacy.deliveryFee === 0 ? t.free : `${pharmacy.deliveryFee} ${t.sar}`}
           </span>
         </div>
-        <div style={{ display: "flex", gap: "6px" }}>
+        <div className="pharmacy-badges-row">
           {pharmacy.is24Hours && <span className="pharmacy-badge">{t.open24}</span>}
           {pharmacy.hasFreeDelivery && (
-            <span className="pharmacy-badge" style={{ backgroundColor: "rgba(16, 185, 129, 0.1)", color: "var(--success)" }}>
+            <span className="pharmacy-badge success-badge">
               {t.free}
             </span>
           )}

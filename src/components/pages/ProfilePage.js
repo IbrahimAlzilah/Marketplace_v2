@@ -211,26 +211,19 @@ function ProfileContent() {
   );
 
   return (
-    <div style={{ paddingBottom: "30px", position: "relative" }}>
-      {/* Styles animation block for spinner */}
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
+    <div className="profile-page-wrapper">
 
       {/* Page Title (Mobile only, on desktop sidebar title serves this) */}
-      <div className="mobile-only" style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "16px" }}>
+      <div className="mobile-only profile-mobile-header">
         {activePanel !== "menu" && (
           <button
             onClick={() => setActivePanel("menu")}
-            style={{ background: "transparent", border: "none", fontSize: "14px", cursor: "pointer", fontWeight: "700" }}
+            className="profile-back-btn"
           >
             ← {t.back}
           </button>
         )}
-        <h1 style={{ fontSize: "20px", fontWeight: "800", margin: 0 }}>
+        <h1 className="profile-mobile-title">
           {activePanel === "menu" ? t.profile : activePanel === "wishlist" ? t.wishlistLabel : activePanel === "addresses" ? t.savedAddresses : activePanel === "support" ? t.supportTitle : activePanel === "profile" ? t.profileTitle : activePanel === "payment" ? t.paymentLabel : activePanel === "privacy" ? t.privacyLabel : t.profile}
         </h1>
       </div>
@@ -240,18 +233,18 @@ function ProfileContent() {
         {/* LEFT COLUMN: Sidebar Navigation */}
         <div className={`profile-sidebar ${activePanel === "menu" ? "" : "desktop-only"}`}>
           {/* User profile briefing summary header */}
-          <div style={{ padding: "20px", backgroundColor: "var(--bg)", borderBottom: "1px solid var(--border)", display: "flex", gap: "12px", alignItems: "center" }}>
-            <div style={{ width: "48px", height: "48px", borderRadius: "50%", backgroundColor: "var(--primary)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "bold" }}>
+          <div className="profile-sidebar-header">
+            <div className="profile-sidebar-avatar">
               👤
             </div>
             <div>
-              <h4 style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-1)", margin: 0 }}>{profileName}</h4>
-              <span style={{ fontSize: "10px", color: "var(--text-2)", display: "block", marginTop: "2px" }}>{profileEmail}</span>
+              <h4 className="profile-sidebar-name">{profileName}</h4>
+              <span className="profile-sidebar-email">{profileEmail}</span>
             </div>
           </div>
 
           {/* Navigation link items */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div className="profile-sidebar-menu-list">
             {sidebarMenuItems.map((item) => {
               const isActive = activePanel === item.id;
               return (
@@ -266,20 +259,20 @@ function ProfileContent() {
                   }}
                   className={`profile-sidebar-item ${isActive ? "profile-sidebar-item-active" : ""}`}
                 >
-                  <span style={{ fontSize: "16px" }}>{item.icon}</span>
-                  <span style={{ flex: 1 }}>{item.label}</span>
-                  <span className="mobile-only" style={{ fontSize: "12px", color: "var(--text-2)" }}>{language === "ar" ? "←" : "→"}</span>
+                  <span className="profile-sidebar-item-icon">{item.icon}</span>
+                  <span className="profile-sidebar-item-label">{item.label}</span>
+                  <span className="mobile-only profile-sidebar-item-arrow">{language === "ar" ? "←" : "→"}</span>
                 </div>
               );
             })}
           </div>
 
           {/* Quick options panel bottom of sidebar */}
-          <div style={{ padding: "16px", borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <button className="btn-secondary" onClick={toggleLanguage} style={{ paddingBlock: "8px", fontSize: "12px" }}>
+          <div className="profile-sidebar-footer">
+            <button className="btn-secondary profile-footer-btn" onClick={toggleLanguage}>
               🌐 {t.langLabel}: {language === "en" ? "العربية" : "English"}
             </button>
-            <button className="btn-secondary" onClick={() => alert("Logging out...")} style={{ color: "var(--danger)", borderColor: "var(--danger)", paddingBlock: "8px", fontSize: "12px" }}>
+            <button className="btn-secondary profile-footer-logout-btn" onClick={() => alert("Logging out...")}>
               🚪 {t.logout}
             </button>
           </div>
@@ -291,7 +284,7 @@ function ProfileContent() {
           {/* A. PROFILE / SETTINGS PANEL */}
           {activePanel === "profile" && (
             <>
-              <div style={{ marginBottom: "16px" }}>
+              <div className="profile-loyalty-wrap">
                 <WalletLoyaltyUnifiedCard
                   onPointsHistoryClick={() => {
                     setActivePanel("wallet");
@@ -307,8 +300,8 @@ function ProfileContent() {
                   }}
                 />
               </div>
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "20px"}}>
-                <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+              <div className="profile-panel-card">
+                <h2 className="profile-panel-title">
                   {t.profileTitle}
                 </h2>
 
@@ -317,7 +310,7 @@ function ProfileContent() {
                   <input type="text" className="form-input" value={profileName} onChange={(e) => setProfileName(e.target.value)} />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}>
+                <div className="profile-grid-1col">
                   <div className="form-group">
                     <label className="form-label">{t.email}</label>
                     <input type="email" className="form-input" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} />
@@ -328,8 +321,8 @@ function ProfileContent() {
                   </div>
                 </div>
 
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: "16px", marginTop: "8px", display: "flex", justifyContent: "flex-end" }}>
-                  <button className="btn-primary" style={{ width: "auto" }} onClick={() => {
+                <div className="profile-form-actions">
+                  <button className="btn-primary profile-action-btn-w-auto" onClick={() => {
                     setToastMessage(t.profileSavedToast);
                     setTimeout(() => setToastMessage(""), 3000);
                   }}>
@@ -342,16 +335,15 @@ function ProfileContent() {
 
           {/* B. ADDRESSES PANEL */}
           {activePanel === "addresses" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "10px", marginBottom: "10px" }}>
-                  <h2 style={{ fontSize: "18px", fontWeight: "800", margin: 0 }}>
+            <div className="profile-panel-container-gap16">
+              <div className="profile-panel-card-gap16">
+                <div className="profile-panel-header-row">
+                  <h2 className="profile-panel-title-no-border">
                     {t.savedAddresses}
                   </h2>
                   {!isAddingAddress && (
                     <button
-                      className="btn-primary"
-                      style={{ width: "auto", padding: "6px 12px", fontSize: "12px" }}
+                      className="btn-primary profile-btn-sm-w-auto"
                       onClick={() => {
                         setIsAddingAddress(true);
                         setGpsLocked(false);
@@ -367,18 +359,18 @@ function ProfileContent() {
                 </div>
 
                 {!isAddingAddress ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div className="profile-addresses-list">
                     {addresses.map((addr) => (
-                      <div key={addr.id} style={{ padding: "16px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                          <strong style={{ fontSize: "14px" }}>{language === "ar" ? addr.tag_ar : addr.tag}</strong>
+                      <div key={addr.id} className="profile-address-card">
+                        <div className="profile-address-title-row">
+                          <strong className="profile-address-tag">{language === "ar" ? addr.tag_ar : addr.tag}</strong>
                           {addr.isDefault && (
-                            <span style={{ fontSize: "10px", backgroundColor: "rgba(15,108,189,0.1)", color: "var(--primary)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+                            <span className="profile-address-default-badge">
                               Default
                             </span>
                           )}
                         </div>
-                        <span style={{ fontSize: "12px", color: "var(--text-2)" }}>
+                        <span className="profile-address-detail-text">
                           {language === "ar" ? addr.street_ar : addr.street}, {language === "ar" ? addr.city_ar : addr.city}
                         </span>
                       </div>
@@ -386,24 +378,10 @@ function ProfileContent() {
                   </div>
                 ) : (
                   /* Screen 23 Map Selector Form */
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    <h3 style={{ fontSize: "14px", fontWeight: "700", margin: 0 }}>{t.mapPinTitle}</h3>
+                  <div className="profile-add-address-form">
+                    <h3 className="profile-form-subtitle">{t.mapPinTitle}</h3>
                     
-                    <div style={{
-                      height: "180px",
-                      backgroundColor: "#e0f2f1",
-                      backgroundImage: "radial-gradient(#b2dfdb 1px, transparent 1px)",
-                      backgroundSize: "20px 20px",
-                      borderRadius: "12px",
-                      position: "relative",
-                      overflow: "hidden",
-                      border: "1px solid var(--border)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      marginBottom: "10px"
-                    }} onClick={() => {
+                    <div className="profile-map-selector" onClick={() => {
                       if (!gpsLocked && !isGPSSearching) {
                         setIsGPSSearching(true);
                         setTimeout(() => {
@@ -416,24 +394,24 @@ function ProfileContent() {
                       }
                     }}>
                       {isGPSSearching ? (
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-                          <div className="spinner" style={{ width: "24px", height: "24px", border: "3px solid var(--primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
-                          <span style={{ fontSize: "12px", color: "var(--text-1)", fontWeight: "600" }}>{t.gpsLookup}</span>
+                        <div className="profile-gps-lookup-row">
+                          <div className="profile-gps-spinner"></div>
+                          <span className="profile-gps-lookup-text">{t.gpsLookup}</span>
                         </div>
                       ) : gpsLocked ? (
-                        <div style={{ textAlign: "center" }}>
-                          <span style={{ fontSize: "28px", display: "block" }}>📍</span>
-                          <span style={{ fontSize: "12px", color: "var(--success)", fontWeight: "700" }}>{t.gpsDone}</span>
+                        <div className="profile-center-text">
+                          <span className="profile-gps-badge-icon">📍</span>
+                          <span className="profile-gps-success-text">{t.gpsDone}</span>
                         </div>
                       ) : (
-                        <div style={{ textAlign: "center", padding: "20px" }}>
-                          <span style={{ fontSize: "24px", display: "block" }}>🗺️</span>
-                          <span style={{ fontSize: "12px", color: "var(--text-2)", fontWeight: "600" }}>
+                        <div className="profile-gps-idle-wrap">
+                          <span className="profile-gps-idle-icon">🗺️</span>
+                          <span className="profile-gps-idle-text">
                             {language === "ar" ? "انقر على الخريطة لإسقاط الدبوس وتحديد موقعك تلقائياً" : "Click Map to Drop Pin and Fetch Coordinates Automatically"}
                           </span>
                         </div>
                       )}
-                      <div style={{ position: "absolute", bottom: "8px", right: "8px", fontSize: "10px", backgroundColor: "rgba(0,0,0,0.6)", color: "white", padding: "2px 6px", borderRadius: "4px" }}>
+                      <div className="profile-gps-coordinates-badge">
                         GPS Coordinates: 24.774265, 46.626482
                       </div>
                     </div>
@@ -443,18 +421,18 @@ function ProfileContent() {
                       <input type="text" className="form-input" value={addrStreet} onChange={(e) => setAddrStreet(e.target.value)} placeholder="e.g. Al-Malqa, Riyadh" required />
                     </div>
                     
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="profile-grid-2cols-gap12">
                       <div className="form-group">
                         <label className="form-label">{t.buildingNumberLabel}</label>
                         <input type="text" className="form-input" value={addrBuilding} onChange={(e) => setAddrBuilding(e.target.value)} placeholder="e.g. 4812" required />
                       </div>
                       <div className="form-group">
                         <label className="form-label">{language === "ar" ? "نوع السكن" : "Housing Type"}</label>
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <button type="button" className={`btn-secondary ${addrType === "Villa" ? "tab-btn-active" : ""}`} style={{ flex: 1, padding: "8px" }} onClick={() => setAddrType("Villa")}>
+                        <div className="profile-btn-row-gap8">
+                          <button type="button" className={`btn-secondary ${addrType === "Villa" ? "tab-btn-active" : ""} profile-form-tab-btn`} onClick={() => setAddrType("Villa")}>
                             🏠 {t.villaLabel}
                           </button>
-                          <button type="button" className={`btn-secondary ${addrType === "Apartment" ? "tab-btn-active" : ""}`} style={{ flex: 1, padding: "8px" }} onClick={() => setAddrType("Apartment")}>
+                          <button type="button" className={`btn-secondary ${addrType === "Apartment" ? "tab-btn-active" : ""} profile-form-tab-btn`} onClick={() => setAddrType("Apartment")}>
                             🏢 {t.apartmentLabel}
                           </button>
                         </div>
@@ -468,25 +446,25 @@ function ProfileContent() {
 
                     <div className="form-group">
                       <label className="form-label">{t.addNotesLabel}</label>
-                      <textarea className="form-input" style={{ minHeight: "60px", fontFamily: "inherit" }} value={addrNotes} onChange={(e) => setAddrNotes(e.target.value)} placeholder="e.g. Near pharmacy, red door" />
+                      <textarea className="form-input profile-textarea-input" value={addrNotes} onChange={(e) => setAddrNotes(e.target.value)} placeholder="e.g. Near pharmacy, red door" />
                     </div>
 
                     <div className="form-group">
                       <label className="form-label">{language === "ar" ? "تصنيف العنوان" : "Address Tag"}</label>
-                      <div style={{ display: "flex", gap: "8px" }}>
+                      <div className="profile-btn-row-gap8">
                         {["Home", "Work", "Other"].map((tag) => (
-                          <button key={tag} type="button" className={`btn-secondary ${addrTag === tag ? "tab-btn-active" : ""}`} style={{ flex: 1, padding: "8px" }} onClick={() => setAddrTag(tag)}>
+                          <button key={tag} type="button" className={`btn-secondary ${addrTag === tag ? "tab-btn-active" : ""} profile-form-tab-btn`} onClick={() => setAddrTag(tag)}>
                             {tag === "Home" ? `🏠 ${t.tagHome}` : tag === "Work" ? `💼 ${t.tagWork}` : `📍 ${t.tagOther}`}
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    <div style={{ display: "flex", gap: "12px", borderTop: "1px solid var(--border)", paddingTop: "16px", marginTop: "8px" }}>
-                      <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setIsAddingAddress(false)}>
+                    <div className="profile-address-form-actions">
+                      <button type="button" className="btn-secondary flex-1" onClick={() => setIsAddingAddress(false)}>
                         {t.cancelBtn}
                       </button>
-                      <button type="button" className="btn-primary" style={{ flex: 1 }} onClick={() => {
+                      <button type="button" className="btn-primary flex-1" onClick={() => {
                         if (!addrStreet || !addrBuilding) {
                            alert(language === "ar" ? "يرجى تعبئة الحقول المطلوبة" : "Please fill in the required fields");
                            return;
@@ -514,38 +492,38 @@ function ProfileContent() {
 
           {/* C. WISHLIST PANEL */}
           {activePanel === "wishlist" && (
-            <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px" }}>
-              <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0, marginBottom: "20px" }}>
+            <div className="profile-panel-card">
+              <h2 className="profile-panel-title-margin20">
                 {t.wishlistLabel}
               </h2>
 
               {wishlistProducts.length > 0 ? (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }}>
+                <div className="profile-grid-1col">
                   {wishlistProducts.map((product) => {
                     const prodName = language === "ar" ? product.name_ar : product.name_en;
                     return (
-                      <div key={product.id} style={{ display: "flex", gap: "16px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "16px", alignItems: "center" }}>
-                        <div style={{ fontSize: "32px", padding: "12px", backgroundColor: "var(--surface)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", width: "56px", height: "56px" }}>
+                      <div key={product.id} className="profile-wishlist-card">
+                        <div className="profile-wishlist-img-box">
                           {product.image}
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ fontSize: "14px", fontWeight: "700", margin: 0 }}>{prodName}</h4>
-                          <span style={{ fontSize: "11px", color: "var(--text-2)", display: "block", marginTop: "2px" }}>
+                        <div className="flex-grow">
+                          <h4 className="profile-wishlist-item-title">{prodName}</h4>
+                          <span className="profile-wishlist-item-pharmacy">
                             {language === "ar" ? product.pharmacyName_ar : product.pharmacyName_en}
                           </span>
-                          <strong style={{ fontSize: "14px", color: "var(--primary)", display: "block", marginTop: "4px" }}>
+                          <strong className="profile-wishlist-item-price">
                             {product.price.toFixed(2)} {language === "ar" ? "ر.س" : "SAR"}
                           </strong>
                         </div>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", width: "auto" }} onClick={() => {
+                        <div className="profile-wishlist-actions">
+                          <button className="btn-primary profile-btn-sm-w-auto" onClick={() => {
                             addToCart(product, 1);
                             setToastMessage(t.addedToCartToast.replace("{name}", prodName));
                             setTimeout(() => setToastMessage(""), 3000);
                           }}>
                             🛒 {language === "ar" ? "أضف للسلة" : "Add to Cart"}
                           </button>
-                          <button style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: "8px", padding: "6px 10px", cursor: "pointer", color: "var(--danger)", fontSize: "14px" }} onClick={() => {
+                          <button className="profile-wishlist-remove-btn" onClick={() => {
                             toggleWishlist(product.id);
                           }}>
                             🗑️
@@ -556,7 +534,7 @@ function ProfileContent() {
                   })}
                 </div>
               ) : (
-                <div className="empty-state" style={{ marginTop: "20px" }}>
+                <div className="empty-state profile-wishlist-empty-wrap">
                   <span className="empty-icon">❤️</span>
                   <strong className="empty-title">{t.wishlistEmpty}</strong>
                   <p className="empty-desc">{t.wishlistEmptyDesc}</p>
@@ -567,33 +545,33 @@ function ProfileContent() {
 
           {/* D. HELP & SUPPORT PANEL */}
           {activePanel === "support" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+            <div className="profile-panel-container-gap16">
+              <div className="profile-panel-card-gap16">
+                <h2 className="profile-panel-title">
                   {t.supportTitle}
                 </h2>
 
                 {/* FAQ sections */}
                 <div>
-                  <h3 style={{ fontSize: "14px", fontWeight: "800", marginBottom: "12px", color: "var(--primary)" }}>
+                  <h3 className="profile-support-section-title">
                     {t.faqTitle}
                   </h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "10px" }}>
-                      <strong style={{ display: "block", fontSize: "13px", color: "var(--text-1)" }}>{t.faq1}</strong>
-                      <p style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "4px", lineHeight: "1.4" }}>{t.faq1Ans}</p>
+                  <div className="profile-support-faq-list">
+                    <div className="profile-faq-item-card">
+                      <strong className="profile-faq-question">{t.faq1}</strong>
+                      <p className="profile-faq-answer">{t.faq1Ans}</p>
                     </div>
-                    <div>
-                      <strong style={{ display: "block", fontSize: "13px", color: "var(--text-1)" }}>{t.faq2}</strong>
-                      <p style={{ fontSize: "12px", color: "var(--text-2)", marginTop: "4px", lineHeight: "1.4" }}>{t.faq2Ans}</p>
+                    <div className="profile-faq-item-card">
+                      <strong className="profile-faq-question">{t.faq2}</strong>
+                      <p className="profile-faq-answer">{t.faq2Ans}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Helpline info */}
-                <div style={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "16px", marginTop: "10px" }}>
-                  <h4 style={{ fontSize: "13px", fontWeight: "800", marginBottom: "8px" }}>📞 {t.contactUs}</h4>
-                  <div style={{ fontSize: "12px", color: "var(--text-1)", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div className="profile-support-contact-card">
+                  <h4 className="profile-support-contact-title">📞 {t.contactUs}</h4>
+                  <div className="profile-support-contact-details">
                     <span>🟢 {t.phoneSupport}</span>
                     <span>🟢 {t.pharmacistLine}</span>
                   </div>
@@ -604,16 +582,16 @@ function ProfileContent() {
 
           {/* E. EMBEDDED WALLET & LOYALTY PANEL */}
           {activePanel === "wallet" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="profile-panel-container-gap20">
               <WalletLoyaltyUnifiedCard
                 onPointsHistoryClick={() => setWalletLoyaltyTab("points")}
                 onTransactionDetailsClick={() => setWalletLoyaltyTab("transactions")}
                 onViewAllClick={() => setWalletLoyaltyTab("transactions")}
               />
 
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div className="profile-panel-card">
                 {/* Custom Tabs inside panel */}
-                <div className="tab-container" style={{ marginBottom: "10px" }}>
+                <div className="tab-container profile-wallet-tabs">
                   <button
                     type="button"
                     className={`tab-btn ${walletLoyaltyTab === "transactions" ? "tab-btn-active" : ""}`}
@@ -632,39 +610,31 @@ function ProfileContent() {
 
                 {/* Sub-Panel 1: Wallet Balance Details and Transaction History */}
                 {walletLoyaltyTab === "transactions" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <div style={{ backgroundColor: "rgba(24, 182, 122, 0.05)", border: "1px dashed var(--secondary)", padding: "16px", borderRadius: "12px", color: "var(--secondary)", fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <strong style={{ fontSize: "14px" }}>⚡ {language === "ar" ? "تنبيه المرتجعات السريعة" : "Instant Refund Guarantee"}</strong>
+                  <div className="profile-panel-container-gap20">
+                    <div className="profile-refund-banner">
+                      <strong className="profile-refund-title">⚡ {language === "ar" ? "تنبيه المرتجعات السريعة" : "Instant Refund Guarantee"}</strong>
                       <span style={{ lineHeight: "1.5" }}>
                         {language === "ar" ? "أي إلغاء أو إرجاع للطلب يتم قيده فوراً في محفظتك الإلكترونية لاستخدامه في مشترياتك القادمة." : "Any canceled orders or items are instantly credited to your wallet to prevent long bank wait times."}
                       </span>
                     </div>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      <h3 style={{ fontSize: "15px", fontWeight: "700" }}>📜 {language === "ar" ? "سجل العمليات" : "Transaction History"}</h3>
+                    <div className="profile-add-address-form">
+                      <h3 className="profile-wallet-section-title">📜 {language === "ar" ? "سجل العمليات" : "Transaction History"}</h3>
                       {walletTransactions.length > 0 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div className="profile-sidebar-footer">
                           {walletTransactions.map((tx) => {
                             const title = language === "ar" ? tx.title_ar : tx.title_en;
                             const isPositive = tx.amount > 0;
                             return (
                               <div
                                 key={tx.id}
-                                style={{
-                                  backgroundColor: "var(--bg)",
-                                  border: "1px solid var(--border)",
-                                  borderRadius: "12px",
-                                  padding: "12px",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center"
-                                }}
+                                className="profile-tx-card"
                               >
                                 <div>
-                                  <span style={{ fontSize: "13px", fontWeight: "600", display: "block" }}>{title}</span>
-                                  <span style={{ fontSize: "10px", color: "var(--text-2)" }}>{tx.date}</span>
+                                  <span className="profile-tx-title">{title}</span>
+                                  <span className="profile-tx-date">{tx.date}</span>
                                 </div>
-                                <strong style={{ fontSize: "14px", color: isPositive ? "var(--success)" : "var(--text-1)" }}>
+                                <strong className="profile-tx-amount" style={{ color: isPositive ? "var(--success)" : "var(--text-1)" }}>
                                   {isPositive ? `+${tx.amount.toFixed(2)}` : tx.amount.toFixed(2)} {language === "ar" ? "ر.س" : "SAR"}
                                 </strong>
                               </div>
@@ -680,12 +650,12 @@ function ProfileContent() {
                     </div>
 
                     {/* Top Up Wallet Section (Screen 24 Specification) */}
-                    <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                      <h3 style={{ fontSize: "15px", fontWeight: "700" }}>💳 {t.topUpTitle}</h3>
+                    <div className="profile-wallet-topup-section">
+                      <h3 className="profile-wallet-section-title">💳 {t.topUpTitle}</h3>
                       
                       <div className="form-group">
                         <label className="form-label">{t.topUpAmountLabel}</label>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <div className="search-price-inputs-row">
                           <input
                             type="number"
                             className="form-input"
@@ -694,17 +664,16 @@ function ProfileContent() {
                             placeholder="100.00"
                             style={{ flex: 1 }}
                           />
-                          <strong style={{ fontSize: "14px", color: "var(--text-1)" }}>{language === "ar" ? "ر.س" : "SAR"}</strong>
+                          <strong className="profile-currency-label">{language === "ar" ? "ر.س" : "SAR"}</strong>
                         </div>
                       </div>
 
-                      <div style={{ display: "flex", gap: "8px" }}>
+                      <div className="profile-btn-row-gap8">
                         {["50", "100", "200", "500"].map((preset) => (
                           <button
                             key={preset}
                             type="button"
-                            className="btn-secondary"
-                            style={{ paddingBlock: "6px", fontSize: "12px", flex: 1 }}
+                            className="btn-secondary profile-preset-btn"
                             onClick={() => setTopUpAmount(preset)}
                           >
                             +{preset}
@@ -714,19 +683,17 @@ function ProfileContent() {
 
                       <div className="form-group">
                         <label className="form-label">{language === "ar" ? "طريقة الدفع للشحن" : "Top Up Payment Method"}</label>
-                        <div style={{ display: "flex", gap: "12px" }}>
+                        <div className="profile-grid-2cols-gap12">
                           <button
                             type="button"
-                            className={`btn-secondary ${topUpSource === "mada" ? "tab-btn-active" : ""}`}
-                            style={{ flex: 1, padding: "10px" }}
+                            className={`btn-secondary ${topUpSource === "mada" ? "tab-btn-active" : ""} profile-payment-source-btn`}
                             onClick={() => setTopUpSource("mada")}
                           >
                             💳 {t.madaPay}
                           </button>
                           <button
                             type="button"
-                            className={`btn-secondary ${topUpSource === "stcpay" ? "tab-btn-active" : ""}`}
-                            style={{ flex: 1, padding: "10px" }}
+                            className={`btn-secondary ${topUpSource === "stcpay" ? "tab-btn-active" : ""} profile-payment-source-btn`}
                             onClick={() => setTopUpSource("stcpay")}
                           >
                             📱 {t.stcPay}
@@ -758,15 +725,15 @@ function ProfileContent() {
 
                 {/* Sub-Panel 2: Loyalty Progression and Point Ledger */}
                 {walletLoyaltyTab === "points" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  <div className="profile-panel-container-gap20">
                     {/* Progression bar */}
-                    <div style={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "16px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", fontWeight: "600", marginBottom: "8px" }}>
+                    <div className="profile-address-card">
+                      <div className="profile-loyalty-tier-row">
                         <span>🏆 {t.goldMemberBadge}</span>
                         <span style={{ color: "var(--primary)" }}>{language === "ar" ? "باقي ٢٥٠ نقطة للبلاتيني" : "250 pts to Platinum Tier"}</span>
                       </div>
                       <div className="loyalty-progress-container">
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", opacity: 0.9, marginBottom: "4px" }}>
+                        <div className="profile-loyalty-progress-desc">
                           <span>{loyaltyPoints} / 1500 {language === "ar" ? "نقطة" : "pts"}</span>
                         </div>
                         <div className="loyalty-progress-bar">
@@ -776,51 +743,43 @@ function ProfileContent() {
                     </div>
 
                     {/* How to Earn/Redeem rules */}
-                    <div style={{ backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <div className="profile-loyalty-rules-card">
                       <div>
-                        <strong style={{ display: "block", fontSize: "13px", color: "var(--primary)", marginBottom: "4px" }}>
+                        <strong className="profile-rule-title-primary">
                           ⭐ {language === "ar" ? "قواعد كسب النقاط" : "How to Earn Points"}
                         </strong>
-                        <p style={{ fontSize: "11px", color: "var(--text-2)", lineHeight: "1.5" }}>
+                        <p className="profile-rule-desc">
                           {language === "ar" ? "اكسب ١ نقطة مقابل كل ١٠ ر.س تنفقها في شراء الأدوية والمستلزمات." : "Earn 1 point for every 10 SAR spent on checkout orders."}
                         </p>
                       </div>
-                      <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px" }}>
-                        <strong style={{ display: "block", fontSize: "13px", color: "var(--secondary)", marginBottom: "4px" }}>
+                      <div className="profile-rule-divider-top">
+                        <strong className="profile-rule-title-secondary">
                           🎁 {language === "ar" ? "قواعد استبدال النقاط" : "How to Redeem Points"}
                         </strong>
-                        <p style={{ fontSize: "11px", color: "var(--text-2)", lineHeight: "1.5" }}>
+                        <p className="profile-rule-desc">
                           {language === "ar" ? "كل ٥٠ نقطة تساوي ١ ر.س خصم فوري. يمكنك استخدامها خلال الدفع." : "Every 50 points = 1 SAR instant discount applied at checkout."}
                         </p>
                       </div>
                     </div>
 
                     {/* Point History */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      <h3 style={{ fontSize: "15px", fontWeight: "700" }}>📜 {language === "ar" ? "سجل النقاط" : "Points History"}</h3>
+                    <div className="profile-add-address-form">
+                      <h3 className="profile-wallet-section-title">📜 {language === "ar" ? "سجل النقاط" : "Points History"}</h3>
                       {loyaltyHistory.length > 0 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div className="profile-sidebar-footer">
                           {loyaltyHistory.map((hist) => {
                             const label = language === "ar" ? hist.action_ar : hist.action_en;
                             const isPositive = hist.points > 0;
                             return (
                               <div
                                 key={hist.id}
-                                style={{
-                                  backgroundColor: "var(--bg)",
-                                  border: "1px solid var(--border)",
-                                  borderRadius: "12px",
-                                  padding: "12px",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center"
-                                }}
+                                className="profile-tx-card"
                               >
                                 <div>
-                                  <span style={{ fontSize: "13px", fontWeight: "600", display: "block" }}>{label}</span>
-                                  <span style={{ fontSize: "10px", color: "var(--text-2)" }}>{hist.date}</span>
+                                  <span className="profile-tx-title">{label}</span>
+                                  <span className="profile-tx-date">{hist.date}</span>
                                 </div>
-                                <strong style={{ fontSize: "14px", color: isPositive ? "var(--success)" : "var(--danger)" }}>
+                                <strong className="profile-tx-amount" style={{ color: isPositive ? "var(--success)" : "var(--danger)" }}>
                                   {isPositive ? `+${hist.points}` : hist.points} {language === "ar" ? "نقطة" : "pts"}
                                 </strong>
                               </div>
@@ -836,10 +795,10 @@ function ProfileContent() {
                     </div>
 
                     {/* Loyalty Points Redemption Widget (Screen 24 Specification) */}
-                    <div style={{ borderTop: "1px solid var(--border)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                      <h3 style={{ fontSize: "15px", fontWeight: "700" }}>🎁 {t.redeemTitle}</h3>
+                    <div className="profile-wallet-topup-section">
+                      <h3 className="profile-wallet-section-title">🎁 {t.redeemTitle}</h3>
                       
-                      <div style={{ padding: "12px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "8px", fontSize: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <div className="profile-redemption-balance-box">
                         <span>{t.pointsBalanceLabel.replace("{points}", loyaltyPoints)}</span>
                         <strong style={{ color: "var(--secondary)" }}>
                           {t.pointsEquivalent.replace("{amount}", (loyaltyPoints / 50).toFixed(2))}
@@ -848,7 +807,7 @@ function ProfileContent() {
 
                       <div className="form-group">
                         <label className="form-label">{t.redeemAmountLabel}</label>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <div className="search-price-inputs-row">
                           <input
                             type="number"
                             className="form-input"
@@ -857,12 +816,12 @@ function ProfileContent() {
                             placeholder="50"
                             style={{ flex: 1 }}
                           />
-                          <span style={{ fontSize: "12px", color: "var(--text-2)" }}>{language === "ar" ? "نقطة" : "pts"}</span>
+                          <span className="profile-address-detail-text">{language === "ar" ? "نقطة" : "pts"}</span>
                         </div>
                       </div>
 
                       {pointsRedeemInput && (
-                        <span style={{ fontSize: "12px", color: "var(--success)", fontWeight: "700", display: "block" }}>
+                        <span className="profile-redemption-notice">
                           {language === "ar" 
                             ? `ستحصل على: ${(parseFloat(pointsRedeemInput) / 50 || 0).toFixed(2)} ر.س كاش باك` 
                             : `You will get: ${(parseFloat(pointsRedeemInput) / 50 || 0).toFixed(2)} SAR cashback`}
@@ -871,8 +830,7 @@ function ProfileContent() {
 
                       <button
                         type="button"
-                        className="btn-secondary"
-                        style={{ borderColor: "var(--secondary)", color: "var(--secondary)" }}
+                        className="btn-secondary profile-redeem-submit-btn"
                         onClick={() => {
                           const pts = parseInt(pointsRedeemInput);
                           if (isNaN(pts) || pts <= 0) {
@@ -901,13 +859,13 @@ function ProfileContent() {
 
           {/* F. EMBEDDED ORDERS PANEL (Desktop-Only Tab) */}
           {activePanel === "orders" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+            <div className="profile-panel-container-gap16">
+              <div className="profile-panel-card-gap16">
+                <h2 className="profile-panel-title">
                   {t.ordersLabel}
                 </h2>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div className="profile-panel-container-gap16">
                   {orders.length > 0 ? (
                     orders.map((order) => (
                       <OrderCard key={order.id} order={order} onTrackClick={handleOpenTracker} />
@@ -925,32 +883,32 @@ function ProfileContent() {
 
           {/* G. SAVED PAYMENT METHODS PANEL */}
           {activePanel === "payment" && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-                <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0, marginBottom: "10px" }}>
+            <div className="profile-panel-container-gap16">
+              <div className="profile-panel-card-gap16">
+                <h2 className="profile-panel-title-margin20">
                   {t.paymentLabel}
                 </h2>
 
                 {!isAddingCard ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div className="profile-addresses-list">
                     {paymentCards.map((card) => (
-                      <div key={card.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", borderRadius: "12px" }}>
-                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                          <span style={{ fontSize: "24px" }}>💳</span>
+                      <div key={card.id} className="profile-payment-card-item">
+                        <div className="profile-sidebar-header">
+                          <span className="profile-payment-icon">💳</span>
                           <div>
-                            <strong style={{ fontSize: "14px", display: "block" }}>{card.brand} {card.number}</strong>
-                            <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{card.holder} | Exp: {card.expiry}</span>
+                            <strong className="profile-payment-card-number">{card.brand} {card.number}</strong>
+                            <span className="profile-payment-card-meta">{card.holder} | Exp: {card.expiry}</span>
                           </div>
                         </div>
-                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <div className="profile-wishlist-actions">
                           {card.isDefault && (
-                            <span style={{ fontSize: "10px", backgroundColor: "rgba(24,182,122,0.1)", color: "var(--success)", padding: "2px 6px", borderRadius: "6px", fontWeight: "700" }}>
+                            <span className="profile-payment-default-badge">
                               {t.defaultCard}
                             </span>
                           )}
                           <button
                             type="button"
-                            style={{ background: "transparent", border: "none", cursor: "pointer", color: "var(--danger)", fontSize: "14px" }}
+                            className="profile-payment-remove-btn"
                             onClick={() => setPaymentCards((prev) => prev.filter((c) => c.id !== card.id))}
                           >
                             🗑️
@@ -975,7 +933,7 @@ function ProfileContent() {
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div className="profile-add-address-form">
                     <div className="form-group">
                       <label className="form-label">{t.cardholderLabel}</label>
                       <input type="text" className="form-input" value={cardHolder} onChange={(e) => setCardHolder(e.target.value)} placeholder="Ibrahim Al-Fahad" required />
@@ -984,7 +942,7 @@ function ProfileContent() {
                       <label className="form-label">{t.cardNumberLabel}</label>
                       <input type="text" className="form-input" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="4000 1234 5678 9010" required />
                     </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="profile-grid-2cols-gap12">
                       <div className="form-group">
                         <label className="form-label">{t.expiryLabel}</label>
                         <input type="text" className="form-input" value={cardExpiry} onChange={(e) => setCardExpiry(e.target.value)} placeholder="MM/YY" required />
@@ -995,14 +953,13 @@ function ProfileContent() {
                       </div>
                     </div>
 
-                    <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
-                      <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={() => setIsAddingCard(false)}>
+                    <div className="profile-card-form-actions">
+                      <button type="button" className="btn-secondary flex-1" onClick={() => setIsAddingCard(false)}>
                         {t.cancelBtn}
                       </button>
                       <button
                         type="button"
-                        className="btn-primary"
-                        style={{ flex: 1 }}
+                        className="btn-primary flex-1"
                         onClick={() => {
                           if (!cardHolder || !cardNumber || !cardExpiry || !cardCvv) {
                             alert(language === "ar" ? "يرجى ملء جميع الخانات" : "Please fill in all card details");
@@ -1030,26 +987,26 @@ function ProfileContent() {
 
           {/* H. SETTINGS PANEL */}
           {activePanel === "settings" && (
-            <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
-              <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+            <div className="profile-panel-card">
+              <h2 className="profile-panel-title">
                 {language === "ar" ? "إعدادات الحساب" : "Account Settings"}
               </h2>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div className="profile-settings-list">
+                <div className="search-filter-row-between">
                   <div>
-                    <strong style={{ fontSize: "14px", display: "block" }}>🔔 {language === "ar" ? "إشعارات الطلبات" : "Order Notifications"}</strong>
-                    <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{language === "ar" ? "تلقي تحديثات تتبع الشحنات عبر البريد ورسائل SMS" : "Receive real-time tracking updates via SMS & Email"}</span>
+                    <strong className="profile-payment-card-number">🔔 {language === "ar" ? "إشعارات الطلبات" : "Order Notifications"}</strong>
+                    <span className="profile-payment-card-meta">{language === "ar" ? "تلقي تحديثات تتبع الشحنات عبر البريد ورسائل SMS" : "Receive real-time tracking updates via SMS & Email"}</span>
                   </div>
-                  <input type="checkbox" defaultChecked style={{ width: "18px", height: "18px", cursor: "pointer" }} />
+                  <input type="checkbox" defaultChecked className="profile-switcher-checkbox" />
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border)", paddingTop: "14px" }}>
+                <div className="profile-settings-item-row-divider">
                   <div>
-                    <strong style={{ fontSize: "14px", display: "block" }}>🔒 {language === "ar" ? "المصادقة الثنائية" : "Two-Factor Authentication"}</strong>
-                    <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{language === "ar" ? "حماية حسابك ورموز المحفظة الشخصية" : "Secure your wallet and account details with 2FA verification"}</span>
+                    <strong className="profile-payment-card-number">🔒 {language === "ar" ? "المصادقة الثنائية" : "Two-Factor Authentication"}</strong>
+                    <span className="profile-payment-card-meta">{language === "ar" ? "حماية حسابك ورموز المحفظة الشخصية" : "Secure your wallet and account details with 2FA verification"}</span>
                   </div>
-                  <input type="checkbox" style={{ width: "18px", height: "18px", cursor: "pointer" }} />
+                  <input type="checkbox" className="profile-switcher-checkbox" />
                 </div>
               </div>
             </div>
@@ -1057,35 +1014,35 @@ function ProfileContent() {
 
           {/* I. PRIVACY & REGULATIONS PANEL */}
           {activePanel === "privacy" && (
-            <div style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
-              <h2 style={{ fontSize: "18px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+            <div className="profile-panel-card">
+              <h2 className="profile-panel-title">
                 {t.privacyLabel}
               </h2>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "14px" }}>
-                  <strong style={{ fontSize: "14px", color: "var(--primary)", display: "block", marginBottom: "6px" }}>
+              <div className="search-filters-container">
+                <div className="profile-privacy-rule-divider">
+                  <strong className="profile-rule-title-primary">
                     {t.moirTitle}
                   </strong>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-2)", lineHeight: "1.6", margin: 0 }}>
+                  <p className="profile-privacy-rule-text">
                     {t.moirText}
                   </p>
                 </div>
 
-                <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "14px" }}>
-                  <strong style={{ fontSize: "14px", color: "var(--secondary)", display: "block", marginBottom: "6px" }}>
+                <div className="profile-privacy-rule-divider">
+                  <strong className="profile-rule-title-secondary">
                     {t.coldChainTitle}
                   </strong>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-2)", lineHeight: "1.6", margin: 0 }}>
+                  <p className="profile-privacy-rule-text">
                     {t.coldChainText}
                   </p>
                 </div>
 
                 <div>
-                  <strong style={{ fontSize: "14px", color: "var(--text-1)", display: "block", marginBottom: "6px" }}>
+                  <strong className="profile-rule-title-standard">
                     {t.walletSecurityTitle}
                   </strong>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-2)", lineHeight: "1.6", margin: 0 }}>
+                  <p className="profile-privacy-rule-text">
                     {t.walletSecurityText}
                   </p>
                 </div>
@@ -1101,48 +1058,27 @@ function ProfileContent() {
       {trackingOrder && (
         <div className="modal-overlay" onClick={() => setTrackingOrder(null)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>
+            <div className="search-filter-row-between">
+              <h3 className="profile-modal-title">
                 {t.trackTitle} #{trackingOrder.id}
               </h3>
               <button className="btn-icon" onClick={() => setTrackingOrder(null)}>✕</button>
             </div>
 
             {/* Map pin */}
-            <div
-              style={{
-                height: "120px",
-                background: "linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.15)), url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect width=%22100%22 height=%22100%22 fill=%22%23b1e2c6%22/><path d=%22M20,0 L20,100 M80,0 L80,100 M0,30 L100,30 M0,70 L100,70%22 stroke=%22%23ffffff%22 stroke-width=%223%22/><circle cx=%2250%22 cy=%2250%22 r=%224%22 fill=%22%230F6CBD%22/><circle cx=%2270%22 cy=%2260%22 r=%226%22 fill=%22%2318B67A%22/></svg>')",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--text-1)",
-                fontWeight: "700",
-                fontSize: "12px",
-                border: "1px solid var(--border)"
-              }}
-            >
-              🛵 Courier Route Live Pin
+            <div className="profile-tracker-map-preview">
+              Live Courier Route Map
             </div>
 
             {/* Courier briefing details */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", backgroundColor: "var(--bg)", borderRadius: "12px" }}>
+            <div className="profile-tx-card">
               <div>
-                <span style={{ fontSize: "11px", color: "var(--text-2)", display: "block" }}>{t.driver}</span>
-                <strong style={{ fontSize: "13px" }}>{trackingOrder.driverName}</strong>
+                <span className="profile-sidebar-email">{t.driver}</span>
+                <strong className="profile-driver-name">{trackingOrder.driverName}</strong>
               </div>
               <a
                 href={`tel:${trackingOrder.driverPhone}`}
-                style={{
-                  backgroundColor: "var(--secondary)",
-                  color: "white",
-                  textDecoration: "none",
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  fontSize: "11px",
-                  fontWeight: "700"
-                }}
+                className="profile-driver-call-btn"
               >
                 📞 {t.call}
               </a>
@@ -1173,9 +1109,8 @@ function ProfileContent() {
             </div>
 
             <button
-              className="btn-secondary"
+              className="btn-secondary profile-preset-btn"
               onClick={() => alert("Connecting to pharmacist support line...")}
-              style={{ padding: "8px", fontSize: "12px" }}
             >
               🏥 {t.support} (Licensed Pharmacist Line)
             </button>
@@ -1185,24 +1120,7 @@ function ProfileContent() {
 
       {/* Floating success toast alert notification */}
       {toastMessage && (
-        <div style={{
-          position: "fixed",
-          bottom: "80px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          backgroundColor: "var(--text-1)",
-          color: "var(--surface)",
-          padding: "12px 24px",
-          borderRadius: "30px",
-          boxShadow: "var(--shadow-lg)",
-          zIndex: 1000,
-          fontWeight: "600",
-          fontSize: "13px",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          animation: "fadeIn 0.2s ease"
-        }}>
+        <div className="profile-toast-notification">
           ✨ {toastMessage}
         </div>
       )}
@@ -1213,7 +1131,7 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>Loading Profile...</div>}>
+    <Suspense fallback={<div className="search-suspense-loading">Loading Profile...</div>}>
       <ProfileContent />
     </Suspense>
   );

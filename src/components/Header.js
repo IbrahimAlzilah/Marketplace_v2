@@ -153,13 +153,13 @@ export default function Header() {
           </Link>
 
           {/* Location selector */}
-          <div className="header-location" onClick={() => setShowLocations(true)} style={{ borderRight: "1px solid var(--border)", borderLeft: "1px solid var(--border)", paddingInline: "16px" }}>
+          <div className="header-location header-location-wrapper" onClick={() => setShowLocations(true)}>
             <span>📍</span>
             <div>
-              <span style={{ fontSize: "10px", color: "var(--text-2)", display: "block" }}>
+              <span className="header-location-subtitle">
                 {t.deliverTo}
               </span>
-              <span style={{ fontSize: "12px", fontWeight: "700" }}>
+              <span className="header-location-title">
                 {currentAddress ? (
                   <>
                     {language === "ar" ? currentAddress.tag_ar : currentAddress.tag}:{" "}
@@ -170,7 +170,7 @@ export default function Header() {
                 )}
               </span>
             </div>
-            <span style={{ fontSize: "10px", marginInlineStart: "4px" }}>▼</span>
+            <span className="header-location-arrow">▼</span>
           </div>
 
           {/* Persistent Search Bar */}
@@ -188,7 +188,7 @@ export default function Header() {
           {/* Actions & Links Menu */}
           <div className="nav-menu">
             {/* Language toggle */}
-            <button className="lang-toggle" onClick={toggleLanguage} style={{ padding: "6px 12px", borderRadius: "20px" }}>
+            <button className="lang-toggle" onClick={toggleLanguage}>
               {language === "en" ? "العربية" : "English"}
             </button>
 
@@ -199,84 +199,54 @@ export default function Header() {
             </Link>
 
             {/* Notifications */}
-            <div style={{ position: "relative" }}>
+            <div className="header-bell-wrapper">
               <button 
-                className="btn-icon" 
+                className="btn-icon header-bell-btn" 
                 onClick={() => setShowNotifications(!showNotifications)}
-                style={{ position: "relative" }}
                 type="button"
               >
                 <span>🔔</span>
-                {notifications.some(n => !n.read) && <span className="badge-dot" style={{ position: "absolute", top: "2px", right: "2px", width: "8px", height: "8px", backgroundColor: "#ef4444", borderRadius: "50%" }}></span>}
+                {notifications.some(n => !n.read) && <span className="badge-dot header-bell-badge"></span>}
               </button>
               {showNotifications && (
                 <div 
-                  className="dropdown-menu-panel"
-                  style={{
-                    position: "absolute",
-                    top: "40px",
-                    right: language === "ar" ? "auto" : "0",
-                    left: language === "ar" ? "0" : "auto",
-                    width: "350px",
-                    backgroundColor: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "16px",
-                    boxShadow: "var(--shadow-lg)",
-                    zIndex: 1000,
-                    padding: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
-                    textAlign: language === "ar" ? "right" : "left"
-                  }}
+                  className="dropdown-menu-panel header-notification-dropdown"
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "8px" }}>
-                    <strong style={{ fontSize: "13px", color: "var(--text-1)" }}>
+                  <div className="header-notif-dropdown-header">
+                    <strong className="header-notif-dropdown-title">
                       {language === "ar" ? "الإشعارات" : "Notifications"} ({notifications.filter(n => !n.read).length})
                     </strong>
                     <button 
                       onClick={() => {
                         setNotifications(notifications.map(n => ({ ...n, read: true })));
                       }}
-                      style={{
-                        border: "none",
-                        background: "transparent",
-                        color: "var(--primary)",
-                        fontSize: "11px",
-                        cursor: "pointer",
-                        fontWeight: "700"
-                      }}
+                      className="header-notif-clear-btn"
                       type="button"
                     >
                       {language === "ar" ? "تحديد الكل كمقروء" : "Mark all as read"}
                     </button>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "280px", overflowY: "auto", paddingRight: "4px" }}>
+                  <div className="header-notif-list">
                     {notifications.map((n) => (
                       <div 
                         key={n.id} 
+                        className="header-notif-item"
                         style={{
-                          display: "flex",
-                          gap: "10px",
-                          padding: "8px",
-                          borderRadius: "10px",
                           backgroundColor: n.read ? "transparent" : "rgba(15, 108, 189, 0.04)",
-                          border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)",
-                          fontSize: "11px",
-                          lineHeight: "1.4"
+                          border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)"
                         }}
                       >
-                        <span style={{ fontSize: "16px" }}>{n.icon}</span>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "2px", flex: 1 }}>
-                          <span style={{ color: "var(--text-1)", fontWeight: n.read ? "500" : "700" }}>
+                        <span className="header-notif-icon">{n.icon}</span>
+                        <div className="header-notif-info">
+                          <span className="header-notif-text" style={{ fontWeight: n.read ? "500" : "700" }}>
                             {language === "ar" ? n.text_ar : n.text_en}
                           </span>
-                          <span style={{ fontSize: "9px", color: "var(--text-2)" }}>
+                          <span className="header-notif-time">
                             {language === "ar" ? n.time_ar : n.time_en}
                           </span>
                         </div>
                         {!n.read && (
-                          <span style={{ width: "5px", height: "5px", backgroundColor: "var(--primary)", borderRadius: "50%", alignSelf: "center", flexShrink: 0 }} />
+                          <span className="header-notif-unread-dot" />
                         )}
                       </div>
                     ))}
@@ -286,7 +256,7 @@ export default function Header() {
             </div>
 
             {/* Cart link with count badge */}
-            <Link href="/cart" className="nav-link-item" style={{ position: "relative" }}>
+            <Link href="/cart" className="nav-link-item header-cart-link">
               <span>🛒</span>
               <span>{t.cart}</span>
               {totalCartItems > 0 && (
@@ -296,15 +266,14 @@ export default function Header() {
 
             {/* Profile or Login Link */}
             {isLoggedIn ? (
-              <Link href="/profile" className="nav-link-item" style={{ borderLeft: "1px solid var(--border)", paddingInlineStart: "16px" }}>
+              <Link href="/profile" className="nav-link-item header-profile-link">
                 <span>👤</span>
                 <span>{t.profile}</span>
               </Link>
             ) : (
               <button
                 onClick={() => setShowLoginModal(true)}
-                className="nav-link-item"
-                style={{ borderLeft: "1px solid var(--border)", paddingInlineStart: "16px", background: "transparent", border: "none", cursor: "pointer", outline: "none" }}
+                className="nav-link-item header-login-btn"
               >
                 <span>👤</span>
                 <span>{language === "ar" ? "تسجيل الدخول" : "Login"}</span>
@@ -316,15 +285,14 @@ export default function Header() {
 
       {/* DESKTOP CATEGORIES RIBBON */}
       <div className="categories-ribbon">
-        <div className="categories-ribbon-inner" style={{ position: "relative" }}>
+        <div className="categories-ribbon-inner categories-ribbon-inner-relative">
           <div
             onMouseEnter={() => setShowMegaMenu(true)}
             onMouseLeave={() => setShowMegaMenu(false)}
-            style={{ display: "inline-block" }}
+            className="categories-trigger-wrapper"
           >
             <button
-              className="categories-link"
-              style={{ background: "transparent", border: "none", outline: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", fontWeight: "700", padding: "0", fontSize: "13px" }}
+              className="categories-link categories-trigger-btn"
             >
               ☰ {language === "ar" ? "كل الفئات" : "All Categories"} ▾
             </button>
@@ -398,12 +366,12 @@ export default function Header() {
 
       {/* 2. MOBILE HEADER (Only shown on mobile screen & on Home/Pharmacies pages) */}
       {showMobileHeader && (
-        <header className="mobile-only" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <header className="mobile-only mobile-header-container">
           <div className="header-top">
             <div className="header-location" onClick={() => setShowLocations(true)}>
               <span>📍</span>
               <div>
-                <span style={{ fontSize: "10px", color: "var(--text-2)", display: "block" }}>
+                <span className="header-location-subtitle">
                   {t.deliverTo}
                 </span>
                 <span>
@@ -424,84 +392,54 @@ export default function Header() {
               <button className="lang-toggle" onClick={toggleLanguage}>
                 {language === "en" ? "العربية" : "English"}
               </button>
-              <div style={{ position: "relative" }}>
+              <div className="header-bell-wrapper">
                 <button 
-                  className="btn-icon" 
+                  className="btn-icon header-bell-btn" 
                   onClick={() => setShowNotifications(!showNotifications)}
-                  style={{ position: "relative" }}
                   type="button"
                 >
                   <span>🔔</span>
-                  {notifications.some(n => !n.read) && <span className="badge-dot" style={{ position: "absolute", top: "2px", right: "2px", width: "8px", height: "8px", backgroundColor: "#ef4444", borderRadius: "50%" }}></span>}
+                  {notifications.some(n => !n.read) && <span className="badge-dot header-bell-badge"></span>}
                 </button>
                 {showNotifications && (
                   <div 
-                    className="dropdown-menu-panel"
-                    style={{
-                      position: "absolute",
-                      top: "40px",
-                      right: language === "ar" ? "0" : "auto",
-                      left: language === "ar" ? "auto" : "0",
-                      width: "290px",
-                      backgroundColor: "var(--surface)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "16px",
-                      boxShadow: "var(--shadow-lg)",
-                      zIndex: 1000,
-                      padding: "12px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                      textAlign: language === "ar" ? "right" : "left"
-                    }}
+                    className="dropdown-menu-panel mobile-header-notification-dropdown"
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>
-                      <strong style={{ fontSize: "12px", color: "var(--text-1)" }}>
+                    <div className="mobile-header-notif-dropdown-header">
+                      <strong className="mobile-header-notif-dropdown-title">
                         {language === "ar" ? "الإشعارات" : "Notifications"} ({notifications.filter(n => !n.read).length})
                       </strong>
                       <button 
                         onClick={() => {
                           setNotifications(notifications.map(n => ({ ...n, read: true })));
                         }}
-                        style={{
-                          border: "none",
-                          background: "transparent",
-                          color: "var(--primary)",
-                          fontSize: "10px",
-                          cursor: "pointer",
-                          fontWeight: "700"
-                        }}
+                        className="header-notif-clear-btn"
                         type="button"
                       >
                         {language === "ar" ? "تحديد الكل" : "Mark all"}
                       </button>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "240px", overflowY: "auto" }}>
+                    <div className="mobile-header-notif-list">
                       {notifications.map((n) => (
                         <div 
                           key={n.id} 
+                          className="mobile-header-notif-item"
                           style={{
-                            display: "flex",
-                            gap: "8px",
-                            padding: "6px",
-                            borderRadius: "8px",
                             backgroundColor: n.read ? "transparent" : "rgba(15, 108, 189, 0.04)",
-                            border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)",
-                            fontSize: "10px",
-                            lineHeight: "1.4"
+                            border: n.read ? "1px solid transparent" : "1px solid rgba(15, 108, 189, 0.1)"
                           }}
                         >
                           <span style={{ fontSize: "14px" }}>{n.icon}</span>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "1px", flex: 1 }}>
-                            <span style={{ color: "var(--text-1)", fontWeight: n.read ? "500" : "700" }}>
+                          <div className="mobile-header-notif-info">
+                            <span className="header-notif-text" style={{ fontWeight: n.read ? "500" : "700" }}>
                               {language === "ar" ? n.text_ar : n.text_en}
                             </span>
-                            <span style={{ fontSize: "8px", color: "var(--text-2)" }}>
+                            <span className="header-notif-time">
                               {language === "ar" ? n.time_ar : n.time_en}
                             </span>
                           </div>
                           {!n.read && (
-                            <span style={{ width: "4px", height: "4px", backgroundColor: "var(--primary)", borderRadius: "50%", alignSelf: "center", flexShrink: 0 }} />
+                            <span className="mobile-header-notif-unread-dot" />
                           )}
                         </div>
                       ))}
@@ -530,11 +468,11 @@ export default function Header() {
       {showLocations && (
         <div className="modal-overlay" onClick={() => setShowLocations(false)}>
           <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: "700" }}>{t.selectAddress}</h3>
+            <div className="location-modal-header">
+              <h3 className="location-modal-title">{t.selectAddress}</h3>
               <button className="btn-icon" onClick={() => setShowLocations(false)}>✕</button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "10px" }}>
+            <div className="location-modal-list">
               {addresses.map((addr) => (
                 <div
                   key={addr.id}
@@ -542,18 +480,16 @@ export default function Header() {
                     setCurrentAddress(addr);
                     setShowLocations(false);
                   }}
+                  className="location-modal-item"
                   style={{
-                    padding: "12px",
-                    borderRadius: "12px",
                     border: `1.5px solid ${currentAddress && currentAddress.id === addr.id ? "var(--primary)" : "var(--border)"}`,
-                    backgroundColor: currentAddress && currentAddress.id === addr.id ? "rgba(15, 108, 189, 0.05)" : "var(--surface)",
-                    cursor: "pointer"
+                    backgroundColor: currentAddress && currentAddress.id === addr.id ? "rgba(15, 108, 189, 0.05)" : "var(--surface)"
                   }}
                 >
-                  <strong style={{ display: "block", fontSize: "14px", marginBottom: "4px" }}>
+                  <strong className="location-modal-item-tag">
                     {language === "ar" ? addr.tag_ar : addr.tag}
                   </strong>
-                  <span style={{ fontSize: "12px", color: "var(--text-2)" }}>
+                  <span className="location-modal-item-address">
                     {language === "ar" ? addr.street_ar : addr.street}, {language === "ar" ? addr.city_ar : addr.city}
                   </span>
                 </div>

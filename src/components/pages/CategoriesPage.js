@@ -182,48 +182,20 @@ export default function CategoriesPage() {
       `}</style>
 
       {/* Sticky Screen 8 Header */}
-      <div 
-        style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center", 
-          backgroundColor: "var(--surface)", 
-          border: "1px solid var(--border)", 
-          borderRadius: "16px", 
-          padding: "12px 18px",
-          boxShadow: "var(--shadow-sm)",
-          position: "sticky",
-          top: 0,
-          zIndex: 100
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div className="sticky-categories-header">
+        <div className="sticky-header-left">
           <button 
             onClick={() => router.push("/home")}
-            style={{ border: "none", background: "transparent", fontSize: "16px", cursor: "pointer", color: "var(--text-2)" }}
+            className="sticky-header-back-btn"
           >
             ◀ {t.back}
           </button>
-          <h2 style={{ fontSize: "16px", fontWeight: "800", margin: 0 }}>
+          <h2 className="sticky-header-title">
             {t.title}
           </h2>
         </div>
-        <Link href="/search" style={{ textDecoration: "none" }}>
-          <button 
-            style={{ 
-              border: "none", 
-              background: "var(--bg)", 
-              color: "var(--text-2)", 
-              padding: "8px 14px", 
-              borderRadius: "12px", 
-              fontSize: "12px", 
-              fontWeight: "700",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "4px"
-            }}
-          >
+        <Link href="/search" className="sticky-header-search-link">
+          <button className="sticky-header-search-btn">
             🔍 {language === "ar" ? "ابحث" : "Search"}
           </button>
         </Link>
@@ -236,17 +208,15 @@ export default function CategoriesPage() {
             {[...Array(6)].map((_, idx) => (
               <div 
                 key={idx} 
-                className="shimmer-box" 
-                style={{ height: "70px", margin: "10px", borderRadius: "10px" }}
+                className="shimmer-box shimmer-box h70-margin-10"
               ></div>
             ))}
           </div>
-          <div className="catalog-content" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "16px", alignContent: "start" }}>
+          <div className="catalog-content catalog-content-grid">
             {[...Array(6)].map((_, idx) => (
               <div 
                 key={idx} 
-                className="shimmer-box" 
-                style={{ height: "110px", borderRadius: "16px" }}
+                className="shimmer-box shimmer-box h110"
               ></div>
             ))}
           </div>
@@ -265,8 +235,8 @@ export default function CategoriesPage() {
                   onClick={() => setActiveCat(cat.id)}
                   className={`catalog-sidebar-btn ${isActive ? "catalog-sidebar-btn-active" : ""}`}
                 >
-                  <span style={{ fontSize: "20px" }}>{cat.icon}</span>
-                  <span style={{ fontSize: "12px" }}>{label}</span>
+                  <span className="catalog-sidebar-icon">{cat.icon}</span>
+                  <span className="catalog-sidebar-label">{label}</span>
                 </button>
               );
             })}
@@ -274,21 +244,21 @@ export default function CategoriesPage() {
 
           {/* Subcategories catalog listing area */}
           <div className="catalog-content">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-              <h3 style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-1)" }}>
+            <div className="subcat-header-row">
+              <h3 className="subcat-header-title">
                 {language === "ar" 
                   ? categories.find(c => c.id === activeCat)?.title_ar 
                   : categories.find(c => c.id === activeCat)?.title_en}
               </h3>
               <button 
                 onClick={() => router.push(`/search?cat=${activeCat}`)}
-                style={{ border: "none", background: "transparent", color: "var(--primary)", fontSize: "11px", fontWeight: "700", cursor: "pointer", textDecoration: "underline" }}
+                className="subcat-all-link"
               >
                 {t.allProducts} &gt;
               </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "16px" }}>
+            <div className="subcat-grid">
               {categorySubcategories[activeCat]?.map((subItem, index) => {
                 const label = language === "ar" ? subItem.ar : subItem.en;
                 return (
@@ -297,8 +267,8 @@ export default function CategoriesPage() {
                     className="subcat-card"
                     onClick={() => handleSubCategoryClick(activeCat, subItem.en)}
                   >
-                    <span style={{ fontSize: "32px" }}>{subItem.icon}</span>
-                    <strong style={{ fontSize: "12px", color: "var(--text-1)" }}>{label}</strong>
+                    <span className="subcat-card-icon">{subItem.icon}</span>
+                    <strong className="subcat-card-title">{label}</strong>
                   </div>
                 );
               })}

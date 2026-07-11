@@ -276,21 +276,21 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 11000 }} onClick={handleClose}>
-      <div className="modal-sheet" style={{ maxWidth: "420px", width: "95%" }} onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay auth-modal-overlay" onClick={handleClose}>
+      <div className="modal-sheet auth-modal-sheet" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Back & Close Buttons */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        <div className="auth-modal-header-row">
           {step !== "login" && step !== "register" && step !== "forgot" ? (
             <button
               type="button"
               onClick={() => setStep(step === "otp-forgot" ? "forgot" : "login")}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "14px", fontWeight: "700", color: "var(--primary)" }}
+              className="auth-modal-back-btn"
             >
               ← {t.backToLogin}
             </button>
           ) : (
-            <span style={{ fontSize: "18px", fontWeight: "800" }}>
+            <span className="auth-modal-title-text">
               {step === "login" ? t.loginTitle : step === "register" ? t.registerTitle : t.forgotTitle}
             </span>
           )}
@@ -299,31 +299,31 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* Global Error Banner */}
         {errorMsg && (
-          <div style={{ backgroundColor: "rgba(239, 68, 68, 0.08)", border: "1px solid var(--danger)", color: "var(--danger)", padding: "10px 14px", borderRadius: "8px", fontSize: "12px", marginBottom: "16px", fontWeight: "600" }}>
+          <div className="auth-error-banner">
             ⚠️ {errorMsg}
           </div>
         )}
 
         {/* SCREEN 3: LOGIN FORM */}
         {step === "login" && (
-          <form onSubmit={handleLoginSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <p style={{ fontSize: "12px", color: "var(--text-2)", margin: 0 }}>
+          <form onSubmit={handleLoginSubmit} className="auth-form gap-16">
+            <p className="auth-form-subtitle">
               {t.loginSub}
             </p>
 
             <div className="form-group">
               <label className="form-label">{t.phoneLabel}</label>
-              <div style={{ display: "flex", gap: "6px" }}>
+              <div className="auth-phone-row">
                 {/* Flag Selector Dropdown */}
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", border: "1px solid var(--border)", borderRadius: "10px", paddingInline: "10px", backgroundColor: "var(--bg)", fontSize: "13px" }}>
+                <div className="auth-flag-selector">
                   <span>🇸🇦</span>
                   <strong>+966</strong>
                 </div>
                 <input
                   type="tel"
                   placeholder={t.phonePlaceholder}
-                  className="form-input"
-                  style={{ flex: 1, borderColor: errorMsg ? "var(--danger)" : "var(--border)" }}
+                  className="form-input auth-input-flex-1"
+                  style={{ borderColor: errorMsg ? "var(--danger)" : "var(--border)" }}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -332,22 +332,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             </div>
 
             <div className="form-group">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                <label className="form-label" style={{ margin: 0 }}>{t.passwordLabel}</label>
+              <div className="auth-password-header-row">
+                <label className="form-label auth-password-label">{t.passwordLabel}</label>
                 <button
                   type="button"
                   onClick={() => setStep("forgot")}
-                  style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "11px", color: "var(--primary)", fontWeight: "600" }}
+                  className="auth-forgot-trigger"
                 >
                   {t.forgotPassword}
                 </button>
               </div>
-              <div style={{ position: "relative" }}>
+              <div className="auth-input-relative-wrapper">
                 <input
                   type={showPass ? "text" : "password"}
                   placeholder="••••••••"
-                  className="form-input"
-                  style={{ borderColor: errorMsg ? "var(--danger)" : "var(--border)", paddingRight: "40px" }}
+                  className="form-input auth-password-input"
+                  style={{ borderColor: errorMsg ? "var(--danger)" : "var(--border)" }}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -355,14 +355,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", cursor: "pointer", fontSize: "14px" }}
+                  className="auth-password-toggle-btn"
                 >
                   {showPass ? "👁️" : "🙈"}
                 </button>
               </div>
             </div>
 
-            <button type="submit" className="btn-primary" disabled={isLoading} style={{ marginTop: "8px" }}>
+            <button type="submit" className="btn-primary auth-submit-btn-margin" disabled={isLoading}>
               {isLoading ? "..." : t.loginBtn}
             </button>
 
@@ -372,7 +372,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 setStep("register");
                 setErrorMsg("");
               }}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "12px", color: "var(--primary)", fontWeight: "600", textDecoration: "underline", alignSelf: "center", marginTop: "4px" }}
+              className="auth-secondary-underline-btn"
             >
               {t.registerLink}
             </button>
@@ -381,7 +381,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* SCREEN 4: REGISTRATION FORM */}
         {step === "register" && (
-          <form onSubmit={handleRegisterSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <form onSubmit={handleRegisterSubmit} className="auth-form gap-14">
             <div className="form-group">
               <label className="form-label">{t.fullNameLabel}</label>
               <input
@@ -408,16 +408,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-group">
               <label className="form-label">{t.phoneLabel}</label>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", border: "1px solid var(--border)", borderRadius: "10px", paddingInline: "10px", backgroundColor: "var(--bg)", fontSize: "13px" }}>
+              <div className="auth-phone-row">
+                <div className="auth-flag-selector">
                   <span>🇸🇦</span>
                   <strong>+966</strong>
                 </div>
                 <input
                   type="tel"
                   placeholder={t.phonePlaceholder}
-                  className="form-input"
-                  style={{ flex: 1 }}
+                  className="form-input auth-input-flex-1"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -427,12 +426,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
             <div className="form-group">
               <label className="form-label">{t.passwordLabel}</label>
-              <div style={{ position: "relative" }}>
+              <div className="auth-input-relative-wrapper">
                 <input
                   type={showPass ? "text" : "password"}
                   placeholder="••••••••"
-                  className="form-input"
-                  style={{ paddingRight: "40px" }}
+                  className="form-input auth-password-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -440,38 +438,38 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", cursor: "pointer", fontSize: "14px" }}
+                  className="auth-password-toggle-btn"
                 >
                   {showPass ? "👁️" : "🙈"}
                 </button>
               </div>
 
               {/* Password complexity checklist (Screen 4 Rules) */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px", fontSize: "11px", color: "var(--text-2)" }}>
-                <span style={{ display: "flex", gap: "6px", alignItems: "center", color: isLengthOk ? "var(--success)" : "var(--danger)" }}>
+              <div className="auth-rules-container">
+                <span className="auth-rule-item" style={{ color: isLengthOk ? "var(--success)" : "var(--danger)" }}>
                   {isLengthOk ? "✅" : "❌"} {t.ruleLength}
                 </span>
-                <span style={{ display: "flex", gap: "6px", alignItems: "center", color: isNumberOk ? "var(--success)" : "var(--danger)" }}>
+                <span className="auth-rule-item" style={{ color: isNumberOk ? "var(--success)" : "var(--danger)" }}>
                   {isNumberOk ? "✅" : "❌"} {t.ruleNumber}
                 </span>
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "8px", alignItems: "flex-start", marginTop: "4px" }}>
+            <div className="auth-checkbox-row">
               <input
                 type="checkbox"
                 id="terms"
-                style={{ width: "16px", height: "16px", cursor: "pointer", marginTop: "2px" }}
+                className="auth-checkbox-input"
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
                 required
               />
-              <label htmlFor="terms" style={{ fontSize: "12px", color: "var(--text-1)", cursor: "pointer", lineHeight: "1.4" }}>
+              <label htmlFor="terms" className="auth-checkbox-label">
                 {t.agreeTerms}
               </label>
             </div>
 
-            <button type="submit" className="btn-primary" disabled={isLoading} style={{ marginTop: "8px" }}>
+            <button type="submit" className="btn-primary auth-submit-btn-margin" disabled={isLoading}>
               {isLoading ? "..." : t.createAccountBtn}
             </button>
 
@@ -481,7 +479,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 setStep("login");
                 setErrorMsg("");
               }}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "12px", color: "var(--primary)", fontWeight: "600", textDecoration: "underline", alignSelf: "center", marginTop: "4px" }}
+              className="auth-secondary-underline-btn"
             >
               {t.backToLogin}
             </button>
@@ -490,23 +488,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* SCREEN 6: FORGOT PASSWORD REQUEST FORM */}
         {step === "forgot" && (
-          <form onSubmit={handleForgotSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <p style={{ fontSize: "12px", color: "var(--text-2)", margin: 0 }}>
+          <form onSubmit={handleForgotSubmit} className="auth-form gap-16">
+            <p className="auth-form-subtitle">
               {t.forgotSub}
             </p>
 
             <div className="form-group">
               <label className="form-label">{t.phoneLabel}</label>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", border: "1px solid var(--border)", borderRadius: "10px", paddingInline: "10px", backgroundColor: "var(--bg)", fontSize: "13px" }}>
+              <div className="auth-phone-row">
+                <div className="auth-flag-selector">
                   <span>🇸🇦</span>
                   <strong>+966</strong>
                 </div>
                 <input
                   type="tel"
                   placeholder={t.phonePlaceholder}
-                  className="form-input"
-                  style={{ flex: 1 }}
+                  className="form-input auth-input-flex-1"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
@@ -524,7 +521,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 setStep("login");
                 setErrorMsg("");
               }}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: "12px", color: "var(--primary)", fontWeight: "600", textDecoration: "underline", alignSelf: "center", marginTop: "4px" }}
+              className="auth-secondary-underline-btn"
             >
               {t.backToLogin}
             </button>
@@ -533,17 +530,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* SCREEN 5: OTP VERIFICATION FORM (Also handles forgot-password verification) */}
         {(step === "otp" || step === "otp-forgot") && (
-          <form onSubmit={handleOtpVerify} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <form onSubmit={handleOtpVerify} className="auth-form gap-20">
             <div style={{ textAlign: "center" }}>
-              <span style={{ fontSize: "36px", display: "block", marginBottom: "8px" }}>💬</span>
-              <h2 style={{ fontSize: "18px", fontWeight: "800", margin: "0 0 6px 0" }}>{t.otpTitle}</h2>
-              <p style={{ fontSize: "12px", color: "var(--text-2)", margin: 0 }}>
+              <span className="auth-otp-header-icon">💬</span>
+              <h2 className="auth-otp-title">{t.otpTitle}</h2>
+              <p className="auth-form-subtitle">
                 {t.otpSub.replace("{phone}", `+966 ${phone || "50 123 4567"}`)}
               </p>
             </div>
 
             {/* 4 Single-Digit Input Boxes (Screen 5 Rules) */}
-            <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
+            <div className="auth-otp-inputs-row">
               {otpDigits.map((digit, index) => (
                 <input
                   key={index}
@@ -551,14 +548,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   type="text"
                   pattern="[0-9]*"
                   inputMode="numeric"
-                  className="form-input"
+                  className="form-input auth-otp-input-box"
                   style={{
-                    width: "48px",
-                    height: "48px",
-                    textAlign: "center",
-                    fontSize: "20px",
-                    fontWeight: "800",
-                    borderRadius: "12px",
                     borderColor: errorMsg ? "var(--danger)" : "var(--border)"
                   }}
                   value={digit}
@@ -570,14 +561,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             </div>
 
             {/* Countdown timer & resend option */}
-            <div style={{ textAlign: "center", fontSize: "12px" }}>
+            <div className="auth-otp-resend-row">
               {timer > 0 ? (
-                <span style={{ color: "var(--text-2)" }}>{t.resendTimer.replace("{timer}", timer)}</span>
+                <span className="auth-otp-resend-timer-text">{t.resendTimer.replace("{timer}", timer)}</span>
               ) : (
                 <button
                   type="button"
-                  className="btn-secondary"
-                  style={{ padding: "4px 10px", fontSize: "11px", display: "inline-block", width: "auto" }}
+                  className="btn-secondary auth-otp-resend-btn"
                   onClick={startOtpCountdown}
                 >
                   🔄 {t.resendBtn}
@@ -593,21 +583,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* SCREEN 6 CONTINUATION: RESET PASSWORD FORM */}
         {step === "reset" && (
-          <form onSubmit={handleResetSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <form onSubmit={handleResetSubmit} className="auth-form gap-16">
             <div style={{ textAlign: "center" }}>
-              <span style={{ fontSize: "36px", display: "block", marginBottom: "8px" }}>🔒</span>
-              <h2 style={{ fontSize: "18px", fontWeight: "800", margin: "0 0 6px 0" }}>{t.resetTitle}</h2>
-              <p style={{ fontSize: "12px", color: "var(--text-2)", margin: 0 }}>{t.resetSub}</p>
+              <span className="auth-reset-header-icon">🔒</span>
+              <h2 className="auth-reset-title">{t.resetTitle}</h2>
+              <p className="auth-form-subtitle">{t.resetSub}</p>
             </div>
 
             <div className="form-group">
               <label className="form-label">{t.newPassLabel}</label>
-              <div style={{ position: "relative" }}>
+              <div className="auth-input-relative-wrapper">
                 <input
                   type={showPass ? "text" : "password"}
                   placeholder="••••••••"
-                  className="form-input"
-                  style={{ paddingRight: "40px" }}
+                  className="form-input auth-password-input"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
@@ -615,18 +604,18 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", background: "transparent", border: "none", cursor: "pointer", fontSize: "14px" }}
+                  className="auth-password-toggle-btn"
                 >
                   {showPass ? "👁️" : "🙈"}
                 </button>
               </div>
 
               {/* Reset Password complexity checklist */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginTop: "8px", fontSize: "11px", color: "var(--text-2)" }}>
-                <span style={{ display: "flex", gap: "6px", alignItems: "center", color: isResetLengthOk ? "var(--success)" : "var(--danger)" }}>
+              <div className="auth-rules-container">
+                <span className="auth-rule-item" style={{ color: isResetLengthOk ? "var(--success)" : "var(--danger)" }}>
                   {isResetLengthOk ? "✅" : "❌"} {t.ruleLength}
                 </span>
-                <span style={{ display: "flex", gap: "6px", alignItems: "center", color: isResetNumberOk ? "var(--success)" : "var(--danger)" }}>
+                <span className="auth-rule-item" style={{ color: isResetNumberOk ? "var(--success)" : "var(--danger)" }}>
                   {isResetNumberOk ? "✅" : "❌"} {t.ruleNumber}
                 </span>
               </div>

@@ -11,7 +11,7 @@ export default function LoyaltyPage() {
   }, [router]);
 
   return (
-    <div style={{ padding: "40px", textAlign: "center", color: "var(--text-2)", fontSize: "14px" }}>
+    <div className="redirect-loading-text">
       Redirecting to Wallet & Loyalty Points...
     </div>
   );

@@ -57,32 +57,17 @@ export default function OrderCard({ order, onTrackClick }) {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: "16px",
-        padding: "16px",
-        boxShadow: "var(--shadow-sm)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px"
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="order-card">
+      <div className="order-card-header">
         <div>
-          <span style={{ fontSize: "14px", fontWeight: "700" }}>#{order.id}</span>
-          <span style={{ fontSize: "11px", color: "var(--text-2)", marginInlineStart: "8px" }}>
+          <span className="order-card-id">#{order.id}</span>
+          <span className="order-card-date">
             {t.date} {order.date}
           </span>
         </div>
         <span
+          className="order-card-status-badge"
           style={{
-            fontSize: "11px",
-            fontWeight: "700",
-            padding: "4px 8px",
-            borderRadius: "6px",
-            color: "white",
             backgroundColor: currentStatus.color
           }}
         >
@@ -90,12 +75,12 @@ export default function OrderCard({ order, onTrackClick }) {
         </span>
       </div>
 
-      <div style={{ fontSize: "13px", color: "var(--text-1)" }}>
-        <strong style={{ display: "block", fontSize: "13px", marginBottom: "4px", color: "var(--text-2)" }}>
+      <div className="order-card-info">
+        <strong className="order-card-pharmacy">
           🏥 {pharmacyName}
         </strong>
         {order.items.map((item) => (
-          <div key={item.id} style={{ display: "flex", justifyContent: "space-between", marginBlock: "2px" }}>
+          <div key={item.id} className="order-card-item-row">
             <span>
               {language === "ar" ? item.name_ar : item.name_en} x{item.quantity}
             </span>
@@ -106,49 +91,23 @@ export default function OrderCard({ order, onTrackClick }) {
         ))}
       </div>
 
-      <div
-        style={{
-          borderTop: "1px solid var(--border)",
-          paddingTop: "10px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}
-      >
-        <span style={{ fontSize: "13px", fontWeight: "600" }}>
-          {t.total} <strong style={{ color: "var(--primary)", fontSize: "15px" }}>{order.total.toFixed(2)} {t.sar}</strong>
+      <div className="order-card-footer">
+        <span className="order-card-total-box">
+          {t.total} <strong className="order-card-total-val">{order.total.toFixed(2)} {t.sar}</strong>
         </span>
 
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className="order-card-actions">
           {order.status === "completed" ? (
             <button
               onClick={handleReorder}
-              style={{
-                backgroundColor: "var(--primary)",
-                color: "white",
-                border: "none",
-                padding: "6px 12px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
+              className="order-card-btn reorder-btn"
             >
               🔄 {t.reorder}
             </button>
           ) : (
             <button
               onClick={() => onTrackClick && onTrackClick(order)}
-              style={{
-                backgroundColor: "var(--secondary)",
-                color: "white",
-                border: "none",
-                padding: "6px 12px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: "700",
-                cursor: "pointer"
-              }}
+              className="order-card-btn track-btn"
             >
               📍 {t.track}
             </button>

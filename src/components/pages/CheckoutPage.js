@@ -982,7 +982,7 @@ export default function CheckoutPage() {
         <div>
           <h1 className="checkout-page-title">{t.checkout}</h1>
           <div className="two-col-layout">
-            <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="layout-main-col">
 
               {/* EVALUATION TOGGLE SCENARIO SELECTOR */}
               <div className="scenario-selector-box">
@@ -1223,9 +1223,9 @@ export default function CheckoutPage() {
 
       {/* STEP 3: ORDER APPROVAL STATUS (DETAILED DECISION INTERFACE) */}
       {checkoutStep === "approval_status" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="profile-panel-container-gap20">
           <div className="approval-header-container">
-            <h2 style={{ fontSize: "20px", fontWeight: "800", margin: 0 }}>{t.approvedTitle}</h2>
+            <h2 className="profile-mobile-title">{t.approvedTitle}</h2>
             <button
               onClick={handleCancelCheckout}
               className="btn-secondary approval-cancel-btn"
@@ -1235,7 +1235,7 @@ export default function CheckoutPage() {
           </div>
 
           <div className="two-col-layout">
-            <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="layout-main-col">
               {activeCheckout.items.map((item) => {
                 if (item.isRemoved) return null;
 
@@ -1317,12 +1317,7 @@ export default function CheckoutPage() {
                             <button
                               type="button"
                               onClick={() => updateCheckoutItem(item.id, { resolvedAllocation: item.allocation })}
-                              className="btn-primary approval-partial-accept-btn"
-                              style={{
-                                border: item.resolvedAllocation === item.allocation ? "1.5px solid var(--success)" : "none",
-                                backgroundColor: item.resolvedAllocation === item.allocation ? "rgba(16, 185, 129, 0.1)" : "var(--primary)",
-                                color: item.resolvedAllocation === item.allocation ? "var(--success)" : "white"
-                              }}
+                              className={`btn-primary approval-partial-accept-btn ${item.resolvedAllocation === item.allocation ? "active" : ""}`}
                             >
                               ✓ {t.actionAcceptPartial} ({item.allocation})
                             </button>
@@ -1365,10 +1360,7 @@ export default function CheckoutPage() {
                                           resolvedAllocation: isPartial ? item.allocation : null
                                         });
                                       }}
-                                      className="btn-primary approval-alternative-accept-btn"
-                                      style={{
-                                        backgroundColor: isSelectedAlt ? "var(--secondary)" : "var(--primary)"
-                                      }}
+                                      className={`btn-primary approval-alternative-accept-btn ${isSelectedAlt ? "active" : ""}`}
                                     >
                                       {t.acceptSub}
                                     </button>
@@ -1383,11 +1375,7 @@ export default function CheckoutPage() {
                               <button
                                 type="button"
                                 onClick={() => updateCheckoutItem(item.id, { resolvedAllocation: item.allocation, selectedReplacement: null })}
-                                className="btn-secondary approval-alternatives-accept-approved-btn"
-                                style={{
-                                  border: item.resolvedAllocation && !item.selectedReplacement ? "1.5px solid var(--success)" : "1px solid var(--border)",
-                                  color: item.resolvedAllocation && !item.selectedReplacement ? "var(--success)" : "var(--text-2)"
-                                }}
+                                className={`btn-secondary approval-alternatives-accept-approved-btn ${item.resolvedAllocation && !item.selectedReplacement ? "active" : ""}`}
                               >
                                 ✓ {t.acceptApprovedOnly} ({item.allocation})
                               </button>
@@ -1433,19 +1421,19 @@ export default function CheckoutPage() {
                 {(() => {
                   const payables = getPayableItemsList();
                   if (payables.length === 0) {
-                    return <p style={{ fontSize: "12px", color: "var(--text-3)", margin: "10px 0" }}>{t.noPayableItems}</p>;
+                    return <p className="checkout-no-payable-items">{t.noPayableItems}</p>;
                   }
 
                   return (
                     <div className="checkout-summary-billing">
                       {payables.map(p => (
-                        <div key={p.id} className="checkout-summary-row" style={{ opacity: 0.85 }}>
+                        <div key={p.id} className="checkout-summary-row checkout-summary-row-opacity">
                           <span>{language === "ar" ? p.name_ar : p.name_en} × {p.quantity}</span>
                           <strong>{(p.price * p.quantity).toFixed(2)} {t.sar}</strong>
                         </div>
                       ))}
 
-                      <div style={{ borderTop: "1px solid var(--border)", marginTop: "6px" }} />
+                      <div className="checkout-summary-divider" />
 
                       <div className="checkout-summary-row">
                         <span>{t.subtotal}</span>
@@ -1477,9 +1465,8 @@ export default function CheckoutPage() {
                   </button>
                 ) : (
                   <button
-                    className="btn-secondary checkout-submit-btn"
+                    className="btn-secondary checkout-submit-btn checkout-return-btn"
                     onClick={handleCancelCheckout}
-                    style={{ border: "1.5px solid var(--danger)", color: "var(--danger)" }}
                   >
                     {t.returnToCartBtn}
                   </button>
@@ -1521,7 +1508,7 @@ export default function CheckoutPage() {
             <span>{t.cartUpdatedNotice}</span>
           </div>
 
-          <button onClick={handleCancelCheckout} className="btn-primary" style={{ width: "100%", paddingVertical: "14px" }}>
+          <button onClick={handleCancelCheckout} className="btn-primary checkout-block-btn">
             {t.returnToCartBtn}
           </button>
         </div>
@@ -1530,15 +1517,15 @@ export default function CheckoutPage() {
       {/* STEP 5: PAYMENT SELECTION */}
       {checkoutStep === "payment" && (
         <div>
-          <h2 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "20px" }}>{t.paymentTitle}</h2>
+          <h2 className="checkout-payment-title">{t.paymentTitle}</h2>
           <div className="two-col-layout">
-            <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div className="layout-main-col">
 
               {/* Wallet Balance */}
               <div className="checkout-benefit-card">
                 <div>
-                  <strong style={{ fontSize: "14px", display: "block" }}>💳 {t.useWallet}</strong>
-                  <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{t.walletBalance}: {walletBalance.toFixed(2)} {t.sar}</span>
+                  <strong className="checkout-benefit-title">💳 {t.useWallet}</strong>
+                  <span className="checkout-benefit-meta">{t.walletBalance}: {walletBalance.toFixed(2)} {t.sar}</span>
                 </div>
                 <input
                   type="checkbox"
@@ -1552,8 +1539,8 @@ export default function CheckoutPage() {
               {/* Loyalty points */}
               <div className="checkout-benefit-card">
                 <div>
-                  <strong style={{ fontSize: "14px", display: "block" }}>👑 {t.redeemLoyalty}</strong>
-                  <span style={{ fontSize: "11px", color: "var(--text-2)" }}>{t.loyaltyPoints}: {loyaltyPoints} pts ({(loyaltyPoints / 50).toFixed(2)} {t.sar})</span>
+                  <strong className="checkout-benefit-title">👑 {t.redeemLoyalty}</strong>
+                  <span className="checkout-benefit-meta">{t.loyaltyPoints}: {loyaltyPoints} pts ({(loyaltyPoints / 50).toFixed(2)} {t.sar})</span>
                 </div>
                 <input
                   type="checkbox"
@@ -1567,7 +1554,7 @@ export default function CheckoutPage() {
               {/* Payment Methods */}
               <div className="checkout-card">
                 <span className="checkout-card-title">💳 Select Payment Option</span>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <div className="orders-refund-options-list">
                   {[
                     { id: "mada", name_en: "Mada card", name_ar: "مدى", logo: "💳" },
                     { id: "visa", name_en: "Visa (**** 4209)", name_ar: "فيزا (**** ٤٢٠٩)", logo: "💳" },
@@ -1584,9 +1571,9 @@ export default function CheckoutPage() {
                         className={`payment-option-card ${isSelected ? "selected" : "unselected"}`}
                       >
                         <div className="payment-option-logo-name">
-                          <span style={{ fontSize: "20px" }}>{method.logo}</span>
-                          <div style={{ display: "flex", flexDirection: "column" }}>
-                            <strong style={{ fontSize: "13px", color: "var(--text-1)" }}>{name}</strong>
+                          <span className="checkout-payment-logo-size">{method.logo}</span>
+                          <div className="checkout-payment-name-wrapper">
+                            <strong className="checkout-payment-name-text">{name}</strong>
                           </div>
                         </div>
                         <input
@@ -1595,7 +1582,7 @@ export default function CheckoutPage() {
                           value={method.id}
                           checked={isSelected}
                           onChange={() => setPaymentMethod(method.id)}
-                          style={{ cursor: "pointer" }}
+                          className="checkout-payment-checkbox"
                         />
                       </label>
                     );
@@ -1642,17 +1629,17 @@ export default function CheckoutPage() {
                         <strong>{vat.toFixed(2)} {t.sar}</strong>
                       </div>
 
-                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+                      <div className="checkout-invoice-thick-divider" />
 
-                      <div className="checkout-summary-row" style={{ fontSize: "15.5px", fontWeight: "800", color: "var(--text-1)" }}>
+                      <div className="checkout-summary-row checkout-invoice-total-text">
                         <span>{t.totalAmount}</span>
                         <span>{totalBeforeDeduct.toFixed(2)} {t.sar}</span>
                       </div>
 
-                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+                      <div className="checkout-invoice-thick-divider" />
 
                       {/* Promo Code */}
-                      <form onSubmit={handleApplyCoupon} style={{ display: "flex", gap: "8px", marginTop: "4px", marginBottom: "4px" }}>
+                      <form onSubmit={handleApplyCoupon} className="checkout-coupon-form">
                         <input
                           type="text"
                           className="form-input coupon-code-input"
@@ -1661,7 +1648,7 @@ export default function CheckoutPage() {
                           disabled={couponApplied}
                           onChange={(e) => setCouponCode(e.target.value)}
                         />
-                        <button type="submit" className="btn-secondary" style={{ width: "auto", paddingInline: "16px", fontSize: "12px" }} disabled={couponApplied}>
+                        <button type="submit" className="btn-secondary checkout-coupon-apply-btn" disabled={couponApplied}>
                           {t.apply}
                         </button>
                       </form>
@@ -1678,42 +1665,42 @@ export default function CheckoutPage() {
                         </div>
                       )}
 
-                      <div style={{ borderTop: "1.5px solid var(--border)", marginTop: "4px", marginBottom: "4px" }} />
+                      <div className="checkout-invoice-thick-divider" />
 
                       {/* Benefits Info */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "2px" }}>
-                        <span style={{ fontSize: "11px", color: "var(--text-2)", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      <div className="checkout-invoice-benefits-section">
+                        <span className="checkout-invoice-benefits-header">
                           {t.availableBenefits}
                         </span>
                         <div className="checkout-summary-row">
-                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>💳 {language === "ar" ? "رصيد المحفظة" : "Wallet Balance"}</span>
-                          <strong style={{ color: "var(--primary)" }}>{walletBalance.toFixed(2)} {t.sar}</strong>
+                          <span className="checkout-invoice-benefit-row-label">💳 {language === "ar" ? "رصيد المحفظة" : "Wallet Balance"}</span>
+                          <strong className="checkout-invoice-primary-color">{walletBalance.toFixed(2)} {t.sar}</strong>
                         </div>
                         <div className="checkout-summary-row">
-                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>👑 {language === "ar" ? "نقاط الولاء" : "Loyalty Points"}</span>
-                          <strong style={{ color: "#f59e0b" }}>{loyaltyPoints} pts ({(loyaltyPoints / 50).toFixed(2)} {t.sar})</strong>
+                          <span className="checkout-invoice-benefit-row-label">👑 {language === "ar" ? "نقاط الولاء" : "Loyalty Points"}</span>
+                          <strong className="checkout-invoice-gold-color">{loyaltyPoints} pts ({(loyaltyPoints / 50).toFixed(2)} {t.sar})</strong>
                         </div>
                       </div>
 
                       {/* Deductions applied list */}
                       {(walletDeduct > 0 || loyaltyDeduct > 0 || discount > 0) && (
                         <>
-                          <div style={{ borderTop: "1.5px dashed var(--border)", marginTop: "4px", marginBottom: "4px" }} />
-                          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                          <div className="checkout-invoice-dashed-divider" />
+                          <div className="checkout-invoice-deductions-list">
                             {discount > 0 && (
-                              <div className="checkout-summary-row" style={{ color: "var(--danger)", fontWeight: "700" }}>
+                              <div className="checkout-summary-row checkout-invoice-danger-bold-text">
                                 <span>{t.additionalDiscount}</span>
                                 <span>-{discount.toFixed(2)} {t.sar}</span>
                               </div>
                             )}
                             {useWallet && walletDeduct > 0 && (
-                              <div className="checkout-summary-row" style={{ color: "var(--secondary)", fontWeight: "700" }}>
+                              <div className="checkout-summary-row checkout-invoice-secondary-bold-text">
                                 <span>{t.paymentFromBalance}</span>
                                 <span>-{walletDeduct.toFixed(2)} {t.sar}</span>
                               </div>
                             )}
                             {useLoyalty && loyaltyDeduct > 0 && (
-                              <div className="checkout-summary-row" style={{ color: "var(--secondary)", fontWeight: "700" }}>
+                              <div className="checkout-summary-row checkout-invoice-secondary-bold-text">
                                 <span>{t.redeemLoyalty}</span>
                                 <span>-{loyaltyDeduct.toFixed(2)} {t.sar}</span>
                               </div>
@@ -1725,10 +1712,10 @@ export default function CheckoutPage() {
                       {/* Final Net Amount Row */}
                       <div className="checkout-summary-total-row">
                         <span>{t.paidAmount}</span>
-                        <span style={{ color: "#7C3AED" }}>{finalPayable.toFixed(2)} {t.sar}</span>
+                        <span className="checkout-invoice-purple-color">{finalPayable.toFixed(2)} {t.sar}</span>
                       </div>
 
-                      <button onClick={() => updateCheckoutState({ step: "processing_payment" })} className="btn-primary checkout-submit-btn" style={{ paddingVertical: "14px" }}>
+                      <button onClick={() => updateCheckoutState({ step: "processing_payment" })} className="btn-primary checkout-submit-btn checkout-invoice-pay-btn">
                         {t.confirmPayment}
                       </button>
                     </div>
@@ -1746,7 +1733,7 @@ export default function CheckoutPage() {
         <div className="processing-payment-container">
           <div className="payment-spinner" />
           <div>
-            <h2 style={{ fontSize: "18px", fontWeight: "800" }}>{t.preparingPayment}</h2>
+            <h2 className="checkout-processing-payment-title">{t.preparingPayment}</h2>
           </div>
         </div>
       )}
@@ -1776,7 +1763,7 @@ export default function CheckoutPage() {
                 {t.availableItems}
               </span>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div className="checkout-invoice-benefits-section">
                 {getPayableItemsList().map(item => (
                   <div key={item.id} className="confirmation-item-card-row available">
                     <div className="confirmation-item-card-row-info">
@@ -1791,13 +1778,13 @@ export default function CheckoutPage() {
 
             {/* Unavailable / Rejected Items */}
             {activeCheckout.items.some(i => i.isRemoved || i.allocation === "*" || i.allocation === "0" || Number(i.allocation) === 0) && (
-              <div style={{ borderTop: "1.5px dashed var(--border)", paddingTop: "14px" }}>
+              <div className="checkout-invoice-dashed-divider-pt14">
                 <span className="confirmation-section-header unavailable">
                   <span className="confirmation-section-badge-circle unavailable">✕</span>
-                  {t.unavailableItems} <span style={{ fontSize: "10.5px", fontWeight: "500", color: "var(--text-2)" }}>({t.refundedToWallet})</span>
+                  {t.unavailableItems} <span className="checkout-invoice-sub-refunded-text">({t.refundedToWallet})</span>
                 </span>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="checkout-invoice-benefits-section">
                   {activeCheckout.items.filter(i => i.isRemoved || i.allocation === "*" || i.allocation === "0" || Number(i.allocation) === 0).map(item => {
                     // Check if replacement was chosen, in which case the original is rejected
                     return (
@@ -1824,10 +1811,10 @@ export default function CheckoutPage() {
 
           {/* Action buttons */}
           <div className="confirmation-actions-container">
-            <button onClick={() => updateCheckoutState({ step: "tracking" })} className="btn-primary" style={{ width: "100%", paddingVertical: "14px", backgroundColor: "#6355a4", border: "none" }}>
+            <button onClick={() => updateCheckoutState({ step: "tracking" })} className="btn-primary checkout-invoice-track-btn">
               {t.trackBtn}
             </button>
-            <button onClick={() => setShowReceiptModal(true)} className="btn-secondary" style={{ width: "100%", paddingVertical: "14px" }}>
+            <button onClick={() => setShowReceiptModal(true)} className="btn-secondary checkout-block-btn">
               {t.receiptBtn}
             </button>
             <button
@@ -1835,8 +1822,7 @@ export default function CheckoutPage() {
                 setActiveCheckout(null); // Reset active checkout
                 router.push("/home");
               }}
-              className="btn-secondary"
-              style={{ width: "100%", paddingVertical: "14px", border: "1px solid var(--border)" }}
+              className="btn-secondary checkout-invoice-home-btn"
             >
               {t.homeBtn}
             </button>
@@ -1847,7 +1833,7 @@ export default function CheckoutPage() {
       {/* STEP 8: SHIPMENT TRACKING TIMELINE */}
       {checkoutStep === "tracking" && (
         <div>
-          <h2 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "20px" }}>🚚 {t.trackingTitle}</h2>
+          <h2 className="checkout-payment-title">🚚 {t.trackingTitle}</h2>
 
           <div className="tracking-timeline-list">
             {activeCheckout.placedOrders && activeCheckout.placedOrders.map((ord, oIndex) => {
@@ -1877,11 +1863,11 @@ export default function CheckoutPage() {
                     ].map((stepItem, sIndex) => (
                       <div key={stepItem.step} className="tracking-milestone-item">
                         <div className={`tracking-milestone-bullet ${stepItem.active ? "active" : stepItem.done ? "done" : "pending"}`} />
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px" }}>
-                          <span style={{ fontWeight: stepItem.active ? "800" : "600", color: stepItem.active ? "var(--primary)" : "var(--text-1)" }}>
+                        <div className="checkout-timeline-row-between">
+                          <span className={stepItem.active ? "checkout-timeline-title-active" : "checkout-timeline-title-normal"}>
                             {stepItem.title}
                           </span>
-                          <span style={{ color: "var(--text-2)" }}>{stepItem.time}</span>
+                          <span className="checkout-timeline-time">{stepItem.time}</span>
                         </div>
                       </div>
                     ))}
@@ -1891,7 +1877,7 @@ export default function CheckoutPage() {
                   <div className="tracking-driver-box">
                     <div>
                       <span className="tracking-driver-label">👤 {t.driver}</span>
-                      <strong style={{ fontSize: "13px" }}>{driverName}</strong>
+                      <strong className="checkout-payment-name-text">{driverName}</strong>
                     </div>
                     <a href={`tel:${driverPhone}`} className="tracking-driver-phone-btn">
                       📞 {driverPhone}
@@ -1907,8 +1893,7 @@ export default function CheckoutPage() {
               setActiveCheckout(null); // Reset checkout state
               router.push("/home");
             }}
-            className="btn-primary"
-            style={{ width: "100%", marginTop: "24px", paddingVertical: "14px" }}
+            className="btn-primary checkout-invoice-home-btn-mt24"
           >
             {t.homeBtn}
           </button>
@@ -1918,14 +1903,14 @@ export default function CheckoutPage() {
       {/* CHOOSE A DELIVERY ADDRESS MODAL */}
       {showAddressModal && (
         <div className="modal-overlay" onClick={() => setShowAddressModal(false)}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "440px", borderRadius: "24px" }}>
+          <div className="modal-sheet checkout-address-select-modal" onClick={(e) => e.stopPropagation()}>
 
             {addressModalMode === "select" ? (
               /* SELECT ADDRESS */
               <div>
                 <div className="address-modal-header">
                   <h3 className="address-modal-title">{t.selectAddress}</h3>
-                  <button className="btn-icon" onClick={() => setShowAddressModal(false)} style={{ fontSize: "16px" }}>✕</button>
+                  <button className="btn-icon checkout-btn-icon-size16" onClick={() => setShowAddressModal(false)}>✕</button>
                 </div>
 
                 <button
@@ -1933,7 +1918,7 @@ export default function CheckoutPage() {
                   onClick={() => setAddressModalMode("add")}
                   className="address-modal-add-btn"
                 >
-                  <span style={{ fontSize: "16px" }}>➕</span> {t.addNewAddress}
+                  <span className="checkout-btn-icon-size16">➕</span> {t.addNewAddress}
                 </button>
 
                 <div className="address-modal-list">
@@ -1944,23 +1929,17 @@ export default function CheckoutPage() {
                       <div
                         key={addr.id}
                         onClick={() => setCurrentAddress(addr)}
-                        className="address-modal-item"
-                        style={{
-                          border: `1.5px solid ${isSelected ? "rgba(249, 115, 22, 0.5)" : "var(--border)"}`
-                        }}
+                        className={`address-modal-item ${isSelected ? "selected" : "unselected"}`}
                       >
                         <div
-                          className="address-modal-radio-outer"
-                          style={{
-                            border: `2px solid ${isSelected ? "#F97316" : "var(--border)"}`
-                          }}
+                          className={`address-modal-radio-outer ${isSelected ? "selected" : "unselected"}`}
                         >
                           {isSelected && <div className="address-modal-radio-inner" />}
                         </div>
 
                         <div className="address-modal-item-info">
-                          <span style={{ fontSize: "18px", marginTop: "2px" }}>{isHome ? "🏠" : "💼"}</span>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                          <span className="checkout-address-tag-icon">{isHome ? "🏠" : "💼"}</span>
+                          <div className="checkout-address-item-details-column">
                             <div className="address-modal-item-tag-row">
                               <strong className="address-modal-item-tag">
                                 {language === "ar" ? addr.tag_ar : addr.tag.toLowerCase()}
@@ -1984,17 +1963,15 @@ export default function CheckoutPage() {
                 <div className="address-modal-actions">
                   <button
                     type="button"
-                    className="btn-primary"
+                    className="btn-primary checkout-invoice-track-btn"
                     onClick={() => setShowAddressModal(false)}
-                    style={{ width: "100%", paddingVertical: "14px", backgroundColor: "#6355a4", border: "none" }}
                   >
                     {t.select}
                   </button>
                   <button
                     type="button"
-                    className="btn-secondary"
+                    className="btn-secondary checkout-invoice-home-btn"
                     onClick={() => setShowAddressModal(false)}
-                    style={{ width: "100%", paddingVertical: "14px", border: "1px solid var(--border)", color: "var(--text-2)" }}
                   >
                     {t.cancel}
                   </button>
@@ -2004,22 +1981,15 @@ export default function CheckoutPage() {
               /* ADD NEW ADDRESS */
               <form onSubmit={handleAddressSubmit}>
                 <div className="address-modal-header">
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div className="checkout-invoice-benefit-row-label">
                     <button
                       type="button"
                       onClick={() => setAddressModalMode("select")}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        fontSize: "16px",
-                        cursor: "pointer",
-                        color: "var(--primary)",
-                        padding: 0
-                      }}
+                      className="checkout-address-back-btn"
                     >
                       {language === "ar" ? "→" : "←"}
                     </button>
-                    <h3 style={{ fontSize: "15px", fontWeight: "700", margin: 0 }}> {t.addNewAddress}</h3>
+                    <h3 className="checkout-address-modal-title"> {t.addNewAddress}</h3>
                   </div>
                   <button className="btn-icon" type="button" onClick={() => setShowAddressModal(false)}>✕</button>
                 </div>
@@ -2052,7 +2022,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "10px", paddingVertical: "14px" }}>
+                <button type="submit" className="btn-primary checkout-address-save-btn">
                   ✓ Save Address
                 </button>
               </form>
@@ -2065,37 +2035,37 @@ export default function CheckoutPage() {
       {/* ELECTRONIC RECEIPT MODAL */}
       {showReceiptModal && activeCheckout && (
         <div className="modal-overlay" onClick={() => setShowReceiptModal(false)}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "460px", padding: "24px", borderRadius: "24px" }}>
+          <div className="modal-sheet checkout-receipt-modal" onClick={(e) => e.stopPropagation()}>
             <div className="receipt-modal-header">
               <h3 className="receipt-modal-title">🧾 {t.electronicReceipt}</h3>
               <button className="btn-icon" onClick={() => setShowReceiptModal(false)}>✕</button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <div className="checkout-receipt-body">
               <div className="receipt-modal-info">
-                <div>{t.orderId}: <strong style={{ color: "var(--text-1)" }}>{activeCheckout.simulatedOrderId}</strong></div>
-                <div>{t.dateLabel}: <strong style={{ color: "var(--text-1)" }}>{new Date().toISOString().split("T")[0]}</strong></div>
-                <div>{t.paymentMethodLabel}: <strong style={{ color: "var(--text-1)" }}>{paymentMethod.toUpperCase()}</strong></div>
-                <div>{t.deliveryAddress}: <strong style={{ color: "var(--text-1)" }}>{activeAddress ? `${activeAddress.street}, ${activeAddress.city}` : ""}</strong></div>
+                <div>{t.orderId}: <strong className="checkout-receipt-info-value">{activeCheckout.simulatedOrderId}</strong></div>
+                <div>{t.dateLabel}: <strong className="checkout-receipt-info-value">{new Date().toISOString().split("T")[0]}</strong></div>
+                <div>{t.paymentMethodLabel}: <strong className="checkout-receipt-info-value">{paymentMethod.toUpperCase()}</strong></div>
+                <div>{t.deliveryAddress}: <strong className="checkout-receipt-info-value">{activeAddress ? `${activeAddress.street}, ${activeAddress.city}` : ""}</strong></div>
               </div>
 
               <div className="receipt-modal-table-container">
                 <table className="receipt-modal-table">
                   <thead>
                     <tr className="receipt-modal-table-header">
-                      <th style={{ padding: "10px", textAlign: "start" }}>Item</th>
-                      <th style={{ padding: "10px", textAlign: "center" }}>Qty</th>
-                      <th style={{ padding: "10px", textAlign: "end" }}>Total</th>
+                      <th>Item</th>
+                      <th>Qty</th>
+                      <th>Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {getPayableItemsList().map(item => (
                       <tr key={item.id} className="receipt-modal-table-row">
-                        <td style={{ padding: "10px", color: "var(--text-1)" }}>
+                        <td className="checkout-receipt-info-value">
                           {language === "ar" ? item.name_ar : item.name_en}
                         </td>
-                        <td style={{ padding: "10px", textAlign: "center", color: "var(--text-2)" }}>{item.quantity}</td>
-                        <td style={{ padding: "10px", textAlign: "end", fontWeight: "700" }}>{(item.price * item.quantity).toFixed(2)} {t.sar}</td>
+                        <td>{item.quantity}</td>
+                        <td>{(item.price * item.quantity).toFixed(2)} {t.sar}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -2116,19 +2086,19 @@ export default function CheckoutPage() {
                   <strong>{activeCheckout.placedVat.toFixed(2)} {t.sar}</strong>
                 </div>
                 {activeCheckout.placedCouponDiscount > 0 && (
-                  <div className="checkout-summary-row" style={{ color: "var(--danger)" }}>
+                  <div className="checkout-summary-row checkout-invoice-danger-bold-text">
                     <span>{t.additionalDiscount}</span>
                     <strong>-{activeCheckout.placedCouponDiscount.toFixed(2)} {t.sar}</strong>
                   </div>
                 )}
                 {activeCheckout.placedWalletDeduction > 0 && (
-                  <div className="checkout-summary-row" style={{ color: "var(--secondary)" }}>
+                  <div className="checkout-summary-row checkout-invoice-secondary-bold-text">
                     <span>{t.paymentFromBalance}</span>
                     <strong>-{activeCheckout.placedWalletDeduction.toFixed(2)} {t.sar}</strong>
                   </div>
                 )}
                 {activeCheckout.placedLoyaltyDeduction > 0 && (
-                  <div className="checkout-summary-row" style={{ color: "var(--secondary)" }}>
+                  <div className="checkout-summary-row checkout-invoice-secondary-bold-text">
                     <span>{t.redeemLoyalty}</span>
                     <strong>-{activeCheckout.placedLoyaltyDeduction.toFixed(2)} {t.sar}</strong>
                   </div>
@@ -2141,9 +2111,8 @@ export default function CheckoutPage() {
 
               <button
                 type="button"
-                className="btn-primary"
+                className="btn-primary checkout-invoice-pay-btn"
                 onClick={() => setShowReceiptModal(false)}
-                style={{ width: "100%", paddingVertical: "12px", marginTop: "6px" }}
               >
                 {t.close}
               </button>

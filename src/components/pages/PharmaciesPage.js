@@ -95,83 +95,63 @@ export default function PharmaciesPage() {
       `}</style>
 
       {/* 1. LEFT FILTER SIDEBAR (Desktop Only) */}
-      <div className="layout-side-col desktop-only" style={{ backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "20px" }}>
-        <h3 style={{ fontSize: "16px", fontWeight: "800", borderBottom: "1px solid var(--border)", paddingBottom: "10px", margin: 0 }}>
+      <div className="layout-side-col desktop-only pharmacies-filter-sidebar">
+        <h3 className="pharmacies-filter-title">
           {t.filters}
         </h3>
 
         {/* 24 hours open toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "13px", fontWeight: "700" }}>🕒 {t.open24}</span>
+        <div className="pharmacies-filter-row">
+          <span className="pharmacies-filter-label">🕒 {t.open24}</span>
           <input
             type="checkbox"
             checked={filter24h}
             onChange={() => setFilter24h(!filter24h)}
-            style={{ width: "18px", height: "18px", cursor: "pointer" }}
+            className="pharmacies-filter-checkbox"
           />
         </div>
 
         {/* Free shipping toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "13px", fontWeight: "700" }}>🚗 {t.freeDel}</span>
+        <div className="pharmacies-filter-row">
+          <span className="pharmacies-filter-label">🚗 {t.freeDel}</span>
           <input
             type="checkbox"
             checked={filterFree}
             onChange={() => setFilterFree(!filterFree)}
-            style={{ width: "18px", height: "18px", cursor: "pointer" }}
+            className="pharmacies-filter-checkbox"
           />
         </div>
 
         {/* Fast delivery toggle (Screen 12 specifications) */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: "13px", fontWeight: "700" }}>⚡ {t.fastDel}</span>
+        <div className="pharmacies-filter-row">
+          <span className="pharmacies-filter-label">⚡ {t.fastDel}</span>
           <input
             type="checkbox"
             checked={filterFast}
             onChange={() => setFilterFast(!filterFast)}
-            style={{ width: "18px", height: "18px", cursor: "pointer" }}
+            className="pharmacies-filter-checkbox"
           />
         </div>
       </div>
 
       {/* 2. RIGHT / MAIN PHARMACIES LIST & MAP */}
-      <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div className="layout-main-col pharmacies-main-col">
         
         {/* Toggle Mode and Map Header Row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ fontSize: "20px", fontWeight: "900", margin: 0 }}>{t.title}</h2>
+        <div className="pharmacies-header-row">
+          <h2 className="pharmacies-header-title">{t.title}</h2>
           
           {/* Map/List Switcher Toggle (Screen 12 specifications) */}
-          <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--surface)", border: "1px solid var(--border)", borderRadius: "30px", padding: "4px" }}>
+          <div className="pharmacies-switcher-container">
             <button
               onClick={() => setViewMode("list")}
-              style={{
-                background: viewMode === "list" ? "var(--primary)" : "transparent",
-                color: viewMode === "list" ? "var(--text-on-primary)" : "var(--text-2)",
-                border: "none",
-                borderRadius: "20px",
-                padding: "6px 14px",
-                fontSize: "12px",
-                fontWeight: "700",
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
+              className={`pharmacies-switcher-btn ${viewMode === "list" ? "active" : ""}`}
             >
               {t.listView}
             </button>
             <button
               onClick={() => setViewMode("map")}
-              style={{
-                background: viewMode === "map" ? "var(--primary)" : "transparent",
-                color: viewMode === "map" ? "var(--text-on-primary)" : "var(--text-2)",
-                border: "none",
-                borderRadius: "20px",
-                padding: "6px 14px",
-                fontSize: "12px",
-                fontWeight: "700",
-                cursor: "pointer",
-                transition: "all 0.2s"
-              }}
+              className={`pharmacies-switcher-btn ${viewMode === "map" ? "active" : ""}`}
             >
               {t.mapView}
             </button>
@@ -179,64 +159,33 @@ export default function PharmaciesPage() {
         </div>
 
         {/* Search input field */}
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div className="pharmacies-search-row">
           <input
             type="text"
-            className="form-input"
+            className="form-input pharmacies-search-input"
             placeholder={t.placeholder}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ borderRadius: "24px", paddingInlineStart: "20px" }}
           />
         </div>
 
         {/* Mobile Filter Badges */}
-        <div className="mobile-only" style={{ display: "flex", gap: "8px", overflowX: "auto", paddingBottom: "4px" }}>
+        <div className="mobile-only pharmacies-mobile-filters">
           <button
             onClick={() => setFilter24h(!filter24h)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              border: `1px solid ${filter24h ? "var(--primary)" : "var(--border)"}`,
-              backgroundColor: filter24h ? "rgba(15, 108, 189, 0.1)" : "var(--surface)",
-              color: filter24h ? "var(--primary)" : "var(--text-2)",
-              fontSize: "11px",
-              fontWeight: "600",
-              cursor: "pointer",
-              whiteSpace: "nowrap"
-            }}
+            className={`pharmacies-mobile-filter-badge ${filter24h ? "active" : ""}`}
           >
             🕒 {language === "ar" ? "٢٤ ساعة" : "24h Open"}
           </button>
           <button
             onClick={() => setFilterFree(!filterFree)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              border: `1px solid ${filterFree ? "var(--primary)" : "var(--border)"}`,
-              backgroundColor: filterFree ? "rgba(15, 108, 189, 0.1)" : "var(--surface)",
-              color: filterFree ? "var(--primary)" : "var(--text-2)",
-              fontSize: "11px",
-              fontWeight: "600",
-              cursor: "pointer",
-              whiteSpace: "nowrap"
-            }}
+            className={`pharmacies-mobile-filter-badge ${filterFree ? "active" : ""}`}
           >
             🚗 {t.freeDel}
           </button>
           <button
             onClick={() => setFilterFast(!filterFast)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              border: `1px solid ${filterFast ? "var(--primary)" : "var(--border)"}`,
-              backgroundColor: filterFast ? "rgba(15, 108, 189, 0.1)" : "var(--surface)",
-              color: filterFast ? "var(--primary)" : "var(--text-2)",
-              fontSize: "11px",
-              fontWeight: "600",
-              cursor: "pointer",
-              whiteSpace: "nowrap"
-            }}
+            className={`pharmacies-mobile-filter-badge ${filterFast ? "active" : ""}`}
           >
             ⚡ {t.fastDel}
           </button>
@@ -248,27 +197,18 @@ export default function PharmaciesPage() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                style={{
-                  backgroundColor: "var(--surface)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "16px",
-                  padding: "16px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  height: "220px"
-                }}
+                className="pharmacies-shimmer-card"
               >
                 {/* Image Placeholder */}
-                <div className="shimmer-bg" style={{ height: "100px", borderRadius: "12px", width: "100%" }} />
+                <div className="shimmer-bg shimmer-bg h100" />
                 {/* Title Line Placeholder */}
-                <div className="shimmer-bg" style={{ height: "16px", borderRadius: "4px", width: "70%" }} />
+                <div className="shimmer-bg shimmer-bg h16-w70" />
                 {/* Subtitle Placeholder */}
-                <div className="shimmer-bg" style={{ height: "12px", borderRadius: "4px", width: "40%" }} />
+                <div className="shimmer-bg shimmer-bg h12-w40-percent" />
                 {/* Footer Buttons Placeholder */}
-                <div style={{ display: "flex", gap: "8px", marginTop: "auto" }}>
-                  <div className="shimmer-bg" style={{ height: "24px", borderRadius: "6px", flex: 1 }} />
-                  <div className="shimmer-bg" style={{ height: "24px", borderRadius: "6px", flex: 1 }} />
+                <div className="pharmacies-shimmer-card-footer">
+                  <div className="shimmer-bg shimmer-bg h24-flex1" />
+                  <div className="shimmer-bg shimmer-bg h24-flex1" />
                 </div>
               </div>
             ))}
@@ -276,8 +216,8 @@ export default function PharmaciesPage() {
         ) : viewMode === "list" ? (
           /* STANDARD LIST VIEW */
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" }}>
-              <span style={{ fontSize: "12px", color: "var(--text-2)", fontWeight: "600" }}>
+            <div className="pharmacies-results-header">
+              <span className="pharmacies-results-count">
                 {filtered.length} {t.resultsCount}
               </span>
             </div>
@@ -289,7 +229,7 @@ export default function PharmaciesPage() {
             </div>
 
             {filtered.length === 0 && (
-              <div className="empty-state" style={{ marginTop: "20px" }}>
+              <div className="empty-state empty-state-margin">
                 <span className="empty-icon">🏥</span>
                 <span className="empty-title">{t.noMatching}</span>
               </div>
@@ -297,29 +237,17 @@ export default function PharmaciesPage() {
           </div>
         ) : (
           /* INTERACTIVE MAP VIEW (Screen 12 Map overlay details) */
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div
-              style={{
-                height: "360px",
-                backgroundColor: "#e0f2f1",
-                backgroundImage: "radial-gradient(#b2dfdb 1.5px, transparent 1.5px)",
-                backgroundSize: "30px 30px",
-                borderRadius: "20px",
-                position: "relative",
-                overflow: "hidden",
-                border: "1px solid var(--border)",
-                boxShadow: "var(--shadow-md)"
-              }}
-            >
+          <div className="pharmacies-map-view-wrapper">
+            <div className="pharmacies-map-canvas">
               {/* Riyadh Grid Streets mockup background overlay */}
-              <div style={{ position: "absolute", width: "100%", height: "4px", backgroundColor: "#fff", top: "50%", left: 0 }} />
-              <div style={{ position: "absolute", width: "4px", height: "100%", backgroundColor: "#fff", left: "50%", top: 0 }} />
-              <div style={{ position: "absolute", width: "100%", height: "2px", backgroundColor: "#fff", top: "25%", left: 0, opacity: 0.7 }} />
-              <div style={{ position: "absolute", width: "100%", height: "2px", backgroundColor: "#fff", top: "75%", left: 0, opacity: 0.7 }} />
+              <div className="map-street-h-mid" />
+              <div className="map-street-v-mid" />
+              <div className="map-street-h-25" />
+              <div className="map-street-h-75" />
               
               {/* Street Names Indicators */}
-              <div style={{ position: "absolute", left: "10px", top: "45%", fontSize: "9px", color: "var(--text-2)", fontWeight: "700", transform: "rotate(-90deg)" }}>King Fahd Road</div>
-              <div style={{ position: "absolute", right: "20px", top: "52%", fontSize: "9px", color: "var(--text-2)", fontWeight: "700" }}>Al-Malqa Road</div>
+              <div className="map-street-label-kf">King Fahd Road</div>
+              <div className="map-street-label-mq">Al-Malqa Road</div>
 
               {/* Render Map pins for matching branches */}
               {filtered.map((ph) => {
@@ -330,34 +258,15 @@ export default function PharmaciesPage() {
                   <div
                     key={ph.id}
                     onClick={() => setActivePin(ph.id)}
+                    className="map-pin-container"
                     style={{
-                      position: "absolute",
                       top: coordinates.top,
                       left: coordinates.left,
-                      cursor: "pointer",
-                      zIndex: isSelected ? 100 : 50,
-                      transform: "translate(-50%, -50%)",
-                      transition: "all 0.2s"
+                      zIndex: isSelected ? 100 : 50
                     }}
                   >
                     {/* Animated Pulsing Pin Locator Drop */}
-                    <div
-                      style={{
-                        width: isSelected ? "32px" : "24px",
-                        height: isSelected ? "32px" : "24px",
-                        borderRadius: "50%",
-                        backgroundColor: isSelected ? "var(--primary)" : "var(--surface)",
-                        border: "2.5px solid var(--primary)",
-                        color: isSelected ? "white" : "var(--primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: isSelected ? "14px" : "11px",
-                        fontWeight: "800",
-                        animation: isSelected ? "pulsePin 1s infinite alternate" : "none",
-                        boxShadow: "var(--shadow-sm)"
-                      }}
-                    >
+                    <div className={`map-pin-icon ${isSelected ? "selected" : ""}`}>
                       💊
                     </div>
                   </div>
@@ -365,9 +274,9 @@ export default function PharmaciesPage() {
               })}
 
               {/* Visual Zoom buttons */}
-              <div style={{ position: "absolute", bottom: "16px", [language === "ar" ? "left" : "right"]: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                <button type="button" style={{ width: "30px", height: "30px", borderRadius: "6px", border: "1px solid var(--border)", backgroundColor: "var(--surface)", fontSize: "14px", fontWeight: "700", cursor: "pointer" }} onClick={() => alert("Zooming In...")}>＋</button>
-                <button type="button" style={{ width: "30px", height: "30px", borderRadius: "6px", border: "1px solid var(--border)", backgroundColor: "var(--surface)", fontSize: "14px", fontWeight: "700", cursor: "pointer" }} onClick={() => alert("Zooming Out...")}>－</button>
+              <div className="map-zoom-controls">
+                <button type="button" className="map-zoom-btn" onClick={() => alert("Zooming In...")}>＋</button>
+                <button type="button" className="map-zoom-btn" onClick={() => alert("Zooming Out...")}>－</button>
               </div>
             </div>
 
@@ -380,32 +289,20 @@ export default function PharmaciesPage() {
                 const phEta = language === "ar" ? selectedPh.deliveryEta_ar : selectedPh.deliveryEta_en;
                 
                 return (
-                  <div
-                    style={{
-                      display: "flex",
-                      backgroundColor: "var(--surface)",
-                      border: "1.5px solid var(--primary)",
-                      borderRadius: "16px",
-                      padding: "16px",
-                      alignItems: "center",
-                      gap: "16px",
-                      boxShadow: "var(--shadow-md)"
-                    }}
-                  >
-                    <div style={{ fontSize: "36px", padding: "10px", backgroundColor: "var(--bg)", borderRadius: "12px" }}>
+                  <div className="map-detail-card">
+                    <div className="map-detail-logo">
                       {selectedPh.logo}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ fontSize: "15px", fontWeight: "800", margin: 0 }}>{phName}</h4>
-                      <div style={{ display: "flex", gap: "10px", fontSize: "11px", color: "var(--text-2)", marginTop: "4px" }}>
+                    <div className="map-detail-info">
+                      <h4 className="map-detail-name">{phName}</h4>
+                      <div className="map-detail-badges">
                         <span>★ {selectedPh.rating}</span>
                         <span>⏱️ {phEta}</span>
                         <span>🚗 {selectedPh.deliveryFee === 0 ? t.freeDel : `${selectedPh.deliveryFee} SAR`}</span>
                       </div>
                     </div>
                     <button
-                      className="btn-primary"
-                      style={{ width: "auto", padding: "8px 16px", fontSize: "12px" }}
+                      className="btn-primary map-detail-btn"
                       onClick={() => router.push(`/pharmacies/${selectedPh.id}`)}
                     >
                       🚀 {t.viewBranch}

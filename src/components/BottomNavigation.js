@@ -31,24 +31,10 @@ export default function BottomNavigation() {
             href={item.path}
             className={`nav-item ${isActive ? "nav-item-active" : ""}`}
           >
-            <div style={{ position: "relative" }}>
+            <div className="nav-icon-wrapper">
               <span className="nav-icon">{item.icon}</span>
               {item.badgeCount && totalCartItems > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-5px",
-                    right: "-10px",
-                    backgroundColor: "var(--danger)",
-                    color: "white",
-                    borderRadius: "50%",
-                    fontSize: "9px",
-                    fontWeight: "bold",
-                    padding: "2px 5px",
-                    minWidth: "16px",
-                    textAlign: "center"
-                  }}
-                >
+                <span className="bottom-nav-badge">
                   {totalCartItems}
                 </span>
               )}

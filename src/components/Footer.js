@@ -43,16 +43,16 @@ export default function Footer() {
 
         <div className="footer-col">
           <h4 className="footer-heading">{t.about}</h4>
-          <p className="footer-desc-text" style={{ fontSize: "12px" }}>{t.aboutDesc}</p>
+          <p className="footer-desc-text footer-col-desc">{t.aboutDesc}</p>
         </div>
 
         <div className="footer-col">
           <h4 className="footer-heading">{t.contactHeader}</h4>
-          <div className="footer-links" style={{ fontSize: "12px", color: "var(--text-2)", gap: "6px" }}>
+          <div className="footer-contact-details">
             <span>📞 920012345</span>
             <span>📧 support@yusur.com</span>
-            <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-              <Link href="/profile?action=support" className="footer-link-item" style={{ textDecoration: "underline" }}>
+            <div className="footer-support-row">
+              <Link href="/profile?action=support" className="footer-link-item footer-underline-link">
                 {t.support}
               </Link>
             </div>
@@ -62,7 +62,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <span>{t.copyright}</span>
-        <div style={{ display: "flex", gap: "16px" }}>
+        <div className="footer-bottom-links">
           <Link href="/profile?action=support" className="footer-bottom-link">{t.privacy}</Link>
           <Link href="/profile?action=support" className="footer-bottom-link">{t.terms}</Link>
         </div>

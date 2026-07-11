@@ -20,25 +20,20 @@ export function WalletCard({ compact = false }) {
     <div className="wallet-card">
       <div className="wallet-card-header">
         <span>{t.wallet}</span>
-        {/* {!compact && (
-          <Link href="/wallet" style={{ color: "#fff", textDecoration: "underline", fontSize: "11px" }}>
-            {t.details}
-          </Link>
-        )} */}
-        <Link href="/wallet" style={{ color: "#fff", textDecoration: "underline", fontSize: "11px" }}>
+        <Link href="/wallet" className="wallet-card-header-link">
           {t.details}
         </Link>
       </div>
 
       <div>
-        <span style={{ fontSize: "11px", opacity: 0.8, display: "block" }}>{t.balance}</span>
+        <span className="wallet-card-label">{t.balance}</span>
         <h3 className="wallet-card-balance">
-          {walletBalance.toFixed(2)} <span style={{ fontSize: "16px" }}>{t.sar}</span>
+          {walletBalance.toFixed(2)} <span className="wallet-card-currency">{t.sar}</span>
         </h3>
       </div>
 
       {!compact && (
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "10px" }}>
+        <div className="wallet-card-breakdown">
           <span>{t.refunds} {(walletBalance * 0.8).toFixed(2)} {t.sar}</span>
           <span>{t.promo} {(walletBalance * 0.2).toFixed(2)} {t.sar}</span>
         </div>
@@ -66,50 +61,34 @@ export function LoyaltyCard({ compact = false }) {
   const percent = Math.min((loyaltyPoints / 1500) * 100, 100);
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #b8860b 0%, #d4af37 100%)",
-        color: "#fff",
-        borderRadius: "16px",
-        padding: "20px",
-        boxShadow: "var(--shadow-md)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px"
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", fontWeight: "600" }}>
+    <div className="loyalty-card">
+      <div className="loyalty-card-header">
         <span>{t.rewards} ({t.gold})</span>
-        {/* {!compact && (
-          <Link href="/loyalty" style={{ color: "#fff", textDecoration: "underline", fontSize: "11px" }}>
-            {t.details}
-          </Link>
-        )} */}
-        <Link href="/loyalty" style={{ color: "#fff", textDecoration: "underline", fontSize: "11px" }}>
+        <Link href="/loyalty" className="loyalty-card-header-link">
           {t.details}
         </Link>
       </div>
 
       <div>
-        {compact && (<span style={{ fontSize: "11px", opacity: 0.8, display: "block" }}>{t.balance}</span>)}
-        <h3 style={{ fontSize: "28px", fontWeight: "800", marginTop: "4px" }}>
-          {loyaltyPoints} <span style={{ fontSize: "14px", fontWeight: "600" }}>{t.points}</span>
+        {compact && (<span className="loyalty-card-label">{t.balance}</span>)}
+        <h3 className="loyalty-card-points-value">
+          {loyaltyPoints} <span className="loyalty-card-points-unit">{t.points}</span>
         </h3>
         {!compact && (
-          <span style={{ fontSize: "12px", fontWeight: "600" }}>
+          <span className="loyalty-card-value-equiv">
             {t.value} {valueSar.toFixed(2)} {t.sar}
           </span>
         )}
       </div>
 
       {!compact && (
-        <div className="loyalty-progress-container" style={{ borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: "10px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", opacity: 0.9 }}>
+        <div className="loyalty-progress-container">
+          <div className="loyalty-progress-info">
             <span>{loyaltyPoints} / 1500 {t.points}</span>
             <span>{t.nextTier}</span>
           </div>
-          <div className="loyalty-progress-bar" style={{ backgroundColor: "rgba(255, 255, 255, 0.25)" }}>
-            <div className="loyalty-progress-fill" style={{ width: `${percent}%`, backgroundColor: "white" }}></div>
+          <div className="loyalty-progress-bar">
+            <div className="loyalty-progress-fill" style={{ width: `${percent}%` }}></div>
           </div>
         </div>
       )}
@@ -126,7 +105,7 @@ export function WalletLoyaltyUnifiedCard({
 
   const t = {
     title: language === "ar" ? "المحفظة ونقاط المكافآت" : "Wallet & Loyalty Points",
-    subtitle: language === "ar" ? "اكسب نقاطاً مع كل عملية شراء واستبدلها بمزايا حصرية" : "Earn points with every purchase and redeem them for exclusive benefits",
+    subtitle: language === "ar" ? "اكسب نقاطاً مع كل عملية شراء واستبدلها بمزايا خصرية" : "Earn points with every purchase and redeem them for exclusive benefits",
     viewAll: language === "ar" ? "عرض الكل" : "View All",
     loyaltyTitle: language === "ar" ? "نقاط الولاء" : "Loyalty Points",
     walletTitle: language === "ar" ? "رصيد المحفظة" : "Wallet Balance",
@@ -137,189 +116,70 @@ export function WalletLoyaltyUnifiedCard({
   };
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #0b3a60 0%, #1e5a8f 100%)",
-        color: "#fff",
-        borderRadius: "16px",
-        padding: "20px",
-        boxShadow: "var(--shadow-md)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-        position: "relative",
-        overflow: "hidden"
-      }}
-    >
+    <div className="unified-card">
       {/* Background glass circles behind the View All button */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-50px",
-          [language === "ar" ? "right" : "left"]: "-60px",
-          width: "140px",
-          height: "140px",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.08)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "55px",
-          [language === "ar" ? "right" : "left"]: "40px",
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.04)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          top: "-50px",
-          [language === "ar" ? "left" : "right"]: "-60px",
-          width: "140px",
-          height: "140px",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.08)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "55px",
-          [language === "ar" ? "left" : "right"]: "40px",
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.04)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
+      <div className="unified-card-circle-1" />
+      <div className="unified-card-circle-2" />
+      <div className="unified-card-circle-3" />
+      <div className="unified-card-circle-4" />
 
       {/* Header section */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", position: "relative", zIndex: 1 }}>
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <span style={{ fontSize: "24px" }}>🎁</span>
+      <div className="unified-card-header">
+        <div className="unified-card-title-box">
+          <span className="unified-card-icon">🎁</span>
           <div>
-            <h4 style={{ fontSize: "14px", fontWeight: "800", margin: 0 }}>{t.title}</h4>
-            {/* <p style={{ fontSize: "10px", opacity: 0.8, margin: "2px 0 0 0", lineHeight: "1.3" }}>{t.subtitle}</p> */}
+            <h4 className="unified-card-title">{t.title}</h4>
           </div>
         </div>
 
         <button
           onClick={onViewAllClick}
           type="button"
-          style={{
-            background: "rgba(255, 255, 255, 0.15)",
-            border: "none",
-            color: "#fff",
-            padding: "6px 12px",
-            borderRadius: "12px",
-            fontSize: "11px",
-            fontWeight: "700",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            whiteSpace: "nowrap"
-          }}
+          className="unified-view-all-btn"
         >
-          {t.viewAll} <span style={{ fontSize: "9px" }}>{language === "ar" ? "◀" : "▶"}</span>
+          {t.viewAll} <span className="unified-btn-arrow">{language === "ar" ? "◀" : "▶"}</span>
         </button>
       </div>
 
       {/* Side-by-side sub-boxes */}
-      <div className="unified-sub-boxes" style={{ position: "relative", zIndex: 1 }}>
+      <div className="unified-sub-boxes">
         {/* Left Sub-box (Loyalty Points) */}
-        <div
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "12px",
-            padding: "14px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            minHeight: "70px"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "8px" }}>
-            <span style={{ fontSize: "11px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap" }}>
+        <div className="unified-sub-box">
+          <div className="unified-sub-box-header">
+            <span className="unified-sub-box-title">
               ✨ {t.loyaltyTitle}
             </span>
             <button
               onClick={onPointsHistoryClick}
               type="button"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#ffca28",
-                fontSize: "10px",
-                fontWeight: "700",
-                textDecoration: "underline",
-                cursor: "pointer",
-                padding: 0,
-                whiteSpace: "nowrap"
-              }}
+              className="unified-sub-box-link"
             >
               {t.pointsHistory}
             </button>
           </div>
-          <div style={{ textAlign: "start", marginTop: "8px" }}>
-            <strong style={{ fontSize: "16px", fontWeight: "800" }}>
+          <div className="unified-sub-box-value-container">
+            <strong className="unified-sub-box-value">
               {loyaltyPoints.toLocaleString()} {t.pointsUnit}
             </strong>
           </div>
         </div>
 
         {/* Right Sub-box (Wallet Balance) */}
-        <div
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "12px",
-            padding: "14px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            minHeight: "70px"
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "8px" }}>
-            <span style={{ fontSize: "11px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap" }}>
+        <div className="unified-sub-box">
+          <div className="unified-sub-box-header">
+            <span className="unified-sub-box-title">
               👛 {t.walletTitle}
             </span>
             <button
               onClick={onTransactionDetailsClick}
               type="button"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#81d4fa",
-                fontSize: "9px",
-                fontWeight: "700",
-                textDecoration: "underline",
-                cursor: "pointer",
-                padding: 0,
-                textTransform: "uppercase",
-                whiteSpace: "nowrap"
-              }}
+              className="unified-sub-box-link blue-accent"
             >
               {t.transactionDetails}
             </button>
           </div>
-          <div style={{ textAlign: "start", marginTop: "8px" }}>
-            <strong style={{ fontSize: "16px", fontWeight: "800" }}>
+          <div className="unified-sub-box-value-container">
+            <strong className="unified-sub-box-value">
               {language === "ar" ? `${walletBalance.toFixed(2)} ${t.currency}` : `${walletBalance.toFixed(2)} ${t.currency}`}
             </strong>
           </div>

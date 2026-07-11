@@ -179,7 +179,7 @@ export default function HomePage() {
     .filter(Boolean);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <div className="home-container">
       
       {/* Dynamic Keyframe Shimmer Animations and Slide transitions */}
       <style>{`
@@ -229,21 +229,7 @@ export default function HomePage() {
 
       {/* Screen 7 Offline banner replacement card */}
       {isOffline && (
-        <div 
-          style={{
-            backgroundColor: "var(--danger-light, #fee2e2)",
-            border: "1px solid var(--danger, #ef4444)",
-            color: "var(--danger, #ef4444)",
-            padding: "12px 16px",
-            borderRadius: "16px",
-            fontSize: "13px",
-            fontWeight: "700",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            boxShadow: "var(--shadow-sm)"
-          }}
-        >
+        <div className="home-offline-banner">
           <span>📡</span>
           <span>{t.offlineWarning}</span>
         </div>
@@ -251,24 +237,24 @@ export default function HomePage() {
 
       {loading ? (
         /* Screen 7: Shimmer Skeletons representing Dashboard components */
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div className="home-container">
           {/* Banner Shimmer */}
-          <div className="shimmer-box" style={{ height: "140px", width: "100%" }}></div>
+          <div className="shimmer-box shimmer-box h140"></div>
 
           {/* Balance/Points Card Shimmer */}
-          <div className="shimmer-box" style={{ height: "90px", width: "100%" }}></div>
+          <div className="shimmer-box shimmer-box h90"></div>
 
           {/* Categories Grid Shimmer */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-              <div className="shimmer-box" style={{ height: "20px", width: "100px" }}></div>
-              <div className="shimmer-box" style={{ height: "16px", width: "60px" }}></div>
+            <div className="shimmer-row-header">
+              <div className="shimmer-box shimmer-box h20-w100"></div>
+              <div className="shimmer-box shimmer-box h16-w60"></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+            <div className="shimmer-grid-4-cols">
               {[...Array(8)].map((_, idx) => (
-                <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-                  <div className="shimmer-box" style={{ height: "50px", width: "50px", borderRadius: "50%" }}></div>
-                  <div className="shimmer-box" style={{ height: "12px", width: "40px" }}></div>
+                <div key={idx} className="shimmer-grid-4-cols-item">
+                  <div className="shimmer-box shimmer-box h50-circle"></div>
+                  <div className="shimmer-box shimmer-box h12-w40"></div>
                 </div>
               ))}
             </div>
@@ -276,22 +262,22 @@ export default function HomePage() {
 
           {/* Nearby Stores Shimmer */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-              <div className="shimmer-box" style={{ height: "20px", width: "140px" }}></div>
-              <div className="shimmer-box" style={{ height: "16px", width: "60px" }}></div>
+            <div className="shimmer-row-header">
+              <div className="shimmer-box shimmer-box h20-w140"></div>
+              <div className="shimmer-box shimmer-box h16-w60"></div>
             </div>
-            <div style={{ display: "flex", gap: "16px" }}>
-              <div className="shimmer-box" style={{ height: "120px", flex: 1 }}></div>
-              <div className="shimmer-box" style={{ height: "120px", flex: 1 }}></div>
+            <div className="shimmer-flex-2-cards">
+              <div className="shimmer-box shimmer-box h120-flex1"></div>
+              <div className="shimmer-box shimmer-box h120-flex1"></div>
             </div>
           </div>
 
           {/* Recommended Shimmer */}
           <div>
-            <div className="shimmer-box" style={{ height: "20px", width: "160px", marginBottom: "12px" }}></div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-              <div className="shimmer-box" style={{ height: "200px" }}></div>
-              <div className="shimmer-box" style={{ height: "200px" }}></div>
+            <div className="shimmer-box shimmer-box h20-w160"></div>
+            <div className="shimmer-grid-2-cols">
+              <div className="shimmer-box shimmer-box h200"></div>
+              <div className="shimmer-box shimmer-box h200"></div>
             </div>
           </div>
         </div>
@@ -300,17 +286,12 @@ export default function HomePage() {
         <>
           {/* Campaign Offer Banner - Active Sliding Carousel (Screen 7 Specs) */}
           <div 
-            className="offer-banner"
+            className="offer-banner promo-hero-container"
             style={{ 
-              background: promoSlides[currentSlide].bgColor,
-              transition: "background 0.5s ease",
-              position: "relative",
-              overflow: "hidden",
-              minHeight: "140px",
-              cursor: "pointer"
+              background: promoSlides[currentSlide].bgColor
             }}
           >
-            <div className="offer-content" key={currentSlide} style={{ animation: "slideInFromRight 0.4s ease" }}>
+            <div className="offer-content offer-content-animated" key={currentSlide}>
               <span className="offer-title">
                 {language === "ar" ? promoSlides[currentSlide].title_ar : promoSlides[currentSlide].title_en}
               </span>
@@ -321,20 +302,10 @@ export default function HomePage() {
                 {language === "ar" ? promoSlides[currentSlide].code_ar : promoSlides[currentSlide].code_en}
               </span>
             </div>
-            <div className="offer-graphic" style={{ fontSize: "56px" }}>{promoSlides[currentSlide].graphic}</div>
+            <div className="offer-graphic">{promoSlides[currentSlide].graphic}</div>
 
             {/* Slider progress bullets / indicator dots */}
-            <div 
-              style={{ 
-                position: "absolute", 
-                bottom: "12px", 
-                left: "0", 
-                right: "0", 
-                display: "flex", 
-                justifyContent: "center", 
-                gap: "6px" 
-              }}
-            >
+            <div className="carousel-bullets-container">
               {promoSlides.map((_, idx) => (
                 <div 
                   key={idx} 
@@ -389,9 +360,9 @@ export default function HomePage() {
 
             {/* Mobile view: Carousel */}
             <div className="mobile-only">
-              <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
+              <div className="product-grid horizontal-scroll">
                 {mockPharmacies.map((pharmacy) => (
-                  <div key={pharmacy.id} style={{ width: "280px", flexShrink: 0 }}>
+                  <div key={pharmacy.id} className="pharmacy-card-scroll-item">
                     <PharmacyCard pharmacy={pharmacy} />
                   </div>
                 ))}
@@ -450,11 +421,11 @@ export default function HomePage() {
 
           {/* Recently Viewed Carousel */}
           {recentlyViewedProducts.length > 0 && (
-            <div style={{ marginBottom: "20px" }}>
+            <div className="home-section-header-wrapper">
               <div className="carousel-header">
                 <h3 className="carousel-title">{t.recentlyViewed}</h3>
               </div>
-              <div className="product-grid horizontal-scroll" style={{ paddingBottom: "4px" }}>
+              <div className="product-grid horizontal-scroll">
                 {recentlyViewedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -466,21 +437,8 @@ export default function HomePage() {
 
       {/* 1. Splash Screen Overlay with Versioning, Custom Animation & Pattern (Screen 1) */}
       {showSplash && (
-        <div
-          className="splash-overlay"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "var(--primary)",
-            backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g fill='white' fill-opacity='0.08'><rect x='18' y='8' width='4' height='24'/><rect x='8' y='18' width='24' height='4'/></g></svg>")`,
-            animation: "crossBackgroundShift 10s linear infinite, fade-out-splash 0.5s ease-in 2.0s forwards",
-            zIndex: 10000
-          }}
-        >
-          <div className="splash-logo" style={{ animation: "pulse 1.2s infinite alternate", fontSize: "80px" }}>🟢</div>
+        <div className="splash-overlay">
+          <div className="splash-logo">🟢</div>
           <h1 className="splash-title">YUSUR</h1>
           <p className="splash-subtitle">
             {language === "ar" ? "منصتك الصحية الموثوقة" : "Your Trusted Healthcare Marketplace"}
@@ -488,47 +446,25 @@ export default function HomePage() {
           <div className="spinner"></div>
 
           {/* Footer KSA version label */}
-          <div style={{ position: "absolute", bottom: "30px", fontSize: "11px", opacity: 0.8, fontWeight: "700", letterSpacing: "0.5px" }}>
+          <div className="splash-footer">
             Version 1.0.0 (KSA)
           </div>
 
           {/* Screen 1 States: Offline Retry Modal */}
           {isOffline && (
-            <div style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(15, 23, 42, 0.95)",
-              zIndex: 11000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "20px"
-            }}>
-              <div style={{
-                backgroundColor: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "24px",
-                padding: "28px",
-                width: "100%",
-                maxWidth: "340px",
-                textAlign: "center",
-                color: "var(--text-1)",
-                boxShadow: "var(--shadow-lg)"
-              }}>
-                <span style={{ fontSize: "40px", display: "block", marginBottom: "12px" }}>⚠️</span>
-                <strong style={{ fontSize: "16px", display: "block", marginBottom: "8px" }}>
+            <div className="offline-retry-overlay">
+              <div className="offline-retry-sheet">
+                <span className="offline-icon">⚠️</span>
+                <strong className="offline-title">
                   {language === "ar" ? "لا يوجد اتصال بالشبكة" : "No Internet Connection"}
                 </strong>
-                <p style={{ fontSize: "12px", color: "var(--text-2)", lineHeight: "1.5", margin: "0 0 20px 0" }}>
+                <p className="offline-desc">
                   {language === "ar" 
                     ? "يرجى التحقق من اتصال البيانات أو الواي فاي وإعادة المحاولة للمتابعة." 
                     : "Please check your mobile data or Wi-Fi settings and try again."}
                 </p>
                 
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="offline-actions-container">
                   <button className="btn-primary" type="button" onClick={() => {
                     if (navigator.onLine) {
                       setIsOffline(false);
@@ -538,7 +474,7 @@ export default function HomePage() {
                   }}>
                     🔄 {language === "ar" ? "إعادة المحاولة" : "Retry Connection"}
                   </button>
-                  <button className="btn-secondary" type="button" style={{ fontSize: "11px", paddingBlock: "6px" }} onClick={() => setIsOffline(false)}>
+                  <button className="btn-secondary offline-dismiss-btn" type="button" onClick={() => setIsOffline(false)}>
                     🔍 {language === "ar" ? "استمر في وضع التجربة" : "Continue in Demo Mode"}
                   </button>
                 </div>
@@ -554,11 +490,10 @@ export default function HomePage() {
           <div className="onboarding-card">
             
             {/* Top-End Language Switcher Toggle */}
-            <div style={{ display: "flex", justifyContent: "flex-end", width: "100%", marginBottom: "12px" }}>
+            <div className="onboarding-skip-row">
               <button
                 type="button"
-                className="btn-secondary"
-                style={{ padding: "4px 10px", fontSize: "11px", display: "flex", alignItems: "center", gap: "4px", width: "auto" }}
+                className="btn-secondary onboarding-skip-btn"
                 onClick={toggleLanguage}
               >
                 🌐 {language === "en" ? "العربية" : "English"}
@@ -566,7 +501,7 @@ export default function HomePage() {
             </div>
 
             {/* Sliding animation key context container */}
-            <div key={onboardingStep} className="onboarding-slide-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div key={onboardingStep} className="onboarding-slide-content onboarding-slide-wrapper">
               <div className="onboarding-icon">
                 {onboardingSlides[onboardingStep].icon}
               </div>
@@ -577,7 +512,7 @@ export default function HomePage() {
                   : onboardingSlides[onboardingStep].title_en}
               </h2>
 
-              <p className="onboarding-desc" style={{ minHeight: "60px" }}>
+              <p className="onboarding-desc">
                 {language === "ar"
                   ? onboardingSlides[onboardingStep].desc_ar
                   : onboardingSlides[onboardingStep].desc_en}
@@ -596,18 +531,16 @@ export default function HomePage() {
             <div className="onboarding-actions">
               <button
                 type="button"
-                className="btn-secondary"
+                className="btn-secondary onboarding-back-btn"
                 onClick={handleOnboardingFinish}
-                style={{ flex: 1, paddingBlock: "10px" }}
               >
                 {language === "ar" ? "تخطي" : "Skip"}
               </button>
 
               <button
                 type="button"
-                className="btn-primary"
+                className="btn-primary onboarding-next-btn"
                 onClick={handleOnboardingNext}
-                style={{ flex: 2, paddingBlock: "10px" }}
               >
                 {onboardingStep === onboardingSlides.length - 1
                   ? (language === "ar" ? "ابدأ التسوق" : "Get Started")
