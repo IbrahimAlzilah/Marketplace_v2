@@ -4,6 +4,7 @@ import React, { use, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { mockPharmacies, mockProducts } from "@/mock/data";
 import ProductCard from "@/components/ProductCard";
+import PharmacyHeader from "@/components/PharmacyHeader";
 import { useRouter } from "next/navigation";
 
 export default function PharmacyDetailPage({ params }) {
@@ -174,97 +175,12 @@ export default function PharmacyDetailPage({ params }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      {/* Styles for animations */}
-      <style>{`
-        @keyframes pulsePin {
-          0% { opacity: 0.95; }
-          100% { opacity: 1; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-        }
-      `}</style>
-
-      {/* Covered Storefront Visual Banner Header (Screen 13 specifications) */}
-      <div
-        style={{
-          position: "relative",
-          height: "160px",
-          background: activeBanner,
-          borderRadius: "16px",
-          overflow: "hidden",
-          display: "flex",
-          alignItems: "flex-end",
-          padding: "20px",
-          boxShadow: "var(--shadow-sm)"
-        }}
-      >
-        {/* Brand medical logo silhouette background decoration */}
-        <div style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          fontSize: "64px",
-          opacity: 0.15,
-          userSelect: "none"
-        }}>
-          🏥
-        </div>
-        
-        {/* Glassmorphism card detailing pharmacy */}
-        <div style={{
-          display: "flex",
-          gap: "16px",
-          alignItems: "center",
-          backgroundColor: "rgba(255, 255, 255, 0.15)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          borderRadius: "12px",
-          padding: "12px 18px",
-          color: "white",
-          width: "100%",
-          zIndex: 10
-        }}>
-          <div style={{ fontSize: "36px" }}>{pharmacy.logo}</div>
-          <div>
-            <h2 style={{ fontSize: "18px", fontWeight: "800", margin: 0, color: "white" }}>{name}</h2>
-            <span style={{ fontSize: "11px", opacity: 0.9 }}>📍 {language === "ar" ? "الرياض، حي الملقا" : "Riyadh, Al-Malqa District"}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Info Card Details (Stars, Delivery ETA, Closed Switch) */}
-      <div
-        style={{
-          backgroundColor: "var(--surface)",
-          border: "1px solid var(--border)",
-          borderRadius: "16px",
-          padding: "16px",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "16px",
-          boxShadow: "var(--shadow-sm)"
-        }}
-      >
-        <div style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text-2)" }}>
-          <span style={{ fontWeight: "700", color: "var(--warning)", fontSize: "13px" }}>★ {pharmacy.rating.toFixed(1)} ({pharmacy.reviewsCount})</span>
-          <span>⏱️ {eta}</span>
-          <span>🚗 {t.fee} {pharmacy.deliveryFee === 0 ? t.free : `${pharmacy.deliveryFee} ${t.sar}`}</span>
-        </div>
-
-        {/* Offline Simulation Gating Switch */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "var(--bg)", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "10px" }}>
-          <label htmlFor="store-offline-toggle" style={{ fontSize: "11px", fontWeight: "700", color: isStoreOffline ? "var(--danger)" : "var(--text-1)", cursor: "pointer" }}>
-            {isStoreOffline ? (language === "ar" ? "المتجر مغلق 🛑" : "Store Closed 🛑") : (language === "ar" ? "محاكاة الإغلاق ⚙️" : "Simulate Closed ⚙️")}
-          </label>
-          <input
-            id="store-offline-toggle"
-            type="checkbox"
-            checked={isStoreOffline}
-            onChange={() => setIsStoreOffline(!isStoreOffline)}
-            style={{ width: "16px", height: "16px", cursor: "pointer" }}
-          />
-        </div>
-      </div>
+      <PharmacyHeader
+        pharmacy={pharmacy}
+        isOffline={isStoreOffline}
+        showOfflineToggle={true}
+        onOfflineToggle={setIsStoreOffline}
+      />
 
       {/* Store Closed Warning Alert Banner (Screen 13 Offline alerts) */}
       {isStoreOffline && (

@@ -61,7 +61,7 @@ const Checkbox = ({ checked, onChange }) => {
 };
 
 export default function CartPage() {
-  const { language, cart, attachPrescription, walletBalance, loyaltyPoints, currentAddress, addresses, setCurrentAddress, isLoggedIn, login, selectedPharmacyIds, setSelectedPharmacyIds } = useApp();
+  const { language, cart, attachPrescription, walletBalance, loyaltyPoints, currentAddress, addresses, setCurrentAddress, isLoggedIn, login, selectedPharmacyIds, setSelectedPharmacyIds, activeCheckout } = useApp();
   const router = useRouter();
 
   const [uploadingItem, setUploadingItem] = useState(null);
@@ -189,6 +189,36 @@ export default function CartPage() {
     <div style={{ paddingBottom: "30px" }}>
       <h1 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "20px" }}>{t.cart}</h1>
 
+      {activeCheckout && ["processing_approval", "approval_status", "payment", "processing_payment"].includes(activeCheckout.step) && (
+        <div style={{
+          backgroundColor: "rgba(249, 115, 22, 0.08)",
+          border: "1.5px solid #F97316",
+          borderRadius: "12px",
+          padding: "8px 12px",
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "12px"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "var(--text-1)" }}>
+            <span>⚠️</span>
+            <span>
+              {language === "ar" 
+                ? "لديك عملية دفع معلقة بانتظار موافقة الصيدلية." 
+                : "You have a pending checkout awaiting pharmacy approval."}
+            </span>
+          </div>
+          <button
+            onClick={() => router.push("/checkout")}
+            className="btn-primary"
+            style={{ width: "auto", padding: "6px 12px", fontSize: "12px" }}
+          >
+            {language === "ar" ? "عرض التفاصيل" : "View Details"}
+          </button>
+        </div>
+      )}
+
       <div className="two-col-layout">
         {/* LEFT COLUMN: Vendors groups & Products list */}
         <div className="layout-main-col" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -267,10 +297,6 @@ export default function CartPage() {
                       </span>
                     </div>
                   </div>
-
-                  <span style={{ fontSize: "12px", color: "var(--text-2)", fontWeight: "500" }}>
-                    {t.eta} {group.items.some(i => i.isColdChain) ? (language === "ar" ? "ساعة واحدة" : "1 Hour") : (language === "ar" ? "٢٥ دقيقة" : "25 mins")}
-                  </span>
                 </div>
 
                 <div style={{ 

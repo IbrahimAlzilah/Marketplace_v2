@@ -21,7 +21,9 @@ export function AppProvider({ children }) {
   const [recentlyViewed, setRecentlyViewed] = useState(["pr-1", "pr-2"]); // Pre-populated default product IDs
   const [selectedPharmacyIds, setSelectedPharmacyIds] = useState([]);
 
-  // Sync login status from localStorage on client-side mount (hydration-safe)
+  const [activeCheckout, setActiveCheckout] = useState(null);
+
+  // Sync login status and active checkout from localStorage on client-side mount (hydration-safe)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("isLoggedIn") === "true";
@@ -31,8 +33,27 @@ export function AppProvider({ children }) {
           setCurrentAddress(addresses[0]);
         }
       }
+      const storedCheckout = localStorage.getItem("activeCheckout");
+      if (storedCheckout) {
+        try {
+          setActiveCheckout(JSON.parse(storedCheckout));
+        } catch (e) {
+          console.error("Failed to parse stored checkout", e);
+        }
+      }
     }
   }, []);
+
+  // Save activeCheckout changes to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (activeCheckout) {
+        localStorage.setItem("activeCheckout", JSON.stringify(activeCheckout));
+      } else {
+        localStorage.removeItem("activeCheckout");
+      }
+    }
+  }, [activeCheckout]);
 
   // Update HTML document direction and lang on language toggle
   useEffect(() => {
@@ -80,7 +101,7 @@ export function AppProvider({ children }) {
           item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prev, { ...product, quantity, rxFile: null }];
+      return [...prev, { ...product, quantity, rxFile: product.rxFile || null }];
     });
   };
 
@@ -102,6 +123,69 @@ export function AppProvider({ children }) {
     setCart((prev) =>
       prev.map((item) => (item.id === productId ? { ...item, rxFile: fileName } : item))
     );
+  };
+
+  const submitCheckout = (items, address, fulfillmentType, scenarioId) => {
+    const checkoutItems = items.map(item => ({
+      ...item,
+      allocation: "?", // starts as pending review
+      selectedReplacement: null,
+      isRemoved: false
+    }));
+
+    const newCheckout = {
+      id: `CK-${Math.floor(100 + Math.random() * 900)}`,
+      step: "processing_approval",
+      scenario: scenarioId || "scenario_1",
+      fulfillmentType,
+      deliveryOption: "standard",
+      address,
+      items: checkoutItems,
+      paymentMethod: "mada",
+      useWallet: false,
+      useLoyalty: false,
+      couponCode: "",
+      couponApplied: false,
+      couponDiscount: 0
+    };
+
+    setActiveCheckout(newCheckout);
+
+    // Remove checked out items from cart
+    const itemIds = items.map(i => i.id);
+    setCart(prev => prev.filter(item => !itemIds.includes(item.id)));
+  };
+
+  const cancelCheckout = () => {
+    if (activeCheckout) {
+      // Restore items back to cart
+      activeCheckout.items.forEach(item => {
+        if (!item.isRemoved) {
+          const { selectedReplacement, allocation, isRemoved, ...product } = item;
+          addToCart(product, product.quantity);
+        }
+      });
+    }
+    setActiveCheckout(null);
+  };
+
+  const updateCheckoutItem = (itemId, update) => {
+    setActiveCheckout(prev => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        items: prev.items.map(item => 
+          item.id === itemId ? { ...item, ...update } : item
+        )
+      };
+    });
+  };
+
+  const updateCheckoutState = (update) => {
+    setActiveCheckout(prev => {
+      if (!prev) return null;
+      return { ...prev, ...update };
+    });
   };
 
   const toggleWishlist = (productId) => {
@@ -145,10 +229,11 @@ export function AppProvider({ children }) {
     return equivalentSar;
   };
 
-  const createOrder = (usedWalletAmount, redeemedPoints, paymentMethod, deliveryOption, activePharmacyIds) => {
+  const createOrder = (usedWalletAmount, redeemedPoints, paymentMethod, deliveryOption, activePharmacyIds, customItems) => {
+    const itemsToUse = customItems || cart;
     const ids = activePharmacyIds || selectedPharmacyIds;
-    // Group cart items by pharmacy
-    const grouped = cart.reduce((acc, item) => {
+    // Group items by pharmacy
+    const grouped = itemsToUse.reduce((acc, item) => {
       if (ids && !ids.includes(item.pharmacyId)) return acc;
       if (!acc[item.pharmacyId]) acc[item.pharmacyId] = [];
       acc[item.pharmacyId].push(item);
@@ -227,8 +312,8 @@ export function AppProvider({ children }) {
 
     // Award Loyalty Points (e.g. 1 point for every 10 SAR spent)
     const purchasedItems = ids 
-      ? cart.filter(item => ids.includes(item.pharmacyId))
-      : cart;
+      ? itemsToUse.filter(item => ids.includes(item.pharmacyId))
+      : itemsToUse;
     const totalSpent = purchasedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const earnedPoints = Math.floor(totalSpent / 10);
     if (earnedPoints > 0) {
@@ -248,11 +333,13 @@ export function AppProvider({ children }) {
     // Add orders to state
     setOrders((prev) => [...newOrdersList, ...prev]);
 
-    // Clear only checked out items
-    if (ids) {
-      setCart((prev) => prev.filter((item) => !ids.includes(item.pharmacyId)));
-    } else {
-      setCart([]);
+    // Clear only checked out items from cart if customItems is NOT used
+    if (!customItems) {
+      if (ids) {
+        setCart((prev) => prev.filter((item) => !ids.includes(item.pharmacyId)));
+      } else {
+        setCart([]);
+      }
     }
 
     return newOrdersList;
@@ -343,7 +430,13 @@ export function AppProvider({ children }) {
         logout,
         recentlyViewed,
         addToRecentlyViewed,
-        cancelOrder
+        cancelOrder,
+        activeCheckout,
+        setActiveCheckout,
+        submitCheckout,
+        cancelCheckout,
+        updateCheckoutItem,
+        updateCheckoutState
       }}
     >
       {children}
