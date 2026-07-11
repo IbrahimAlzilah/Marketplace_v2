@@ -19,6 +19,7 @@ export function AppProvider({ children }) {
   const [wishlist, setWishlist] = useState(["pr-1", "pr-6"]); // Saved product IDs
   const [searchHistory, setSearchHistory] = useState(["Panadol", "Baby Milk"]);
   const [recentlyViewed, setRecentlyViewed] = useState(["pr-1", "pr-2"]); // Pre-populated default product IDs
+  const [selectedPharmacyIds, setSelectedPharmacyIds] = useState([]);
 
   // Sync login status from localStorage on client-side mount (hydration-safe)
   useEffect(() => {
@@ -38,6 +39,15 @@ export function AppProvider({ children }) {
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = language;
   }, [language]);
+
+  // Keep selectedPharmacyIds in sync with cart (removing pharmacies no longer in the cart)
+  useEffect(() => {
+    const pharmacyIdsInCart = Array.from(new Set(cart.map((item) => item.pharmacyId)));
+    setSelectedPharmacyIds((prev) => {
+      // Keep only those that are still in the cart, do not add new ones by default
+      return prev.filter((id) => pharmacyIdsInCart.includes(id));
+    });
+  }, [cart]);
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ar" : "en"));
@@ -135,9 +145,11 @@ export function AppProvider({ children }) {
     return equivalentSar;
   };
 
-  const createOrder = (usedWalletAmount, redeemedPoints, paymentMethod, deliveryOption) => {
+  const createOrder = (usedWalletAmount, redeemedPoints, paymentMethod, deliveryOption, activePharmacyIds) => {
+    const ids = activePharmacyIds || selectedPharmacyIds;
     // Group cart items by pharmacy
     const grouped = cart.reduce((acc, item) => {
+      if (ids && !ids.includes(item.pharmacyId)) return acc;
       if (!acc[item.pharmacyId]) acc[item.pharmacyId] = [];
       acc[item.pharmacyId].push(item);
       return acc;
@@ -214,7 +226,10 @@ export function AppProvider({ children }) {
     }
 
     // Award Loyalty Points (e.g. 1 point for every 10 SAR spent)
-    const totalSpent = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const purchasedItems = ids 
+      ? cart.filter(item => ids.includes(item.pharmacyId))
+      : cart;
+    const totalSpent = purchasedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const earnedPoints = Math.floor(totalSpent / 10);
     if (earnedPoints > 0) {
       setLoyaltyPoints((prev) => prev + earnedPoints);
@@ -233,8 +248,12 @@ export function AppProvider({ children }) {
     // Add orders to state
     setOrders((prev) => [...newOrdersList, ...prev]);
 
-    // Clear Cart
-    setCart([]);
+    // Clear only checked out items
+    if (ids) {
+      setCart((prev) => prev.filter((item) => !ids.includes(item.pharmacyId)));
+    } else {
+      setCart([]);
+    }
 
     return newOrdersList;
   };
@@ -318,6 +337,8 @@ export function AppProvider({ children }) {
         addSearchHistory,
         createOrder,
         isLoggedIn,
+        selectedPharmacyIds,
+        setSelectedPharmacyIds,
         login,
         logout,
         recentlyViewed,
