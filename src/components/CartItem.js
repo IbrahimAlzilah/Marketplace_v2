@@ -18,44 +18,18 @@ export default function CartItem({ item, onUploadPrescription }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: "12px",
-        backgroundColor: "var(--surface)",
-        border: "1px solid var(--border)",
-        borderRadius: "12px",
-        gap: "8px"
-      }}
-    >
-      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+    <div className="cart-item-card">
+      <div className="cart-item-main">
         <Link
           href={`/product/${item.id}`}
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            textDecoration: "none",
-            color: "inherit",
-            flex: 1,
-            minWidth: 0
-          }}
-          onMouseEnter={(e) => {
-            const titleEl = e.currentTarget.querySelector("h5");
-            if (titleEl) titleEl.style.textDecoration = "underline";
-          }}
-          onMouseLeave={(e) => {
-            const titleEl = e.currentTarget.querySelector("h5");
-            if (titleEl) titleEl.style.textDecoration = "none";
-          }}
+          className="cart-item-info-link"
         >
-          <div style={{ fontSize: "28px", width: "48px", height: "48px", backgroundColor: "var(--bg)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div className="cart-item-thumbnail">
             {item.image}
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h5 style={{ fontSize: "13px", fontWeight: "600", margin: 0 }}>{name}</h5>
-            <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--primary)" }}>
+          <div className="cart-item-text-wrapper">
+            <h5 className="cart-item-title">{name}</h5>
+            <span className="cart-item-price-tag">
               {item.price.toFixed(2)} {t.sar}
             </span>
           </div>
@@ -69,7 +43,7 @@ export default function CartItem({ item, onUploadPrescription }) {
 
         <button
           onClick={() => removeFromCart(item.id)}
-          style={{ background: "transparent", border: "none", fontSize: "16px", cursor: "pointer", color: "var(--danger)" }}
+          className="cart-item-delete-btn"
         >
           🗑️
         </button>
@@ -78,22 +52,12 @@ export default function CartItem({ item, onUploadPrescription }) {
       {item.isRx && (
         <div
           onClick={() => onUploadPrescription && onUploadPrescription(item)}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "8px 12px",
-            backgroundColor: item.rxFile ? "rgba(24, 182, 122, 0.05)" : "rgba(225, 29, 72, 0.05)",
-            border: `1px dashed ${item.rxFile ? "var(--secondary)" : "var(--danger)"}`,
-            borderRadius: "8px",
-            fontSize: "11px",
-            cursor: "pointer"
-          }}
+          className={`cart-item-rx-row ${item.rxFile ? "rx-attached" : "rx-needed"}`}
         >
-          <span style={{ color: item.rxFile ? "var(--secondary)" : "var(--danger)", fontWeight: "600" }}>
+          <span className={`cart-item-rx-label ${item.rxFile ? "rx-attached" : "rx-needed"}`}>
             📋 {t.rxNeeded}
           </span>
-          <span style={{ color: item.rxFile ? "var(--text-1)" : "var(--primary)", fontWeight: "700" }}>
+          <span className={`cart-item-rx-action ${item.rxFile ? "rx-attached" : "rx-needed"}`}>
             {item.rxFile ? `${t.rxAttached} (${item.rxFile})` : t.uploadRx}
           </span>
         </div>

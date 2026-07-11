@@ -1945,3 +1945,1998 @@ main {
     transform: translateY(-8px);
   }
 }
+
+/* ==========================================================================
+   Refactored Checkout and Cart Styles (Replacing Inline CSS Styles)
+   ========================================================================== */
+
+/* Cart Item Component Styles */
+.cart-item-card {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  gap: 8px;
+}
+
+.cart-item-main {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cart-item-info-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-info-link:hover .cart-item-title {
+  text-decoration: underline;
+}
+
+.cart-item-thumbnail {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  background-color: var(--bg);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cart-item-text-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.cart-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cart-item-price-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.cart-item-delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--danger);
+}
+
+.cart-item-rx-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.cart-item-rx-row.rx-needed {
+  background-color: rgba(225, 29, 72, 0.05);
+  border: 1px dashed var(--danger);
+}
+
+.cart-item-rx-row.rx-attached {
+  background-color: rgba(24, 182, 122, 0.05);
+  border: 1px dashed var(--secondary);
+}
+
+.cart-item-rx-label.rx-needed {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.cart-item-rx-label.rx-attached {
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.cart-item-rx-action.rx-needed {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.cart-item-rx-action.rx-attached {
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+/* Cart Page Styles */
+.cart-page-container {
+  padding-bottom: 30px;
+}
+
+.cart-page-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.cart-empty-btn {
+  width: auto;
+}
+
+.checkout-banner-wrapper {
+  background-color: rgba(249, 115, 22, 0.08);
+  border: 1.5px solid #F97316;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkout-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-1);
+}
+
+.checkout-banner-btn {
+  width: auto;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.cart-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pharmacy-group-box {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  background-color: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pharmacy-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pharmacy-group-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pharmacy-group-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pharmacy-group-logo-text {
+  font-size: 20px;
+}
+
+.pharmacy-group-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pharmacy-group-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0c2b5c;
+}
+
+.pharmacy-group-count {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.pharmacy-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.delivery-progress-container {
+  margin-top: 6px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+
+.delivery-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 4px;
+  color: var(--text-2);
+}
+
+.delivery-progress-track {
+  width: 100%;
+  height: 6px;
+  background-color: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.delivery-progress-fill {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.delivery-unlocked {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--success);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.pharmacy-group-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  font-weight: 700;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pharmacy-delivery-fee-label {
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.pharmacy-delivery-fee-value {
+  color: var(--text-1);
+  font-weight: 800;
+}
+
+.pharmacy-shop-more-link {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s;
+}
+
+.pharmacy-shop-more-link:hover {
+  text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+.cart-rx-notice {
+  padding: 16px;
+}
+
+.cart-rx-notice-title {
+  font-size: 14px;
+}
+
+.cart-rx-notice-desc {
+  margin-top: 4px;
+}
+
+.cart-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-summary-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-summary-title {
+  font-size: 16px;
+  font-weight: 800;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin: 0;
+}
+
+.cart-summary-billing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  position: relative;
+}
+
+.cart-summary-row-bold {
+  font-weight: 600;
+}
+
+.delivery-split-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.delivery-split-popover {
+  position: absolute;
+  bottom: 24px;
+  background-color: var(--surface);
+  border: 1.5px solid var(--primary);
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 100;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.delivery-split-popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.delivery-split-popover-title {
+  font-size: 11px;
+  color: var(--text-1);
+}
+
+.delivery-split-popover-close {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.delivery-split-popover-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.cart-summary-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 800;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+  color: var(--text-1);
+}
+
+.cart-summary-total-value {
+  color: var(--primary);
+}
+
+.cart-benefits-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.cart-benefits-header {
+  font-size: 11px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+}
+
+.cart-benefits-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.cart-benefits-value-primary {
+  color: var(--primary);
+}
+
+.cart-benefits-value-loyalty {
+  color: #b8860b;
+}
+
+.cart-checkout-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.rx-modal-sheet {
+  max-width: 440px;
+}
+
+.rx-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.rx-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.rx-modal-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-bottom: 14px;
+}
+
+.rx-modal-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.rx-modal-tab-btn {
+  padding-block: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-bottom: -2px;
+}
+
+.rx-modal-tab-btn.active {
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.rx-modal-tab-btn.inactive {
+  border-bottom: 2px solid transparent;
+  color: var(--text-2);
+}
+
+.rx-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rx-upload-dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.rx-upload-dropzone-icon {
+  font-size: 28px;
+}
+
+.rx-upload-dropzone-text {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.rx-upload-attached-info {
+  font-size: 12px;
+  background-color: rgba(24, 182, 122, 0.1);
+  color: var(--secondary);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.rx-digital-connect-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rx-digital-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rx-digital-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.rx-digital-fetch-btn {
+  width: auto;
+  font-size: 12px;
+  padding-inline: 16px;
+}
+
+.rx-digital-loader {
+  text-align: center;
+  padding-block: 10px;
+}
+
+.rx-digital-loader-spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  animation: pulsePin 1s infinite linear;
+  margin: 0 auto;
+}
+
+.rx-digital-loader-text {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 4px;
+  display: block;
+}
+
+.rx-digital-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.rx-digital-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rx-digital-item.selected {
+  border: 1.5px solid var(--primary);
+  background-color: rgba(15, 108, 189, 0.04);
+}
+
+.rx-digital-item.unselected {
+  border: 1.5px solid var(--border);
+  background-color: var(--surface);
+}
+
+.rx-digital-item-doctor {
+  font-size: 12px;
+  display: block;
+  color: var(--text-1);
+}
+
+.rx-digital-item-meta {
+  font-size: 10px;
+  color: var(--text-2);
+}
+
+.rx-digital-item-code {
+  font-size: 10px;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.location-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.location-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.location-modal-item {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background-color: var(--surface);
+  cursor: pointer;
+}
+
+.location-modal-item-tag {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.location-modal-item-street {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+/* Checkout Page Styles */
+.checkout-page-container {
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.checkout-page-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.scenario-selector-box {
+  background-color: rgba(15, 108, 189, 0.06);
+  border: 1.5px dashed var(--primary);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scenario-selector-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.scenario-selector-input {
+  font-size: 12.5px;
+  padding: 8px 12px;
+}
+
+.fulfillment-toggle-container {
+  display: flex;
+  gap: 10px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.fulfillment-toggle-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: transparent;
+  color: var(--text-2);
+}
+
+.fulfillment-toggle-btn.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.checkout-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkout-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.checkout-branch-highlight {
+  padding: 12px;
+  border: 1.5px solid var(--primary);
+  border-radius: 12px;
+  background-color: rgba(15, 108, 189, 0.04);
+}
+
+.checkout-branch-name {
+  font-size: 13.5px;
+  display: block;
+}
+
+.checkout-branch-address {
+  font-size: 12px;
+  color: var(--text-2);
+  display: block;
+  margin-top: 2px;
+}
+
+.checkout-branch-ready {
+  display: block;
+  font-size: 11px;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.checkout-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.checkout-change-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.checkout-address-tag {
+  font-size: 13.5px;
+  display: block;
+}
+
+.checkout-address-detail {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+.checkout-add-address-btn {
+  width: 100%;
+}
+
+.checkout-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkout-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.checkout-pharmacy-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.checkout-pharmacy-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.checkout-item-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.checkout-item-icon {
+  font-size: 20px;
+}
+
+.checkout-item-info {
+  flex: 1;
+}
+
+.checkout-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.checkout-item-price {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.checkout-item-qty {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.checkout-pharmacy-subtotal {
+  border-top: 1.5px dashed var(--border);
+  margin-top: 12px;
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.checkout-summary-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 20px;
+}
+
+.checkout-summary-billing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.checkout-summary-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkout-summary-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 800;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 4px;
+  color: var(--primary);
+}
+
+.checkout-submit-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Step 2 Processing Screen */
+.processing-screen-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+  text-align: center;
+  padding-block: 30px;
+}
+
+.processing-spinner-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: rgba(249, 115, 22, 0.1);
+  margin-bottom: 8px;
+}
+
+.processing-spinner-inner {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 4px solid rgba(249, 115, 22, 0.2);
+  border-top-color: #F97316;
+  animation: spin 1s infinite linear;
+}
+
+.processing-title {
+  font-size: 21px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: var(--text-1);
+}
+
+.processing-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+.processing-progress-wrapper {
+  width: 100%;
+  max-width: 440px;
+  padding-inline: 10px;
+}
+
+.processing-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: 6px;
+}
+
+.processing-progress-header-count {
+  color: var(--text-1);
+}
+
+.processing-progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.processing-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F97316, #EA580C);
+  transition: width 0.4s ease-out;
+}
+
+.processing-checklist-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 440px;
+  text-align: start;
+  margin-top: 10px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.processing-checklist-title {
+  font-size: 11px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-weight: 800;
+  display: block;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.processing-checklist-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 4px;
+}
+
+.processing-checklist-row-info {
+  flex: 1;
+  min-width: 0;
+  padding-right: 10px;
+}
+
+[dir="rtl"] .processing-checklist-row-info {
+  padding-right: 0;
+  padding-left: 10px;
+}
+
+.processing-checklist-row-name {
+  font-size: 13px;
+  color: var(--text-1);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.processing-checklist-row-pharmacy {
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+.processing-status-badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.processing-status-badge.pending {
+  color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.processing-status-badge.approved {
+  color: var(--success);
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.processing-status-badge.rejected {
+  color: var(--danger);
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--warning);
+  display: inline-block;
+}
+
+/* Step 3: Approval Decision Screen */
+.approval-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.approval-cancel-btn {
+  width: auto;
+  padding: 6px 12px;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.approval-item-card {
+  border-radius: 16px;
+  padding: 16px;
+  background-color: var(--surface);
+  position: relative;
+  transition: all 0.2s;
+}
+
+.approval-item-card.unresolved {
+  border: 1.5px solid var(--primary);
+}
+
+.approval-item-card.resolved {
+  border: 1.5px solid var(--border);
+}
+
+.approval-item-pharmacy-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.approval-item-pharmacy-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.approval-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.approval-badge.resolved {
+  color: var(--success);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.approval-badge.unresolved {
+  color: var(--primary);
+  background-color: rgba(15, 108, 189, 0.1);
+  animation: pulsePin 1s infinite alternate;
+}
+
+.approval-original-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.approval-original-icon {
+  font-size: 28px;
+}
+
+.approval-original-info {
+  flex: 1;
+}
+
+.approval-original-name {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.approval-original-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+
+.approval-original-status-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 10px;
+}
+
+.approval-original-status-pill.approved {
+  color: var(--success);
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+.approval-original-status-pill.partial {
+  color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.approval-original-status-pill.rejected {
+  color: var(--danger);
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.approval-resolution-panel {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.approval-partial-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.approval-partial-text {
+  font-size: 12px;
+  color: var(--text-1);
+}
+
+.approval-partial-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.approval-partial-accept-btn {
+  flex: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 12px;
+}
+
+.approval-partial-remove-btn {
+  flex: 1;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: 12px;
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+}
+
+.approval-alternatives-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.approval-alternatives-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.approval-alternatives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.approval-alternative-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  transition: all 0.15s;
+}
+
+.approval-alternative-card.selected {
+  border: 1.5px solid var(--secondary);
+  background-color: rgba(24, 182, 122, 0.03);
+}
+
+.approval-alternative-card.unselected {
+  border: 1.5px solid var(--border);
+  background-color: var(--surface);
+}
+
+.approval-alternative-name {
+  font-size: 12.5px;
+  display: block;
+}
+
+.approval-alternative-pharmacy {
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.approval-alternative-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.approval-alternative-price {
+  color: var(--primary);
+  font-size: 13px;
+}
+
+.approval-alternative-accept-btn {
+  width: auto;
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.approval-alternatives-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.approval-alternatives-accept-approved-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.approval-alternatives-remove-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+.approval-rejected-out-stock-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(239, 68, 68, 0.03);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.approval-rejected-out-stock-text {
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.approval-rejected-out-stock-remove-btn {
+  width: auto;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  background-color: white;
+}
+
+/* Step 4: Rejection Screen */
+.rejection-screen-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+  padding-block: 30px;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.rejection-icon-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.rejection-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin: 0 0 6px 0;
+}
+
+.rejection-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+.rejection-reasons-card {
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rejection-reasons-header {
+  font-size: 11px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.rejection-reason-item {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.rejection-reason-item-name {
+  font-size: 13px;
+  display: block;
+  color: var(--text-1);
+}
+
+.rejection-reason-item-status {
+  font-size: 11.5px;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.rejection-info-banner {
+  background-color: rgba(14, 165, 233, 0.05);
+  border: 1px solid var(--info);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  color: var(--text-1);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  text-align: start;
+}
+
+/* Step 5: Payment Styles */
+.checkout-benefit-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkout-benefit-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.payment-option-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.payment-option-card.selected {
+  border: 1.5px solid var(--primary);
+  background-color: rgba(15, 108, 189, 0.03);
+}
+
+.payment-option-card.unselected {
+  border: 1.5px solid var(--border);
+  background-color: var(--surface);
+}
+
+.payment-option-logo-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coupon-code-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.coupon-status-alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(24, 182, 122, 0.08);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-top: -6px;
+}
+
+.coupon-remove-btn {
+  border: none;
+  background: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* Step 6: Processing Payment */
+.processing-payment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+  text-align: center;
+}
+
+.payment-spinner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid var(--border);
+  border-top-color: var(--secondary);
+  animation: spin 1s infinite linear;
+}
+
+/* Step 7: Confirmation Screen */
+.confirmation-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  text-align: center;
+  padding-block: 30px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.confirmation-icon-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: rgba(249, 115, 22, 0.1);
+  margin-bottom: 4px;
+}
+
+.confirmation-icon-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: #F97316;
+  color: white;
+  font-size: 32px;
+}
+
+.confirmation-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin: 0 0 4px 0;
+}
+
+.confirmation-id-label {
+  font-size: 13px;
+  color: var(--text-2);
+  display: block;
+}
+
+.confirmation-breakdown-card {
+  width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.confirmation-section-header {
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.confirmation-section-header.available {
+  color: var(--secondary);
+}
+
+.confirmation-section-header.unavailable {
+  color: var(--danger);
+}
+
+.confirmation-section-badge-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.confirmation-section-badge-circle.available {
+  border: 1.5px solid var(--secondary);
+}
+
+.confirmation-section-badge-circle.unavailable {
+  border: 1.5px solid var(--danger);
+}
+
+.confirmation-item-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.confirmation-item-card-row.available {
+  background-color: rgba(24, 182, 122, 0.05);
+}
+
+.confirmation-item-card-row.unavailable {
+  background-color: rgba(225, 29, 72, 0.05);
+}
+
+.confirmation-item-card-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.confirmation-item-card-row-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.confirmation-item-card-row-name.unavailable {
+  text-decoration: line-through;
+}
+
+.confirmation-item-card-row-qty {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.confirmation-item-card-row-price {
+  font-size: 13px;
+}
+
+.confirmation-item-card-row-price.available {
+  color: #7C3AED;
+}
+
+.confirmation-item-card-row-price.unavailable {
+  color: var(--danger);
+}
+
+.confirmation-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1.5px solid var(--border);
+  padding-top: 12px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.confirmation-total-value {
+  color: #7C3AED;
+}
+
+.confirmation-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Step 8: Shipment Tracking */
+.tracking-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tracking-timeline-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.tracking-timeline-card-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.tracking-timeline-pharmacy {
+  font-size: 14px;
+  color: var(--primary);
+}
+
+.tracking-timeline-shipment-id {
+  font-size: 11px;
+  color: var(--text-2);
+  display: block;
+  margin-top: 2px;
+}
+
+.tracking-timeline-status {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.tracking-milestones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-left: 24px;
+  margin-block: 10px;
+  margin-left: 8px;
+  border-left: 2px solid var(--border);
+}
+
+[dir="rtl"] .tracking-milestones-container {
+  padding-left: 0;
+  padding-right: 24px;
+  margin-left: auto;
+  margin-right: 8px;
+  border-left: none;
+  border-right: 2px solid var(--border);
+}
+
+.tracking-milestone-item {
+  position: relative;
+}
+
+.tracking-milestone-bullet {
+  position: absolute;
+  left: -31px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+
+[dir="rtl"] .tracking-milestone-bullet {
+  left: auto;
+  right: -31px;
+}
+
+.tracking-milestone-bullet.active {
+  background-color: var(--primary);
+  border: 3px solid rgba(15,108,189,0.2);
+}
+
+.tracking-milestone-bullet.done {
+  background-color: var(--secondary);
+}
+
+.tracking-milestone-bullet.pending {
+  background-color: var(--border);
+}
+
+.tracking-driver-box {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tracking-driver-label {
+  font-size: 11px;
+  color: var(--text-2);
+  display: block;
+}
+
+.tracking-driver-phone-btn {
+  background-color: rgba(15, 108, 189, 0.08);
+  color: var(--primary);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Modals inside Checkout Page */
+.address-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.address-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin: 0;
+}
+
+.address-modal-add-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-vertical: 12px;
+  margin-bottom: 16px;
+  border: 1.5px solid var(--border);
+  color: var(--text-1);
+  background-color: white;
+  border-radius: 16px;
+}
+
+.address-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-inline: 2px;
+}
+
+.address-modal-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background-color: var(--surface);
+}
+
+.address-modal-radio-outer {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.address-modal-radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #F97316;
+}
+
+.address-modal-item-info {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.address-modal-item-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.address-modal-item-tag {
+  font-size: 13.5px;
+  color: var(--text-1);
+}
+
+.address-modal-item-main-badge {
+  font-size: 10px;
+  color: #0066cc;
+  background-color: #e6f2ff;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.address-modal-item-street {
+  font-size: 11.5px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.address-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receipt-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.receipt-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin: 0;
+}
+
+.receipt-modal-info {
+  font-size: 12px;
+  color: var(--text-2);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.receipt-modal-table-container {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.receipt-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.receipt-modal-table-header {
+  background-color: var(--bg);
+  border-bottom: 1.5px solid var(--border);
+}
+
+.receipt-modal-table-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-modal-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+  background-color: var(--bg);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+/* Custom Checkbox Component */
+.custom-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.custom-checkbox.checked {
+  border: none;
+  background-color: #ee6c00;
+}
+
+.custom-checkbox.unchecked {
+  border: 2.5px solid var(--border);
+  background-color: transparent;
+}
+
+.main-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
