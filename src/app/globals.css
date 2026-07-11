@@ -335,8 +335,11 @@ main {
 }
 
 .carousel-bullets-container {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 12px;
   display: flex;
-  align-items: center;
+  justify-content: center;
   gap: 2px;
 }
 
